@@ -214,7 +214,7 @@ export default function AdminDashboard() {
           return (
             <div
               key={stat.label}
-              className={`relative overflow-hidden rounded-2xl p-5 bg-slate-900 border border-slate-800 ${colors.border} transition-all duration-200`}
+              className={`relative overflow-hidden rounded-2xl p-5 bg-slate-900/40 backdrop-blur-md border border-slate-800/60 shadow-xl shadow-slate-950/20 ${colors.border} transition-all duration-200`}
             >
               <div className={`absolute top-0 right-0 w-20 h-20 ${colors.bg} rounded-full blur-2xl pointer-events-none`} />
               <div className={`w-10 h-10 rounded-xl ${colors.iconBg} border ${colors.iconBorder} flex items-center justify-center mb-4 ${colors.iconText}`}>
@@ -223,7 +223,7 @@ export default function AdminDashboard() {
               <div className={`text-3xl font-extrabold ${colors.valueText} mb-1`}>
                 {stat.value ?? 0}
               </div>
-              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 {stat.label}
               </div>
             </div>
@@ -234,8 +234,8 @@ export default function AdminDashboard() {
       {/* Detailed Columns for Messages & Downloads */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {/* Contact Messages */}
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
-          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
+        <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20">
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800/60">
             <Mail className="w-4 h-4 text-cyan-400" />
             <h2 className="text-sm font-bold text-white">Recent Messages</h2>
           </div>
@@ -255,7 +255,7 @@ export default function AdminDashboard() {
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className="p-4 bg-slate-800/40 border border-slate-800/60 rounded-xl space-y-2 relative group hover:bg-slate-800/60 transition-colors duration-150"
+                  className="p-4 bg-slate-800/30 border border-slate-800/50 rounded-xl space-y-2 relative group hover:bg-slate-800/50 hover:border-slate-700/50 transition-all duration-150"
                 >
                   <div className="flex items-start justify-between">
                     <div>
@@ -265,12 +265,12 @@ export default function AdminDashboard() {
                     
                     <button
                       onClick={() => handleDeleteMessage(msg.id)}
-                      className="text-slate-500 hover:text-red-400 p-1 rounded-lg hover:bg-red-500/10 transition-colors"
+                      className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                  <p className="text-xs text-slate-400 leading-relaxed pr-6">
+                  <p className="text-xs text-slate-300 leading-relaxed pr-6">
                     {msg.message}
                   </p>
                   <div className="text-[9px] text-slate-500 text-right">
@@ -283,8 +283,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Downloads */}
-        <div id="downloads" className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
-          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
+        <div id="downloads" className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20">
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800/60">
             <Download className="w-4 h-4 text-cyan-400" />
             <h2 className="text-sm font-bold text-white">Live Download Activity</h2>
           </div>
@@ -304,13 +304,13 @@ export default function AdminDashboard() {
               {recentDownloads.map((dl) => (
                 <div
                   key={dl.id}
-                  className="flex items-center justify-between py-3 px-3 rounded-xl hover:bg-slate-800/50 transition-colors duration-150 group"
+                  className="flex items-center justify-between py-3 px-3 rounded-xl hover:bg-slate-800/20 transition-colors duration-150 group"
                 >
                   <div className="min-w-0 pr-4">
                     <h4 className="text-sm font-semibold text-white group-hover:text-cyan-50 transition-colors truncate">
                       {dl.notes?.title || "Unknown File"}
                     </h4>
-                    <span className="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-md">
+                    <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-full">
                       {dl.notes?.course || "Global"}
                     </span>
                   </div>

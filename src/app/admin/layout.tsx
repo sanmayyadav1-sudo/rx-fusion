@@ -14,10 +14,10 @@ export default function AdminLayout({
   return (
     <div className="dark min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
       {/* Mobile Top Header */}
-      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 text-white flex items-center justify-between px-4 z-30 shadow-lg">
+      <header className="md:hidden fixed top-0 left-0 right-0 h-16 bg-slate-900/40 backdrop-blur-md border-b border-slate-800/60 text-white flex items-center justify-between px-4 z-30 shadow-xl shadow-slate-950/10">
         <button
           onClick={() => setSidebarOpen(true)}
-          className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800/80 transition-all active:scale-95"
+          className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800/60 transition-all active:scale-95"
           aria-label="Open Sidebar"
         >
           <Menu className="w-6 h-6" />

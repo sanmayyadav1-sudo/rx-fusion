@@ -383,7 +383,7 @@ export default function NotesCrud() {
               setShowAddForm(true);
             }
           }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-semibold shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{showAddForm ? "Hide Form" : "Upload Note"}</span>
@@ -406,15 +406,15 @@ export default function NotesCrud() {
 
       {/* Add Note Form */}
       {showAddForm && (
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-3xl animate-fade-in">
-          <h2 className="text-md font-bold text-white mb-6">
+        <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 mb-6 max-w-3xl shadow-xl shadow-slate-950/20 animate-fade-in">
+          <h2 className="text-md font-extrabold tracking-tight text-white mb-6">
             {editingId ? "Edit Lecture Material" : "Upload New Lecture Material"}
           </h2>
 
           <form onSubmit={handleUploadAndSave} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                   Title
                 </label>
                 <input
@@ -422,28 +422,28 @@ export default function NotesCrud() {
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. Pharmaceutics-I Lecture 3"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                   Course
                 </label>
                 <select
                   value={course}
                   onChange={(e) => setCourse(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 >
-                  <option value="Pharm D">Pharm D (Doctor of Pharmacy)</option>
-                  <option value="B Pharm">B Pharm (Bachelor of Pharmacy)</option>
-                  <option value="D Pharm">D Pharm (Diploma in Pharmacy)</option>
+                  <option value="Pharm D" className="bg-slate-900">Pharm D (Doctor of Pharmacy)</option>
+                  <option value="B Pharm" className="bg-slate-900">B Pharm (Bachelor of Pharmacy)</option>
+                  <option value="D Pharm" className="bg-slate-900">D Pharm (Diploma in Pharmacy)</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                   Semester / Year
                 </label>
                 <input
@@ -453,21 +453,21 @@ export default function NotesCrud() {
                   max={course === "Pharm D" ? 6 : course === "D Pharm" ? 2 : 8}
                   value={semester}
                   onChange={(e) => setSemester(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                   Subject
                 </label>
                 {loadingSubjects ? (
-                  <div className="flex items-center space-x-2 py-2.5 px-4 bg-slate-800/60 border border-slate-700/60 rounded-xl text-xs text-slate-500">
+                  <div className="flex items-center space-x-2 py-2.5 px-4 bg-slate-800/30 border border-slate-700/50 rounded-xl text-xs text-slate-400 animate-pulse">
                     <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
                     <span>Loading subjects...</span>
                   </div>
                 ) : subjectsForForm.length === 0 ? (
-                  <div className="py-2.5 px-4 bg-red-950/20 border border-red-900/40 rounded-xl text-xs text-red-300">
+                  <div className="py-2.5 px-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-300">
                     No subjects for this year yet —{" "}
                     <Link href="/admin/subjects" className="font-bold underline text-cyan-400 hover:text-cyan-300">
                       add them in Manage Subjects
@@ -484,10 +484,10 @@ export default function NotesCrud() {
                         setSubject(selectedObj.subject_name);
                       }
                     }}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   >
                     {subjectsForForm.map((s) => (
-                      <option key={s.id} value={s.id}>
+                      <option key={s.id} value={s.id} className="bg-slate-900">
                         {s.subject_name}
                       </option>
                     ))}
@@ -496,25 +496,25 @@ export default function NotesCrud() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                   Category
                 </label>
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 >
                   {categories.map((c) => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
+                    <option key={c.id} value={c.id} className="bg-slate-900">{c.name}</option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                   PDF / PPT / DOCX File
                 </label>
-                <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-slate-700 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-200 group">
+                <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-slate-700/60 cursor-pointer hover:border-cyan-500/40 hover:bg-cyan-500/5 transition-all duration-200 group">
                   <UploadCloud className="w-6 h-6 text-slate-500 group-hover:text-cyan-400 transition-colors mb-2" />
                   <span className="text-sm text-slate-500 group-hover:text-slate-300">
                     {file ? file.name : "Click to select file"}
@@ -531,14 +531,14 @@ export default function NotesCrud() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">
                 Description (Optional)
               </label>
               <textarea
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 resize-none"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                 placeholder="Include lecture outlines, core drug structures, or reference links..."
               />
             </div>
@@ -547,7 +547,7 @@ export default function NotesCrud() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? (
                   <>
@@ -562,7 +562,7 @@ export default function NotesCrud() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
                 >
                   Cancel Edit
                 </button>
@@ -584,11 +584,7 @@ export default function NotesCrud() {
             placeholder="Search notes by title..."
             value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value); }}
-            className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm
-              bg-slate-800/60 border border-slate-700/60 text-white
-              placeholder:text-slate-500 focus:outline-none
-              focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10
-              transition-all duration-200"
+            className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
           />
         </div>
 
@@ -600,15 +596,12 @@ export default function NotesCrud() {
             setFilterSemester("all");
             setFilterSubject("all");
           }}
-          className="px-3 py-2.5 rounded-xl text-sm bg-slate-800/60
-            border border-slate-700/60 text-white focus:outline-none
-            focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10
-            transition-all duration-200 cursor-pointer"
+          className="px-3 py-2.5 rounded-xl text-sm bg-slate-800/40 border border-slate-700/50 text-white focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
         >
-          <option value="all">All Courses</option>
-          <option value="Pharm D">Pharm D</option>
-          <option value="B Pharm">B Pharm</option>
-          <option value="D Pharm">D Pharm</option>
+          <option value="all" className="bg-slate-900">All Courses</option>
+          <option value="Pharm D" className="bg-slate-900">Pharm D</option>
+          <option value="B Pharm" className="bg-slate-900">B Pharm</option>
+          <option value="D Pharm" className="bg-slate-900">D Pharm</option>
         </select>
 
         {/* Semester/Year filter — dynamic based on selected course */}
@@ -619,26 +612,22 @@ export default function NotesCrud() {
             setFilterSubject("all");
           }}
           disabled={filterCourse === "all"}
-          className="px-3 py-2.5 rounded-xl text-sm bg-slate-800/60
-            border border-slate-700/60 text-white focus:outline-none
-            focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10
-            transition-all duration-200 cursor-pointer
-            disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-3 py-2.5 rounded-xl text-sm bg-slate-800/40 border border-slate-700/50 text-white focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          <option value="all">All Years</option>
+          <option value="all" className="bg-slate-900">All Years</option>
           {filterCourse === "Pharm D" &&
             [1,2,3,4,5,6].map(n => (
-              <option key={n} value={String(n)}>Year {n}</option>
+              <option key={n} value={String(n)} className="bg-slate-900">Year {n}</option>
             ))
           }
           {filterCourse === "B Pharm" &&
             [1,2,3,4,5,6,7,8].map(n => (
-              <option key={n} value={String(n)}>Semester {n}</option>
+              <option key={n} value={String(n)} className="bg-slate-900">Semester {n}</option>
             ))
           }
           {filterCourse === "D Pharm" &&
             [1,2].map(n => (
-              <option key={n} value={String(n)}>Year {n}</option>
+              <option key={n} value={String(n)} className="bg-slate-900">Year {n}</option>
             ))
           }
         </select>
@@ -648,15 +637,11 @@ export default function NotesCrud() {
           value={filterSubject}
           onChange={(e) => setFilterSubject(e.target.value)}
           disabled={filterSemester === "all"}
-          className="px-3 py-2.5 rounded-xl text-sm bg-slate-800/60
-            border border-slate-700/60 text-white focus:outline-none
-            focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10
-            transition-all duration-200 cursor-pointer
-            disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-3 py-2.5 rounded-xl text-sm bg-slate-800/40 border border-slate-700/50 text-white focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          <option value="all">All Subjects</option>
+          <option value="all" className="bg-slate-900">All Subjects</option>
           {availableSubjects.map(sub => (
-            <option key={sub} value={sub}>{sub}</option>
+            <option key={sub} value={sub} className="bg-slate-900">{sub}</option>
           ))}
         </select>
 
@@ -670,9 +655,7 @@ export default function NotesCrud() {
               setFilterSubject("all");
               setSearchQuery("");
             }}
-            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm
-              font-medium text-red-400 bg-red-500/10 border border-red-500/20
-              hover:bg-red-500/20 transition-all duration-200 whitespace-nowrap"
+            className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/25 transition-all duration-200 active:scale-95 whitespace-nowrap"
           >
             <X className="w-3.5 h-3.5" />
             Clear Filters
@@ -680,7 +663,7 @@ export default function NotesCrud() {
         )}
 
         {/* Results count */}
-        <span className="text-xs text-slate-500 font-medium whitespace-nowrap ml-auto">
+        <span className="text-xs text-slate-400 font-medium whitespace-nowrap ml-auto">
           {filteredNotes.length} of {notes.length} notes
         </span>
       </div>
@@ -690,8 +673,8 @@ export default function NotesCrud() {
         <div className="flex items-center gap-2 mb-4 flex-wrap">
           <span className="text-xs text-slate-500">Showing:</span>
           {filterCourse !== "all" && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg
-              text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+              text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 animate-fade-in">
               {filterCourse}
               <button onClick={() => {
                 setFilterCourse("all");
@@ -703,9 +686,9 @@ export default function NotesCrud() {
             </span>
           )}
           {filterSemester !== "all" && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
               text-xs font-semibold bg-violet-500/10 text-violet-400
-              border border-violet-500/20">
+              border border-violet-500/20 animate-fade-in">
               {filterCourse === "B Pharm" ? "Sem" : "Year"} {filterSemester}
               <button onClick={() => {
                 setFilterSemester("all");
@@ -716,9 +699,9 @@ export default function NotesCrud() {
             </span>
           )}
           {filterSubject !== "all" && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
               text-xs font-semibold bg-emerald-500/10 text-emerald-400
-              border border-emerald-500/20">
+              border border-emerald-500/20 animate-fade-in">
               {filterSubject}
               <button onClick={() => setFilterSubject("all")}>
                 <X className="w-3 h-3" />
@@ -729,7 +712,7 @@ export default function NotesCrud() {
       )}
 
       {/* Notes Table list */}
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
+      <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20">
         {loading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
@@ -748,15 +731,15 @@ export default function NotesCrud() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-slate-800/60">
                   {["Title", "Course & Sem", "Subject", "Actions"].map(h => (
-                    <th key={h} className="text-left text-xs font-bold text-slate-500 uppercase tracking-wider py-3 px-4 first:pl-0">{h}</th>
+                    <th key={h} className="text-left text-xs font-bold text-slate-400 uppercase tracking-wider py-3 px-4 first:pl-0">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filteredNotes.map((note) => (
-                  <tr key={note.id} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors duration-150 group">
+                  <tr key={note.id} className="border-b border-slate-800/60 hover:bg-slate-800/20 transition-colors duration-150 group">
                     {/* Title cell */}
                     <td className="py-3.5 px-4 first:pl-0">
                       <div className="flex items-center gap-3">
@@ -770,29 +753,29 @@ export default function NotesCrud() {
                     </td>
                     {/* Course badge — single line, no wrap */}
                     <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 whitespace-nowrap">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800/60 text-slate-300 border border-slate-700/35 whitespace-nowrap">
                         {note.course} · Sem {note.semester}
                       </span>
                     </td>
                     {/* Subject */}
                     <td className="py-3.5 px-4">
-                      <span className="text-sm text-slate-400">{note.subject || "—"}</span>
+                      <span className="text-sm text-slate-300">{note.subject || "—"}</span>
                     </td>
                     {/* Actions — bigger tap targets */}
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2">
                         <a href={note.file_url} target="_blank" rel="noreferrer"
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                           title="Download">
                           <Download className="w-4 h-4" />
                         </a>
                         <button onClick={() => handleEditClick(note)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                           title="Edit">
                           <Edit className="w-4 h-4" />
                         </button>
                         <button onClick={() => handleDeleteNote(note.id, note.file_url)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                           title="Delete">
                           <Trash2 className="w-4 h-4" />
                         </button>

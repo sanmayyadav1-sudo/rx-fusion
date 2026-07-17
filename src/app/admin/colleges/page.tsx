@@ -441,7 +441,7 @@ export default function CollegesAdmin() {
               resetForm();
               setShowForm(true);
             }}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-cyan-500/20 active:scale-95"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>Add College</span>
@@ -451,13 +451,13 @@ export default function CollegesAdmin() {
 
       {/* Notifications */}
       {error && (
-        <div className="p-3.5 bg-red-950/60 border border-red-800/80 rounded-xl text-xs text-red-300 flex items-center gap-2 animate-fade-in">
+        <div className="p-3.5 bg-red-500/10 border border-red-500/20 rounded-xl text-xs text-red-400 flex items-center gap-2 animate-fade-in">
           <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
           <span>{error}</span>
         </div>
       )}
       {success && (
-        <div className="p-3.5 bg-emerald-950/60 border border-emerald-800/80 rounded-xl text-xs text-emerald-300 flex items-center gap-2 animate-fade-in">
+        <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-400 flex items-center gap-2 animate-fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{success}</span>
         </div>
@@ -465,8 +465,8 @@ export default function CollegesAdmin() {
 
       {/* Add / Edit Form Block */}
       {showForm && (
-        <form onSubmit={handleSaveCollege} className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-6 backdrop-blur-md shadow-xl space-y-6">
-          <h3 className="text-sm font-extrabold text-white uppercase tracking-wider border-b border-slate-800 pb-3 flex items-center gap-2">
+        <form onSubmit={handleSaveCollege} className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20 space-y-6">
+          <h3 className="text-sm font-extrabold text-white uppercase tracking-widest border-b border-slate-800/60 pb-3 flex items-center gap-2">
             <GraduationCap className="w-4 h-4 text-cyan-400" />
             <span>{editId ? "Edit Pharmacy College Profile" : "Create New Pharmacy College Profile"}</span>
           </h3>
@@ -476,80 +476,80 @@ export default function CollegesAdmin() {
             <div className="md:col-span-2 space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">College Name *</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">College Name *</label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => handleNameChange(e.target.value)}
                     placeholder="Manipal College of Pharmaceutical Sciences"
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 placeholder:text-slate-500"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Slug (URL Route) *</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Slug (URL Route) *</label>
                   <input
                     type="text"
                     required
                     value={slug}
                     onChange={(e) => setSlug(generateSlug(e.target.value))}
                     placeholder="manipal-college-of-pharmaceutical-sciences"
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-mono text-cyan-400 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 placeholder:text-slate-500"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs font-mono text-cyan-400 bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Short Description</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Short Description</label>
                 <input
                   type="text"
                   value={shortDescription}
                   onChange={(e) => setShortDescription(e.target.value)}
                   placeholder="A brief 1-2 sentence tagline for directory search listings."
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Detailed Overview</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Detailed Overview</label>
                 <textarea
                   value={overview}
                   onChange={(e) => setOverview(e.target.value)}
                   placeholder="Detailed institution history, campus environment, vision, and summary..."
                   rows={4}
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/20 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">City *</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">City *</label>
                   <input
                     type="text"
                     required
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="Manipal"
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">State *</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">State *</label>
                   <input
                     type="text"
                     required
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                     placeholder="Karnataka"
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">College Type</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">College Type</label>
                   <select
                     value={collegeType}
                     onChange={(e) => setCollegeType(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 cursor-pointer"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                   >
                     <option value="Government" className="bg-slate-900">Government</option>
                     <option value="Private" className="bg-slate-900">Private</option>
@@ -561,69 +561,69 @@ export default function CollegesAdmin() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Full Postal Address</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Full Postal Address</label>
                 <input
                   type="text"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Complete location coordinates, PIN Code..."
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Official Website</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Official Website</label>
                   <input
                     type="url"
                     value={officialWebsite}
                     onChange={(e) => setOfficialWebsite(e.target.value)}
                     placeholder="https://manipal.edu"
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs font-mono text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Admission Portal Website</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Admission Portal Website</label>
                   <input
                     type="url"
                     value={admissionWebsite}
                     onChange={(e) => setAdmissionWebsite(e.target.value)}
                     placeholder="https://manipal.edu/admissions.html"
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs font-mono text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Contact Number</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Contact Number</label>
                   <input
                     type="text"
                     value={contactNumber}
                     onChange={(e) => setContactNumber(e.target.value)}
                     placeholder="+91-824-2224445"
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Admission Email Address</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Admission Email Address</label>
                   <input
                     type="email"
                     value={admissionEmail}
                     onChange={(e) => setAdmissionEmail(e.target.value)}
                     placeholder="admissions@manipal.edu"
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   />
                 </div>
               </div>
             </div>
 
             {/* Right 1 Col: Logo upload & Status settings */}
-            <div className="space-y-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+            <div className="space-y-4 bg-slate-950/40 p-4 rounded-2xl border border-slate-800/60">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">College Logo</label>
-                <div className="flex flex-col items-center gap-3 bg-slate-900 p-4 rounded-xl border border-slate-800">
-                  <div className="w-20 h-20 bg-slate-800 rounded-xl border border-slate-700 flex items-center justify-center overflow-hidden">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">College Logo</label>
+                <div className="flex flex-col items-center gap-3 bg-slate-900/30 p-4 rounded-xl border border-slate-800/50">
+                  <div className="w-20 h-20 bg-slate-800/40 rounded-xl border border-slate-700/50 flex items-center justify-center overflow-hidden">
                     {logoFile ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -642,7 +642,7 @@ export default function CollegesAdmin() {
                       <GraduationCap className="w-10 h-10 text-slate-600" />
                     )}
                   </div>
-                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 rounded-lg text-xs font-semibold cursor-pointer text-slate-200 transition-colors">
+                  <label className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600 rounded-xl text-xs font-semibold cursor-pointer text-slate-300 hover:text-white transition-all duration-200 active:scale-95">
                     <Upload className="w-3.5 h-3.5 text-cyan-400" />
                     Upload Image
                     <input
@@ -657,11 +657,11 @@ export default function CollegesAdmin() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Admission Status</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Admission Status</label>
                 <select
                   value={admissionStatus}
                   onChange={(e) => setAdmissionStatus(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 cursor-pointer"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
                   <option value="not_updated" className="bg-slate-900">Not Updated</option>
                   <option value="admission_open" className="bg-slate-900">Admission Open</option>
@@ -672,22 +672,22 @@ export default function CollegesAdmin() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Academic Session Year</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Academic Session Year</label>
                 <input
                   type="text"
                   value={admissionSession}
                   onChange={(e) => setAdmissionSession(e.target.value)}
                   placeholder="2026-2027"
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">PCI Status</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">PCI Status</label>
                 <select
                   value={pciStatus}
                   onChange={(e) => setPciStatus(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 cursor-pointer"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
                   <option value="not_verified" className="bg-slate-900">Verification Pending / Not Updated</option>
                   <option value="verified_by_admin" className="bg-slate-900">Verified by Admin</option>
@@ -695,24 +695,24 @@ export default function CollegesAdmin() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">PCI Reference URL</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">PCI Reference URL</label>
                 <input
                   type="url"
                   value={pciReferenceUrl}
                   onChange={(e) => setPciReferenceUrl(e.target.value)}
                   placeholder="https://www.pci.nic.in/pdf/Decisions.pdf"
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs font-mono text-slate-200 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs font-mono text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Display Order</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Display Order</label>
                   <input
                     type="number"
                     value={displayOrder}
                     onChange={(e) => setDisplayOrder(parseInt(e.target.value) || 0)}
-                    className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500"
+                    className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   />
                 </div>
                 <div className="flex flex-col justify-end pb-1.5 space-y-2">
@@ -740,88 +740,88 @@ export default function CollegesAdmin() {
           </div>
 
           {/* Collapsible/Tabbed extra detail blocks */}
-          <div className="border-t border-slate-800 pt-6">
-            <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider mb-4">Admissions, Fees, Placements & Hostel Details</h4>
+          <div className="border-t border-slate-800/60 pt-6">
+            <h4 className="text-xs font-bold text-slate-200 uppercase tracking-widest mb-4">Admissions, Fees, Placements & Hostel Details</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Eligibility Details</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Eligibility Details</label>
                 <textarea
                   value={eligibility}
                   onChange={(e) => setEligibility(e.target.value)}
                   placeholder="Eligibility details for courses (e.g. 10+2 with PCB/PCM, minimum 50% marks)..."
                   rows={3}
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Admission Process</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Admission Process</label>
                 <textarea
                   value={admissionProcess}
                   onChange={(e) => setAdmissionProcess(e.target.value)}
                   placeholder="Detailed steps for counseling, direct application, or merit list..."
                   rows={3}
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Entrance Exam Requirements</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Entrance Exam Requirements</label>
                 <input
                   type="text"
                   value={entranceExam}
                   onChange={(e) => setEntranceExam(e.target.value)}
                   placeholder="KCET / GPAT / NEET / Management Merit"
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Fees & Scholarship Overview</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Fees & Scholarship Overview</label>
                 <textarea
                   value={feesInformation}
                   onChange={(e) => setFeesInformation(e.target.value)}
                   placeholder="Fee structure summaries, installment policies, state scholarships..."
                   rows={3}
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Hostel & Accommodation</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Hostel & Accommodation</label>
                 <textarea
                   value={hostelInformation}
                   onChange={(e) => setHostelInformation(e.target.value)}
                   placeholder="Hostel fees, food facilities, room sharing..."
                   rows={3}
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 ml-0.5">Clinical & Internship Training</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Clinical & Internship Training</label>
                 <textarea
                   value={clinicalTrainingInformation}
                   onChange={(e) => setClinicalTrainingInformation(e.target.value)}
                   placeholder="Hospital tie-ups for Pharm D internships, lab facilities..."
                   rows={3}
-                  className="w-full px-3 py-2.5 bg-slate-800/80 border border-slate-700/80 rounded-xl text-xs text-slate-100 focus:outline-none focus:border-cyan-500 placeholder:text-slate-500"
+                  className="w-full px-3 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
             </div>
           </div>
 
           {/* Courses Configuration Section */}
-          <div className="border-t border-slate-800 pt-6">
+          <div className="border-t border-slate-800/60 pt-6">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">Configured Courses & Seat Intake</h4>
+                <h4 className="text-xs font-bold text-white uppercase tracking-widest">Configured Courses & Seat Intake</h4>
                 <p className="text-[11px] text-slate-400">Add B.Pharm, Pharm.D, D.Pharm programs offered by this institution.</p>
               </div>
               <button
                 type="button"
                 onClick={addCourseRow}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-cyan-400 hover:text-cyan-300 text-xs font-bold rounded-xl transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600 text-cyan-400 hover:text-white text-xs font-semibold rounded-xl transition-all duration-200 active:scale-95"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add Course Program
@@ -829,14 +829,14 @@ export default function CollegesAdmin() {
             </div>
 
             {courses.length === 0 ? (
-              <div className="p-6 bg-slate-950/60 border border-slate-800 border-dashed rounded-xl text-center text-xs text-slate-400">
+              <div className="p-6 bg-slate-950/40 border border-slate-800/60 border-dashed rounded-xl text-center text-xs text-slate-400">
                 No course programs configured yet for this college. Click &quot;Add Course Program&quot; above to add offerings.
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
-                    <tr className="bg-slate-950/80 border-b border-slate-800 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <tr className="bg-slate-950/40 border-b border-slate-800/60 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                       <th className="p-2.5">Course Name</th>
                       <th className="p-2.5">Duration</th>
                       <th className="p-2.5">Seat Intake</th>
@@ -847,14 +847,14 @@ export default function CollegesAdmin() {
                   </thead>
                   <tbody className="divide-y divide-slate-800/60">
                     {courses.map((course, index) => (
-                      <tr key={index} className="hover:bg-slate-800/30">
+                      <tr key={index} className="hover:bg-slate-800/20">
                         <td className="p-2">
                           <input
                             type="text"
                             value={course.course_name}
                             onChange={(e) => updateCourseField(index, "course_name", e.target.value)}
                             placeholder="B.Pharm / Pharm.D"
-                            className="w-full min-w-[120px] px-2.5 py-1.5 border border-slate-700/80 rounded-xl bg-slate-800/80 text-white text-xs"
+                            className="w-full min-w-[120px] px-2.5 py-1.5 bg-slate-800/40 border border-slate-700/50 rounded-xl text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                           />
                         </td>
                         <td className="p-2">
@@ -863,7 +863,7 @@ export default function CollegesAdmin() {
                             value={course.course_duration}
                             onChange={(e) => updateCourseField(index, "course_duration", e.target.value)}
                             placeholder="4 Years"
-                            className="w-full min-w-[100px] px-2.5 py-1.5 border border-slate-700/80 rounded-xl bg-slate-800/80 text-white text-xs"
+                            className="w-full min-w-[100px] px-2.5 py-1.5 bg-slate-800/40 border border-slate-700/50 rounded-xl text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                           />
                         </td>
                         <td className="p-2">
@@ -872,7 +872,7 @@ export default function CollegesAdmin() {
                             value={course.intake}
                             onChange={(e) => updateCourseField(index, "intake", e.target.value)}
                             placeholder="60 Seats"
-                            className="w-full min-w-[80px] px-2.5 py-1.5 border border-slate-700/80 rounded-xl bg-slate-800/80 text-white text-xs"
+                            className="w-full min-w-[80px] px-2.5 py-1.5 bg-slate-800/40 border border-slate-700/50 rounded-xl text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                           />
                         </td>
                         <td className="p-2">
@@ -881,7 +881,7 @@ export default function CollegesAdmin() {
                             value={course.course_fee || ""}
                             onChange={(e) => updateCourseField(index, "course_fee", e.target.value)}
                             placeholder="₹ 1,20,000 / Year"
-                            className="w-full min-w-[120px] px-2.5 py-1.5 border border-slate-700/80 rounded-xl bg-slate-800/80 text-white text-xs"
+                            className="w-full min-w-[120px] px-2.5 py-1.5 bg-slate-800/40 border border-slate-700/50 rounded-xl text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                           />
                         </td>
                         <td className="p-2 text-center">
@@ -896,7 +896,7 @@ export default function CollegesAdmin() {
                           <button
                             type="button"
                             onClick={() => removeCourseRow(index)}
-                            className="p-1.5 hover:bg-red-950/60 rounded-lg text-slate-400 hover:text-red-400 transition-colors"
+                            className="p-1.5 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                           >
                             <Trash className="w-4 h-4" />
                           </button>
@@ -910,18 +910,18 @@ export default function CollegesAdmin() {
           </div>
 
           {/* Form Actions */}
-          <div className="flex justify-end gap-3 pt-6 border-t border-slate-800">
+          <div className="flex justify-end gap-3 pt-6 border-t border-slate-800/60">
             <button
               type="button"
               onClick={resetForm}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 text-xs font-semibold rounded-xl transition-all"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-bold rounded-xl shadow-md shadow-cyan-500/20 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95 disabled:opacity-50"
             >
               {saving ? (
                 <>
@@ -938,17 +938,17 @@ export default function CollegesAdmin() {
 
       {/* Colleges List Panel */}
       {!showForm && (
-        <div className="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 sm:p-6 backdrop-blur-md shadow-xl">
+        <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-4 sm:p-6 shadow-xl shadow-slate-950/20">
           {/* List Search & Info */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="relative w-full sm:max-w-xs">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search college, city..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-slate-800/80 border border-slate-700/80 focus:border-cyan-500 rounded-xl text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none transition-all"
+                className="w-full pl-9 pr-4 py-2 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
               />
             </div>
             <span className="text-xs text-slate-400 font-medium">
@@ -970,7 +970,7 @@ export default function CollegesAdmin() {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-slate-800 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider bg-slate-950/60">
+                  <tr className="border-b border-slate-800/60 text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-950/40">
                     <th className="p-3">Logo</th>
                     <th className="p-3">College Name</th>
                     <th className="p-3">City & State</th>
@@ -998,9 +998,9 @@ export default function CollegesAdmin() {
                     };
 
                     return (
-                      <tr key={college.id} className="hover:bg-slate-800/40 transition-colors">
+                      <tr key={college.id} className="hover:bg-slate-800/20 transition-colors duration-150">
                         <td className="p-3">
-                          <div className="w-9 h-9 rounded-xl border border-slate-700/80 bg-slate-800 flex items-center justify-center overflow-hidden">
+                          <div className="w-9 h-9 rounded-xl border border-slate-700/80 bg-slate-800/60 flex items-center justify-center overflow-hidden">
                             {college.logo_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img
@@ -1030,19 +1030,18 @@ export default function CollegesAdmin() {
                           )}
                         </td>
                         <td className="p-3">
-                          <span className={`px-2 py-0.5 rounded font-bold text-[10px] ${
-                            college.admission_status.toLowerCase().includes("open") ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800/80" :
-                            college.admission_status.toLowerCase().includes("closed") ? "bg-red-950/80 text-red-300 border border-red-800/80" :
-                            college.admission_status.toLowerCase().includes("soon") ? "bg-amber-950/80 text-amber-300 border border-amber-800/80" :
-                            college.admission_status.toLowerCase().includes("contact") ? "bg-sky-950/80 text-sky-300 border border-sky-800/80" :
-                            "bg-slate-800 text-slate-400 border border-slate-700"
+                          <span className={`px-2.5 py-1 rounded-full font-bold text-[10px] ${
+                            college.admission_status.toLowerCase().includes("open") ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" :
+                            college.admission_status.toLowerCase().includes("closed") ? "bg-slate-800/60 text-slate-400 border border-slate-700/30" :
+                            college.admission_status.toLowerCase().includes("soon") || college.admission_status.toLowerCase().includes("contact") ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" :
+                            "bg-slate-800/60 text-slate-400 border border-slate-700/30"
                           }`}>
                             {getStatusName(college.admission_status)}
                           </span>
                         </td>
                         <td className="p-3 text-center">
                           {college.is_featured ? (
-                            <Star className="w-4 h-4 text-amber-400 fill-amber-400 mx-auto" />
+                            <Star className="w-4 h-4 text-amber-400 fill-amber-400 mx-auto animate-pulse" />
                           ) : (
                             <span className="text-slate-600">-</span>
                           )}
@@ -1051,21 +1050,21 @@ export default function CollegesAdmin() {
                           {college.is_published ? (
                             <Eye className="w-4 h-4 text-emerald-400 mx-auto" />
                           ) : (
-                            <EyeOff className="w-4 h-4 text-red-400 mx-auto" />
+                            <EyeOff className="w-4 h-4 text-rose-450 mx-auto" />
                           )}
                         </td>
                         <td className="p-3 text-center">
                           <div className="flex items-center justify-center gap-1.5">
                             <button
                               onClick={() => handleEditClick(college)}
-                              className="p-1.5 hover:bg-cyan-950/60 rounded-xl text-cyan-400 hover:text-cyan-300 border border-transparent hover:border-cyan-800/50 transition-colors"
+                              className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                               title="Edit College Profile"
                             >
                               <Edit className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => setDeleteConfirmId(college.id)}
-                              className="p-1.5 hover:bg-red-950/60 rounded-xl text-red-400 hover:text-red-300 border border-transparent hover:border-red-800/50 transition-colors"
+                              className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                               title="Delete College"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -1085,7 +1084,7 @@ export default function CollegesAdmin() {
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 text-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+          <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 text-white rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4">
             <h3 className="text-base font-extrabold text-white">Delete College?</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
               This will permanently remove the college profile, uploaded logo image, and all configured course details from the directory database.
@@ -1093,13 +1092,13 @@ export default function CollegesAdmin() {
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 text-xs font-semibold rounded-xl transition-all"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteCollege}
-                className="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold rounded-xl shadow-md shadow-red-500/20 transition-all"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white shadow-lg shadow-rose-500/10 hover:shadow-rose-500/20 transition-all duration-200 active:scale-95"
               >
                 Delete College
               </button>

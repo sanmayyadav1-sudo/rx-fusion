@@ -57,10 +57,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <aside className={`w-64 bg-slate-900/95 border-r border-slate-800/90 text-white flex flex-col justify-between h-screen fixed top-0 left-0 z-40 transition-transform duration-300 ease-in-out md:translate-x-0 backdrop-blur-md shadow-2xl ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
+    <aside className={`w-64 bg-slate-900/40 border-r border-slate-800/60 text-white flex flex-col justify-between h-screen fixed top-0 left-0 z-40 transition-transform duration-300 ease-in-out md:translate-x-0 backdrop-blur-md shadow-xl shadow-slate-950/20 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
       {/* Upper Brand / Logo block */}
       <div className="flex flex-col flex-grow overflow-y-auto scrollbar-none">
-        <div className="h-16 sm:h-20 flex items-center justify-between px-6 border-b border-slate-800/80 flex-shrink-0">
+        <div className="h-16 sm:h-20 flex items-center justify-between px-6 border-b border-slate-800/60 flex-shrink-0">
           <div className="flex items-center">
             <Link href="/admin/dashboard" className="flex items-center space-x-2.5 group">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
@@ -92,10 +92,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 key={item.name}
                 href={item.href}
                 onClick={onClose}
-                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-95 ${
                   active
-                    ? "bg-gradient-to-r from-cyan-500/20 to-blue-600/10 text-cyan-400 border border-cyan-500/30 shadow-xs"
-                    : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 border border-transparent"
+                    ? "bg-gradient-to-r from-cyan-500/15 to-blue-600/5 text-cyan-400 border border-cyan-500/25 shadow-md shadow-cyan-500/5"
+                    : "text-slate-400 hover:text-slate-150 hover:bg-slate-800/40 border border-transparent"
                 }`}
               >
                 <span className={active ? "text-cyan-400" : "text-slate-400"}>{item.icon}</span>
@@ -107,10 +107,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       </div>
 
       {/* Bottom Profile / Session actions */}
-      <div className="p-4 border-t border-slate-800/80 space-y-3 flex-shrink-0 bg-slate-900/60">
+      <div className="p-4 border-t border-slate-800/60 space-y-3 flex-shrink-0 bg-slate-900/20">
         {profile && (
-          <div className="flex items-center space-x-3 px-2 py-1.5 rounded-xl bg-slate-800/40 border border-slate-800">
-            <div className="w-8 h-8 bg-cyan-950/60 border border-cyan-800/50 rounded-lg flex items-center justify-center text-cyan-400 shrink-0">
+          <div className="flex items-center space-x-3 px-3 py-2 rounded-xl bg-slate-800/30 border border-slate-800/50">
+            <div className="w-8 h-8 bg-cyan-500/10 border border-cyan-500/20 rounded-lg flex items-center justify-center text-cyan-400 shrink-0">
               <UserCheck className="w-4 h-4" />
             </div>
             <div className="min-w-0 flex-grow">
@@ -127,7 +127,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             await signOut();
             window.location.href = "/rx-admin-access";
           }}
-          className="flex items-center space-x-3 w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-red-400 hover:text-white hover:bg-red-950/30 transition-all border border-transparent hover:border-red-900/40"
+          className="flex items-center space-x-3 w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-rose-400 hover:text-white hover:bg-rose-500/15 transition-all duration-200 border border-transparent hover:border-rose-500/20 active:scale-95"
         >
           <LogOut className="w-4.5 h-4.5" />
           <span>Sign Out</span>
