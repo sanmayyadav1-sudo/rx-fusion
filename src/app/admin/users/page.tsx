@@ -354,23 +354,23 @@ export default function AdminUsersPage() {
                 <select
                   value={filter}
                   onChange={(e) => { setFilter(e.target.value); setPage(1); }}
-                  className="px-3 py-2 bg-slate-950/60 border border-slate-850 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-cyan-500/60"
+                  className="px-3 py-2 bg-slate-950/60 border border-slate-850 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-cyan-500/60 cursor-pointer"
                 >
-                  <option value="all">All Students</option>
-                  <option value="free_available">Free Downloads Available</option>
-                  <option value="limit_reached">Free Limit Reached</option>
-                  <option value="recently_joined">Recently Joined</option>
+                  <option value="all" className="bg-slate-900">All Students</option>
+                  <option value="free_available" className="bg-slate-900">Free Downloads Available</option>
+                  <option value="limit_reached" className="bg-slate-900">Free Limit Reached</option>
+                  <option value="recently_joined" className="bg-slate-900">Recently Joined</option>
                 </select>
 
                 <select
                   value={sort}
                   onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                  className="px-3 py-2 bg-slate-950/60 border border-slate-850 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-cyan-500/60"
+                  className="px-3 py-2 bg-slate-950/60 border border-slate-850 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-cyan-500/60 cursor-pointer"
                 >
-                  <option value="recently_active">Recently Active</option>
-                  <option value="newest">Recently Joined</option>
-                  <option value="oldest">Oldest Accounts</option>
-                  <option value="most_downloads">Most Downloads</option>
+                  <option value="recently_active" className="bg-slate-900">Recently Active</option>
+                  <option value="newest" className="bg-slate-900">Recently Joined</option>
+                  <option value="oldest" className="bg-slate-900">Oldest Accounts</option>
+                  <option value="most_downloads" className="bg-slate-900">Most Downloads</option>
                 </select>
               </div>
             </div>

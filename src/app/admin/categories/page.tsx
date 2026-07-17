@@ -195,11 +195,11 @@ export default function CategoriesCrud() {
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as "notes" | "blogs" | "resources")}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 cursor-pointer"
               >
-                <option value="notes">Notes</option>
-                <option value="blogs">Blogs</option>
-                <option value="resources">Resources</option>
+                <option value="notes" className="bg-slate-900">Notes</option>
+                <option value="blogs" className="bg-slate-900">Blogs</option>
+                <option value="resources" className="bg-slate-900">Resources</option>
               </select>
             </div>
 

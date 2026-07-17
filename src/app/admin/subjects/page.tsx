@@ -143,11 +143,11 @@ export default function ManageSubjects() {
               <select
                 value={course}
                 onChange={(e) => setCourse(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 cursor-pointer"
               >
-                <option value="Pharm D">Pharm D (Doctor of Pharmacy)</option>
-                <option value="B Pharm">B Pharm (Bachelor of Pharmacy)</option>
-                <option value="D Pharm">D Pharm (Diploma in Pharmacy)</option>
+                <option value="Pharm D" className="bg-slate-900">Pharm D (Doctor of Pharmacy)</option>
+                <option value="B Pharm" className="bg-slate-900">B Pharm (Bachelor of Pharmacy)</option>
+                <option value="D Pharm" className="bg-slate-900">D Pharm (Diploma in Pharmacy)</option>
               </select>
             </div>
 
@@ -158,10 +158,10 @@ export default function ManageSubjects() {
               <select
                 value={yearNumber}
                 onChange={(e) => setYearNumber(Number(e.target.value))}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 cursor-pointer"
               >
                 {Array.from({ length: maxYears }, (_, i) => i + 1).map((val) => (
-                  <option key={val} value={val}>
+                  <option key={val} value={val} className="bg-slate-900">
                     {periodLabel} {val}
                   </option>
                 ))}

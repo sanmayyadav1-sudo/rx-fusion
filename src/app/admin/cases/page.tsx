@@ -406,7 +406,7 @@ export default function CasesAdmin() {
                   className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
                 >
                   {DEPARTMENTS.map(dept => (
-                    <option key={dept} value={dept}>{dept}</option>
+                    <option key={dept} value={dept} className="bg-slate-900">{dept}</option>
                   ))}
                 </select>
               </div>
@@ -450,9 +450,9 @@ export default function CasesAdmin() {
                   onChange={(e) => setGender(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
                 >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option value="Male" className="bg-slate-900">Male</option>
+                  <option value="Female" className="bg-slate-900">Female</option>
+                  <option value="Other" className="bg-slate-900">Other</option>
                 </select>
               </div>
             </div>

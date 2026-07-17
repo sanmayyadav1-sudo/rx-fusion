@@ -57,26 +57,26 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <aside className={`w-64 bg-slate-900 border-r border-slate-800 text-white flex flex-col justify-between h-screen fixed top-0 left-0 z-40 transition-transform duration-300 ease-in-out md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
+    <aside className={`w-64 bg-slate-900/95 border-r border-slate-800/90 text-white flex flex-col justify-between h-screen fixed top-0 left-0 z-40 transition-transform duration-300 ease-in-out md:translate-x-0 backdrop-blur-md shadow-2xl ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
       {/* Upper Brand / Logo block */}
       <div className="flex flex-col flex-grow overflow-y-auto scrollbar-none">
-        <div className="h-16 sm:h-20 flex items-center justify-between px-6 border-b border-slate-800 flex-shrink-0">
+        <div className="h-16 sm:h-20 flex items-center justify-between px-6 border-b border-slate-800/80 flex-shrink-0">
           <div className="flex items-center">
-            <Link href="/admin/dashboard" className="flex items-center space-x-2.5">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white shadow-md">
+            <Link href="/admin/dashboard" className="flex items-center space-x-2.5 group">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
                 <GraduationCap className="w-5 h-5" />
               </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent tracking-tight font-display">
+              <span className="text-lg font-black bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 bg-clip-text text-transparent tracking-tight font-display">
                 Rx<span className="text-white">Fusion</span>
               </span>
             </Link>
-            <span className="ml-2 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-slate-800 text-slate-400 border border-slate-700">
+            <span className="ml-2.5 px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-cyan-950/80 text-cyan-400 border border-cyan-800/60 shadow-xs">
               Admin
             </span>
           </div>
           <button
             onClick={onClose}
-            className="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="md:hidden p-1.5 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
             aria-label="Close Sidebar"
           >
             <X className="w-5 h-5" />
@@ -84,35 +84,38 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Navigation links */}
-        <nav className="p-4 space-y-1.5">
-          {menuItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={onClose}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                isActive(item.href)
-                  ? "bg-primary text-white shadow-md shadow-primary/10"
-                  : "text-slate-400 hover:text-white hover:bg-slate-800/50"
-              }`}
-            >
-              {item.icon}
-              <span>{item.name}</span>
-            </Link>
-          ))}
+        <nav className="p-3 space-y-1">
+          {menuItems.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={onClose}
+                className={`flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                  active
+                    ? "bg-gradient-to-r from-cyan-500/20 to-blue-600/10 text-cyan-400 border border-cyan-500/30 shadow-xs"
+                    : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 border border-transparent"
+                }`}
+              >
+                <span className={active ? "text-cyan-400" : "text-slate-400"}>{item.icon}</span>
+                <span className="truncate">{item.name}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
 
       {/* Bottom Profile / Session actions */}
-      <div className="p-4 border-t border-slate-800 space-y-4 flex-shrink-0 bg-slate-900">
+      <div className="p-4 border-t border-slate-800/80 space-y-3 flex-shrink-0 bg-slate-900/60">
         {profile && (
-          <div className="flex items-center space-x-3 px-2">
-            <div className="w-9 h-9 bg-slate-800 border border-slate-700 rounded-xl flex items-center justify-center text-primary">
-              <UserCheck className="w-5 h-5" />
+          <div className="flex items-center space-x-3 px-2 py-1.5 rounded-xl bg-slate-800/40 border border-slate-800">
+            <div className="w-8 h-8 bg-cyan-950/60 border border-cyan-800/50 rounded-lg flex items-center justify-center text-cyan-400 shrink-0">
+              <UserCheck className="w-4 h-4" />
             </div>
             <div className="min-w-0 flex-grow">
-              <h4 className="text-xs font-bold text-white truncate">{profile.email.split("@")[0]}</h4>
-              <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-200 truncate">{profile.email.split("@")[0]}</h4>
+              <p className="text-[9px] text-cyan-400 font-extrabold uppercase tracking-wider">
                 {profile.role}
               </p>
             </div>
@@ -124,9 +127,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             await signOut();
             window.location.href = "/rx-admin-access";
           }}
-          className="flex items-center space-x-3 w-full px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold text-red-400 hover:text-white hover:bg-red-950/20 transition-all border border-transparent hover:border-red-900/35"
+          className="flex items-center space-x-3 w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-red-400 hover:text-white hover:bg-red-950/30 transition-all border border-transparent hover:border-red-900/40"
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut className="w-4.5 h-4.5" />
           <span>Sign Out</span>
         </button>
       </div>

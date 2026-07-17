@@ -544,9 +544,9 @@ export default function DrugsAdmin() {
                 onChange={(e) => setStatus(e.target.value as "draft" | "published" | "scheduled")}
                 className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
               >
-                <option value="draft">Save Draft</option>
-                <option value="published">Publish Instantly</option>
-                <option value="scheduled">Schedule Post</option>
+                <option value="draft" className="bg-slate-900">Save Draft</option>
+                <option value="published" className="bg-slate-900">Publish Instantly</option>
+                <option value="scheduled" className="bg-slate-900">Schedule Post</option>
               </select>
             </div>
 

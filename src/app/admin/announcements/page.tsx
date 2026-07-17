@@ -397,13 +397,13 @@ export default function AnnouncementsAdmin() {
                   onChange={(e) => setType(e.target.value as Announcement["type"])}
                   className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
                 >
-                  <option value="announcement">Announcement</option>
-                  <option value="exam_update">Exam Update</option>
-                  <option value="new_notes">New Notes Available</option>
-                  <option value="news_update">News Update</option>
-                  <option value="important_notice">Important Notice</option>
-                  <option value="event">Event</option>
-                  <option value="general">General Information</option>
+                  <option value="announcement" className="bg-slate-900">Announcement</option>
+                  <option value="exam_update" className="bg-slate-900">Exam Update</option>
+                  <option value="new_notes" className="bg-slate-900">New Notes Available</option>
+                  <option value="news_update" className="bg-slate-900">News Update</option>
+                  <option value="important_notice" className="bg-slate-900">Important Notice</option>
+                  <option value="event" className="bg-slate-900">Event</option>
+                  <option value="general" className="bg-slate-900">General Information</option>
                 </select>
               </div>
             </div>
