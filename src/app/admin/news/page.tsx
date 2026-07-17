@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { Newspaper, Plus, Trash2, Loader2, Bell } from "lucide-react";
+import { Newspaper, Plus, Trash2, Edit, Loader2, Bell } from "lucide-react";
 
 interface NewsItem {
   id: string;
   title: string;
   content: string;
   source: string;
+  is_important: boolean;
   published_date: string;
   created_at: string;
 }
@@ -24,6 +25,7 @@ export default function NewsCrud() {
   const [content, setContent] = useState("");
   const [source, setSource] = useState("");
   const [isImportant, setIsImportant] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchNews();
@@ -46,31 +48,57 @@ export default function NewsCrud() {
     }
   };
 
+  const resetForm = () => {
+    setTitle("");
+    setContent("");
+    setSource("");
+    setIsImportant(false);
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  const handleEditClick = (item: NewsItem) => {
+    setEditingId(item.id);
+    setTitle(item.title);
+    setContent(item.content);
+    setSource(item.source || "");
+    setIsImportant(item.is_important || false);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSaveNews = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
 
     setSaving(true);
     try {
-      const { error } = await supabase.from("news").insert([
-        {
-          title,
-          content,
-          source: source.trim() || null,
-          published_date: new Date().toISOString(),
-        },
-      ]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: any = {
+        title,
+        content,
+        source: source.trim() || null,
+        is_important: isImportant,
+      };
 
-      if (error) throw error;
+      if (editingId) {
+        const { error } = await supabase
+          .from("news")
+          .update(payload)
+          .eq("id", editingId);
 
-      setTitle("");
-      setContent("");
-      setSource("");
-      setIsImportant(false);
-      setShowForm(false);
+        if (error) throw error;
+      } else {
+        payload.published_date = new Date().toISOString();
+        const { error } = await supabase.from("news").insert([payload]);
+
+        if (error) throw error;
+      }
+
+      resetForm();
       fetchNews();
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : "Failed to publish notice.";
+      const errorMsg = err instanceof Error ? err.message : "Failed to save notice.";
       alert(errorMsg);
     } finally {
       setSaving(false);
@@ -102,7 +130,13 @@ export default function NewsCrud() {
           </p>
         </div>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            if (showForm) {
+              resetForm();
+            } else {
+              setShowForm(true);
+            }
+          }}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
@@ -114,7 +148,7 @@ export default function NewsCrud() {
       {showForm && (
         <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-3xl animate-fade-in">
           <h2 className="text-md font-bold text-white mb-6">
-            Create General Board Notice
+            {editingId ? "Edit Board Notice" : "Create General Board Notice"}
           </h2>
 
           {/* Priority Toggle */}
@@ -177,20 +211,31 @@ export default function NewsCrud() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Publishing notice...</span>
-                </>
-              ) : (
-                <span>Publish Notice</span>
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>{editingId ? "Save Changes" : "Publish Notice"}</span>
+                )}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                >
+                  Cancel Edit
+                </button>
               )}
-            </button>
+            </div>
           </form>
         </div>
       )}
@@ -241,12 +286,21 @@ export default function NewsCrud() {
                       {new Date(item.published_date).toLocaleDateString()}
                     </td>
                     <td className="py-3.5 px-4">
-                      <button
-                        onClick={() => handleDeleteNews(item.id)}
-                        className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => handleEditClick(item)}
+                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          title="Edit"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteNews(item.id)}
+                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

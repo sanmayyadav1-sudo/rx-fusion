@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { BookOpen, Plus, Trash2, Loader2, Upload, AlertCircle } from "lucide-react";
+import { BookOpen, Plus, Trash2, Edit, Loader2, Upload, AlertCircle } from "lucide-react";
 
 interface Blog {
   id: string;
@@ -38,6 +38,7 @@ export default function BlogsCrud() {
   const [author, setAuthor] = useState("RxFusion Editorial");
   const [categoryId, setCategoryId] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchBlogs();
@@ -99,6 +100,27 @@ export default function BlogsCrud() {
     }
   };
 
+  const resetForm = () => {
+    setTitle("");
+    setSlug("");
+    setContent("");
+    setImageFile(null);
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  const handleEditClick = (blog: Blog) => {
+    setEditingId(blog.id);
+    setTitle(blog.title);
+    setSlug(blog.slug);
+    setContent(blog.content);
+    setAuthor(blog.author);
+    setCategoryId(blog.category_id || "");
+    setImageFile(null);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSaveBlog = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -130,27 +152,39 @@ export default function BlogsCrud() {
         imageUrl = publicUrl;
       }
 
-      // 2. Insert record
-      const { error: dbError } = await supabase
-        .from("blogs")
-        .insert([{
-          title,
-          slug,
-          featured_image: imageUrl || null,
-          content,
-          author,
-          category_id: categoryId || null,
-          published_date: new Date().toISOString()
-        }]);
+      // 2. Prepare payload
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: any = {
+        title,
+        slug,
+        content,
+        author,
+        category_id: categoryId || null
+      };
 
-      if (dbError) throw dbError;
+      if (imageUrl) {
+        payload.featured_image = imageUrl;
+      }
 
-      // Success Reset
-      setTitle("");
-      setSlug("");
-      setContent("");
-      setImageFile(null);
-      setShowForm(false);
+      if (editingId) {
+        // Update record
+        const { error: dbError } = await supabase
+          .from("blogs")
+          .update(payload)
+          .eq("id", editingId);
+
+        if (dbError) throw dbError;
+      } else {
+        // Insert record
+        payload.published_date = new Date().toISOString();
+        const { error: dbError } = await supabase
+          .from("blogs")
+          .insert([payload]);
+
+        if (dbError) throw dbError;
+      }
+
+      resetForm();
       fetchBlogs();
 
     } catch (err: unknown) {
@@ -211,7 +245,13 @@ export default function BlogsCrud() {
           </p>
         </div>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            if (showForm) {
+              resetForm();
+            } else {
+              setShowForm(true);
+            }
+          }}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
@@ -231,7 +271,7 @@ export default function BlogsCrud() {
       {showForm && (
         <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-4xl animate-fade-in">
           <h2 className="text-md font-bold text-white mb-6">
-            Compose Scientific Blog Post
+            {editingId ? "Edit Scientific Blog Post" : "Compose Scientific Blog Post"}
           </h2>
 
           <form onSubmit={handleSaveBlog} className="space-y-5">
@@ -340,20 +380,31 @@ export default function BlogsCrud() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Publishing article...</span>
-                </>
-              ) : (
-                <span>Publish Post</span>
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>{editingId ? "Save Changes" : "Publish Post"}</span>
+                )}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                >
+                  Cancel Edit
+                </button>
               )}
-            </button>
+            </div>
           </form>
         </div>
       )}
@@ -405,12 +456,21 @@ export default function BlogsCrud() {
                       {new Date(blog.published_date).toLocaleDateString()}
                     </td>
                     <td className="py-3.5 px-4">
-                      <button
-                        onClick={() => handleDeleteBlog(blog.id, blog.featured_image)}
-                        className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => handleEditClick(blog)}
+                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          title="Edit"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteBlog(blog.id, blog.featured_image)}
+                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

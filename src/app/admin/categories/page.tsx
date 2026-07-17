@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { FolderTree, Trash2, Plus, Loader2, AlertCircle, Tag } from "lucide-react";
+import { FolderTree, Trash2, Edit, Plus, Loader2, AlertCircle, Tag } from "lucide-react";
 
 interface Category {
   id: string;
@@ -20,6 +20,7 @@ export default function CategoriesCrud() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -76,6 +77,20 @@ export default function CategoriesCrud() {
     setSlug(val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, ""));
   };
 
+  const resetForm = () => {
+    setName("");
+    setSlug("");
+    setEditingId(null);
+  };
+
+  const handleEditClick = (cat: Category) => {
+    setEditingId(cat.id);
+    setName(cat.name);
+    setSlug(cat.slug);
+    setType(cat.type);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -83,24 +98,41 @@ export default function CategoriesCrud() {
 
     setSaving(true);
     try {
-      const { error: insertError } = await supabase
-        .from("categories")
-        .insert([{ name, slug, type }]);
+      if (editingId) {
+        // Update category
+        const { error: updateError } = await supabase
+          .from("categories")
+          .update({ name, slug, type })
+          .eq("id", editingId);
 
-      if (insertError) {
-        if (insertError.code === "23505") {
-          setError(`A category with slug "${slug}" already exists. Use a different name.`);
-        } else {
-          setError("Failed to create category: " + insertError.message);
+        if (updateError) {
+          if (updateError.code === "23505") {
+            setError(`A category with slug "${slug}" already exists. Use a different name.`);
+          } else {
+            setError("Failed to update category: " + updateError.message);
+          }
+          return;
         }
-        return;
+      } else {
+        // Create category
+        const { error: insertError } = await supabase
+          .from("categories")
+          .insert([{ name, slug, type }]);
+
+        if (insertError) {
+          if (insertError.code === "23505") {
+            setError(`A category with slug "${slug}" already exists. Use a different name.`);
+          } else {
+            setError("Failed to create category: " + insertError.message);
+          }
+          return;
+        }
       }
 
-      setName("");
-      setSlug("");
+      resetForm();
       fetchCategories();
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : "Failed to create category";
+      const errorMsg = err instanceof Error ? err.message : "Failed to save category";
       setError(errorMsg);
     } finally {
       setSaving(false);
@@ -156,7 +188,7 @@ export default function CategoriesCrud() {
         <div className="lg:col-span-2 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
           <h2 className="text-md font-bold text-white mb-5 flex items-center gap-2">
             <Plus className="w-5 h-5 text-cyan-400" />
-            <span>Create Category</span>
+            <span>{editingId ? "Edit Category" : "Create Category"}</span>
           </h2>
 
           <form onSubmit={handleCreateCategory} className="space-y-5">
@@ -214,9 +246,18 @@ export default function CategoriesCrud() {
                   <span>Saving...</span>
                 </>
               ) : (
-                <span>Add Category</span>
+                <span>{editingId ? "Save Changes" : "Add Category"}</span>
               )}
             </button>
+            {editingId && (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="w-full mt-2 flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+              >
+                Cancel Edit
+              </button>
+            )}
           </form>
         </div>
 
@@ -258,8 +299,14 @@ export default function CategoriesCrud() {
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${typeColorMap[cat.type]}`}>
                       {cat.type}
                     </span>
+                    <button onClick={() => handleEditClick(cat)}
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-150 opacity-0 group-hover:opacity-100"
+                      title="Edit">
+                      <Edit className="w-3.5 h-3.5" />
+                    </button>
                     <button onClick={() => handleDeleteCategory(cat.id)}
-                      className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 opacity-0 group-hover:opacity-100">
+                      className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 opacity-0 group-hover:opacity-100"
+                      title="Delete">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>

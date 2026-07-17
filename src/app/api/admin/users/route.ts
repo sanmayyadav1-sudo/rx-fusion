@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     } else if (filter === "limit_reached") {
       query = query.gte("free_downloads_used", 2);
     } else if (filter === "recently_joined") {
-      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 65 * 60 * 1000).toISOString(); // ~7 days
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(); // ~7 days
       query = query.gte("created_at", sevenDaysAgo);
     }
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import { BookMarked, Plus, Trash2, Loader2, Upload, Download, AlertCircle } from "lucide-react";
+import { BookMarked, Plus, Trash2, Edit, Loader2, Upload, Download, AlertCircle } from "lucide-react";
 
 interface Resource {
   id: string;
@@ -36,6 +36,7 @@ export default function ResourcesCrud() {
   const [categoryId, setCategoryId] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [inputMode, setInputMode] = useState<"file" | "url">("file");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchResources();
@@ -81,6 +82,32 @@ export default function ResourcesCrud() {
     }
   };
 
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setFileUrl("");
+    setFile(null);
+    setEditingId(null);
+    setShowForm(false);
+  };
+
+  const handleEditClick = (res: Resource) => {
+    setEditingId(res.id);
+    setTitle(res.title);
+    setDescription(res.description || "");
+    setCategoryId(res.category_id || "");
+    if (res.file_url && (res.file_url.includes("/storage/v1/object/public/resources/") || res.file_url.includes("/resources/"))) {
+      setInputMode("file");
+      setFileUrl("");
+    } else {
+      setInputMode("url");
+      setFileUrl(res.file_url);
+    }
+    setFile(null);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleSaveResource = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -93,7 +120,7 @@ export default function ResourcesCrud() {
     const hasFile = !!file;
     const hasUrl = fileUrl.trim().length > 0;
 
-    if (inputMode === "file" && !hasFile) {
+    if (inputMode === "file" && !hasFile && !editingId) {
       setError("Please upload a file.");
       return;
     }
@@ -128,6 +155,12 @@ export default function ResourcesCrud() {
           .getPublicUrl(storagePath);
 
         finalUrl = publicUrl;
+      } else if (inputMode === "file" && editingId) {
+        // Reuse old file url if no new file is uploaded
+        const existing = resources.find(r => r.id === editingId);
+        if (existing) {
+          finalUrl = existing.file_url;
+        }
       }
 
       if (!finalUrl) {
@@ -136,23 +169,31 @@ export default function ResourcesCrud() {
         return;
       }
 
-      // 2. Insert record
-      const { error: dbError } = await supabase.from("resources").insert([
-        {
-          title,
-          description: description.trim() || null,
-          file_url: finalUrl,
-          category_id: categoryId || null,
-        },
-      ]);
+      // 2. Save/Update record
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: any = {
+        title,
+        description: description.trim() || null,
+        file_url: finalUrl,
+        category_id: categoryId || null,
+      };
 
-      if (dbError) throw dbError;
+      if (editingId) {
+        const { error: dbError } = await supabase
+          .from("resources")
+          .update(payload)
+          .eq("id", editingId);
 
-      setTitle("");
-      setDescription("");
-      setFileUrl("");
-      setFile(null);
-      setShowForm(false);
+        if (dbError) throw dbError;
+      } else {
+        const { error: dbError } = await supabase
+          .from("resources")
+          .insert([payload]);
+
+        if (dbError) throw dbError;
+      }
+
+      resetForm();
       fetchResources();
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : "Failed to save curriculum resource.";
@@ -203,7 +244,13 @@ export default function ResourcesCrud() {
           </p>
         </div>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => {
+            if (showForm) {
+              resetForm();
+            } else {
+              setShowForm(true);
+            }
+          }}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
@@ -223,7 +270,7 @@ export default function ResourcesCrud() {
       {showForm && (
         <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-3xl animate-fade-in">
           <h2 className="text-md font-bold text-white mb-6">
-            Upload Generic Curriculum Resource
+            {editingId ? "Edit Generic Curriculum Resource" : "Upload Generic Curriculum Resource"}
           </h2>
 
           <form onSubmit={handleSaveResource} className="space-y-5">
@@ -307,20 +354,31 @@ export default function ResourcesCrud() {
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Publishing resource...</span>
-                </>
-              ) : (
-                <span>Publish Resource</span>
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>{editingId ? "Save Changes" : "Publish Resource"}</span>
+                )}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                >
+                  Cancel Edit
+                </button>
               )}
-            </button>
+            </div>
           </form>
         </div>
       )}
@@ -377,10 +435,16 @@ export default function ResourcesCrud() {
                           title="Download">
                           <Download className="w-4 h-4" />
                         </a>
+                        <button onClick={() => handleEditClick(res)}
+                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          title="Edit">
+                          <Edit className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => handleDeleteResource(res.id, res.file_url)}
                           className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
-                          title="Delete">
+                          title="Delete"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

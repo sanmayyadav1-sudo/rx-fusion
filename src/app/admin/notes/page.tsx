@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
-import { FileText, Plus, Trash2, Loader2, UploadCloud, Download, AlertCircle, CheckCircle2, Search, X } from "lucide-react";
+import { FileText, Plus, Trash2, Edit, Loader2, UploadCloud, Download, AlertCircle, CheckCircle2, Search, X } from "lucide-react";
 import Link from "next/link";
 import { getSubjectsByCourseAndYear } from "@/lib/subjects";
 import { Subject } from "@/types/supabase";
@@ -51,6 +51,8 @@ export default function NotesCrud() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editSubjectId, setEditSubjectId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchNotes();
@@ -66,6 +68,18 @@ export default function NotesCrud() {
       try {
         const data = await getSubjectsByCourseAndYear(course, semester);
         setSubjectsForForm(data);
+        
+        // If editing, check if we need to restore editSubjectId
+        if (editSubjectId) {
+          const matched = data.find(s => s.id === editSubjectId);
+          if (matched) {
+            setSubjectId(matched.id);
+            setSubject(matched.subject_name);
+            setEditSubjectId(null);
+            return;
+          }
+        }
+
         if (data.length > 0) {
           setSubjectId(data[0].id);
           setSubject(data[0].subject_name);
@@ -80,7 +94,32 @@ export default function NotesCrud() {
       }
     }
     loadFormSubjects();
-  }, [course, semester]);
+  }, [course, semester, editSubjectId]);
+
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setCourse("B Pharm");
+    setSemester(1);
+    setSubject("");
+    setSubjectId("");
+    setFile(null);
+    setEditingId(null);
+    setEditSubjectId(null);
+    setShowAddForm(false);
+  };
+
+  const handleEditClick = (note: Note) => {
+    setEditingId(note.id);
+    setTitle(note.title);
+    setDescription(note.description || "");
+    setCourse(note.course);
+    setSemester(note.semester);
+    setEditSubjectId(note.subject_id);
+    setCategoryId(note.category_id || "");
+    setShowAddForm(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const fetchNotes = async () => {
     setLoading(true);
@@ -166,71 +205,94 @@ export default function NotesCrud() {
     setError(null);
     setSuccessMsg("");
 
-    if (!file || !title.trim() || !subjectId) {
-      setError("Please specify a file and fill all fields (make sure a subject is selected).");
+    if (!title.trim() || !subjectId) {
+      setError("Please fill all fields (make sure a subject is selected).");
       return;
     }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      setError("Only PDF, PPT, PPTX, DOC, DOCX files are allowed.");
+    if (!editingId && !file) {
+      setError("Please specify a file to upload.");
       return;
     }
-    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      setError(`File size must be under ${MAX_SIZE_MB}MB.`);
-      return;
+
+    if (file) {
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        setError("Only PDF, PPT, PPTX, DOC, DOCX files are allowed.");
+        return;
+      }
+      if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+        setError(`File size must be under ${MAX_SIZE_MB}MB.`);
+        return;
+      }
     }
 
     setSaving(true);
     try {
-      // 1. Upload File to Supabase Storage
-      const fileExt = file.name.split(".").pop();
-      const uniqueFileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const sanitizedCourse = course.replace(/\s+/g, "_");
-      const storagePath = `${sanitizedCourse}/sem_${semester}/${uniqueFileName}`;
+      let finalFileUrl = "";
 
-      const { error: uploadError } = await supabase.storage
-        .from("notes")
-        .upload(storagePath, file, {
-          cacheControl: "3600",
-          upsert: false
-        });
+      if (file) {
+        // 1. Upload File to Supabase Storage
+        const fileExt = file.name.split(".").pop();
+        const uniqueFileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+        const sanitizedCourse = course.replace(/\s+/g, "_");
+        const storagePath = `${sanitizedCourse}/sem_${semester}/${uniqueFileName}`;
 
-      if (uploadError) throw uploadError;
+        const { error: uploadError } = await supabase.storage
+          .from("notes")
+          .upload(storagePath, file, {
+            cacheControl: "3600",
+            upsert: false
+          });
 
-      // 2. Fetch Public Url for Note
-      const { data: { publicUrl } } = supabase.storage
-        .from("notes")
-        .getPublicUrl(storagePath);
+        if (uploadError) throw uploadError;
+
+        // 2. Fetch Public Url for Note
+        const { data: { publicUrl } } = supabase.storage
+          .from("notes")
+          .getPublicUrl(storagePath);
+
+        finalFileUrl = publicUrl;
+      }
 
       // 3. Save details to database
-      const { error: dbError } = await supabase
-        .from("notes")
-        .insert([{
-          title,
-          description,
-          course,
-          semester: Number(semester),
-          subject,
-          subject_id: subjectId || null,
-          file_url: publicUrl,
-          category_id: categoryId || null
-        }]);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const payload: any = {
+        title,
+        description,
+        course,
+        semester: Number(semester),
+        subject,
+        subject_id: subjectId || null,
+        category_id: categoryId || null
+      };
 
-      if (dbError) throw dbError;
+      if (finalFileUrl) {
+        payload.file_url = finalFileUrl;
+      }
 
-      // Success Reset
-      setTitle("");
-      setDescription("");
-      setSubject("");
-      setSubjectId("");
-      setFile(null);
-      setShowAddForm(false);
+      if (editingId) {
+        const { error: dbError } = await supabase
+          .from("notes")
+          .update(payload)
+          .eq("id", editingId);
+
+        if (dbError) throw dbError;
+        setSuccessMsg("Note updated successfully!");
+      } else {
+        const { error: dbError } = await supabase
+          .from("notes")
+          .insert([payload]);
+
+        if (dbError) throw dbError;
+        setSuccessMsg("Note uploaded successfully!");
+      }
+
+      resetForm();
       fetchNotes();
-      setSuccessMsg("Note uploaded successfully!");
       setTimeout(() => setSuccessMsg(""), 4000);
 
     } catch (err: unknown) {
-      const errorMsg = err instanceof Error ? err.message : "An error occurred during file upload.";
+      const errorMsg = err instanceof Error ? err.message : "An error occurred during save.";
       console.error(err);
       setError(errorMsg);
     } finally {
@@ -314,7 +376,13 @@ export default function NotesCrud() {
           </p>
         </div>
         <button
-          onClick={() => setShowAddForm(!showAddForm)}
+          onClick={() => {
+            if (showAddForm) {
+              resetForm();
+            } else {
+              setShowAddForm(true);
+            }
+          }}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
         >
           <Plus className="w-4 h-4" />
@@ -340,7 +408,7 @@ export default function NotesCrud() {
       {showAddForm && (
         <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-3xl animate-fade-in">
           <h2 className="text-md font-bold text-white mb-6">
-            Upload New Lecture Material
+            {editingId ? "Edit Lecture Material" : "Upload New Lecture Material"}
           </h2>
 
           <form onSubmit={handleUploadAndSave} className="space-y-6">
@@ -454,7 +522,7 @@ export default function NotesCrud() {
                   <input
                     type="file"
                     className="hidden"
-                    required
+                    required={!editingId}
                     accept=".pdf,.ppt,.pptx,.docx"
                     onChange={handleFileChange}
                   />
@@ -475,20 +543,31 @@ export default function NotesCrud() {
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  <span>Uploading file...</span>
-                </>
-              ) : (
-                <span>Upload to Repository</span>
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={saving}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>{editingId ? "Save Changes" : "Upload to Repository"}</span>
+                )}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                >
+                  Cancel Edit
+                </button>
               )}
-            </button>
+            </div>
           </form>
         </div>
       )}
@@ -707,6 +786,11 @@ export default function NotesCrud() {
                           title="Download">
                           <Download className="w-4 h-4" />
                         </a>
+                        <button onClick={() => handleEditClick(note)}
+                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          title="Edit">
+                          <Edit className="w-4 h-4" />
+                        </button>
                         <button onClick={() => handleDeleteNote(note.id, note.file_url)}
                           className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
                           title="Delete">
