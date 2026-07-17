@@ -1,0 +1,329 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { 
+  FileText, 
+  BookOpen, 
+  Newspaper, 
+  Download, 
+  Mail, 
+  Trash2,
+  Calendar,
+  Loader2,
+  Inbox,
+  HelpCircle,
+  BookMarked
+} from "lucide-react";
+
+
+interface Stats {
+  notesCount: number;
+  blogsCount: number;
+  newsCount: number;
+  downloadsCount: number;
+  quizCount: number;
+  qbCount: number;
+  qpCount: number;
+  fcCount: number;
+}
+
+interface ContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  created_at: string;
+}
+
+interface RecentDownload {
+  id: string;
+  downloaded_at: string;
+  notes: {
+    title: string;
+    course: string;
+  };
+}
+
+export default function AdminDashboard() {
+  const [stats, setStats] = useState<Stats>({
+    notesCount: 0,
+    blogsCount: 0,
+    newsCount: 0,
+    downloadsCount: 0,
+    quizCount: 0,
+    qbCount: 0,
+    qpCount: 0,
+    fcCount: 0,
+  });
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [recentDownloads, setRecentDownloads] = useState<RecentDownload[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    try {
+      // Fetch stats count parallelly
+      const [
+        { count: notesCount },
+        { count: blogsCount },
+        { count: newsCount },
+        { count: downloadsCount },
+        { count: quizCount },
+        { count: qbCount },
+        { count: qpCount },
+        { count: fcCount }
+      ] = await Promise.all([
+        supabase.from("notes").select("*", { count: "exact", head: true }),
+        supabase.from("blogs").select("*", { count: "exact", head: true }),
+        supabase.from("news").select("*", { count: "exact", head: true }),
+        supabase.from("downloads").select("id, notes!inner(id)", { count: "exact", head: true }),
+        supabase.from("quiz_questions").select("*", { count: "exact", head: true }),
+        supabase.from("question_bank").select("*", { count: "exact", head: true }),
+        supabase.from("question_papers").select("*", { count: "exact", head: true }),
+        supabase.from("flashcards").select("*", { count: "exact", head: true }),
+      ]);
+
+      setStats({
+        notesCount: notesCount || 0,
+        blogsCount: blogsCount || 0,
+        newsCount: newsCount || 0,
+        downloadsCount: downloadsCount || 0,
+        quizCount: quizCount || 0,
+        qbCount: qbCount || 0,
+        qpCount: qpCount || 0,
+        fcCount: fcCount || 0,
+      });
+
+      // Fetch contact messages
+      const { data: msgData } = await supabase
+        .from("contact_messages")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (msgData) setMessages(msgData as ContactMessage[]);
+
+      // Fetch recent downloads
+      const { data: dlData } = await supabase
+        .from("downloads")
+        .select("id, downloaded_at, notes(title, course)")
+        .order("downloaded_at", { ascending: false })
+        .limit(5);
+
+      if (dlData) setRecentDownloads(dlData as unknown as RecentDownload[]);
+
+    } catch (err) {
+      console.error("Dashboard metric load fail:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleDeleteMessage = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this contact message?")) return;
+    try {
+      const { error } = await supabase
+        .from("contact_messages")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+      setMessages(messages.filter((m) => m.id !== id));
+    } catch {
+      alert("Failed to delete message");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh]">
+        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+        <p className="text-sm text-slate-500 mt-2">Aggregating dashboard stats...</p>
+      </div>
+    );
+  }
+
+  const statCards = [
+    { label: "Total Notes", value: stats.notesCount, icon: <FileText className="w-5 h-5" />, color: "cyan" as const },
+    { label: "Total Blogs", value: stats.blogsCount, icon: <BookOpen className="w-5 h-5" />, color: "violet" as const },
+    { label: "Total News", value: stats.newsCount, icon: <Newspaper className="w-5 h-5" />, color: "emerald" as const },
+    { label: "Downloads", value: stats.downloadsCount, icon: <Download className="w-5 h-5" />, color: "amber" as const },
+    { label: "Quiz Questions", value: stats.quizCount, icon: <HelpCircle className="w-5 h-5" />, color: "cyan" as const },
+    { label: "Question Bank", value: stats.qbCount, icon: <BookOpen className="w-5 h-5" />, color: "violet" as const },
+    { label: "Question Papers", value: stats.qpCount, icon: <FileText className="w-5 h-5" />, color: "emerald" as const },
+    { label: "Flashcards", value: stats.fcCount, icon: <BookMarked className="w-5 h-5" />, color: "amber" as const },
+  ];
+
+  const colorMap = {
+    cyan: {
+      border: "hover:border-cyan-500/30",
+      bg: "bg-cyan-500/5",
+      iconBg: "bg-cyan-500/10",
+      iconBorder: "border-cyan-500/20",
+      iconText: "text-cyan-400",
+      valueText: "text-cyan-400",
+    },
+    violet: {
+      border: "hover:border-violet-500/30",
+      bg: "bg-violet-500/5",
+      iconBg: "bg-violet-500/10",
+      iconBorder: "border-violet-500/20",
+      iconText: "text-violet-400",
+      valueText: "text-violet-400",
+    },
+    emerald: {
+      border: "hover:border-emerald-500/30",
+      bg: "bg-emerald-500/5",
+      iconBg: "bg-emerald-500/10",
+      iconBorder: "border-emerald-500/20",
+      iconText: "text-emerald-400",
+      valueText: "text-emerald-400",
+    },
+    amber: {
+      border: "hover:border-amber-500/30",
+      bg: "bg-amber-500/5",
+      iconBg: "bg-amber-500/10",
+      iconBorder: "border-amber-500/20",
+      iconText: "text-amber-400",
+      valueText: "text-amber-400",
+    },
+  };
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+      {/* Page Header */}
+      <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+            Dashboard Overview
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Monitor your platform&apos;s files, posts, and student downloads.
+          </p>
+        </div>
+      </div>
+
+      {/* Stats Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {statCards.map((stat) => {
+          const colors = colorMap[stat.color];
+          return (
+            <div
+              key={stat.label}
+              className={`relative overflow-hidden rounded-2xl p-5 bg-slate-900 border border-slate-800 ${colors.border} transition-all duration-200`}
+            >
+              <div className={`absolute top-0 right-0 w-20 h-20 ${colors.bg} rounded-full blur-2xl pointer-events-none`} />
+              <div className={`w-10 h-10 rounded-xl ${colors.iconBg} border ${colors.iconBorder} flex items-center justify-center mb-4 ${colors.iconText}`}>
+                {stat.icon}
+              </div>
+              <div className={`text-3xl font-extrabold ${colors.valueText} mb-1`}>
+                {stat.value ?? 0}
+              </div>
+              <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                {stat.label}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Detailed Columns for Messages & Downloads */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Contact Messages */}
+        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
+            <Mail className="w-4 h-4 text-cyan-400" />
+            <h2 className="text-sm font-bold text-white">Recent Messages</h2>
+          </div>
+
+          {messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
+              <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
+                <Inbox className="w-5 h-5 text-slate-500" />
+              </div>
+              <p className="text-sm font-medium text-slate-400">No messages yet</p>
+              <p className="text-xs text-slate-600 mt-1">
+                Contact form submissions will appear here.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className="p-4 bg-slate-800/40 border border-slate-800/60 rounded-xl space-y-2 relative group hover:bg-slate-800/60 transition-colors duration-150"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold text-white">{msg.name}</h4>
+                      <p className="text-[10px] text-slate-500 mt-0.5">{msg.email}</p>
+                    </div>
+                    
+                    <button
+                      onClick={() => handleDeleteMessage(msg.id)}
+                      className="text-slate-500 hover:text-red-400 p-1 rounded-lg hover:bg-red-500/10 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-slate-400 leading-relaxed pr-6">
+                    {msg.message}
+                  </p>
+                  <div className="text-[9px] text-slate-500 text-right">
+                    {new Date(msg.created_at).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Recent Downloads */}
+        <div id="downloads" className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
+          <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
+            <Download className="w-4 h-4 text-cyan-400" />
+            <h2 className="text-sm font-bold text-white">Live Download Activity</h2>
+          </div>
+
+          {recentDownloads.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
+              <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
+                <Download className="w-5 h-5 text-slate-500" />
+              </div>
+              <p className="text-sm font-medium text-slate-400">No downloads yet</p>
+              <p className="text-xs text-slate-600 mt-1">
+                Notes you upload will track downloads here.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {recentDownloads.map((dl) => (
+                <div
+                  key={dl.id}
+                  className="flex items-center justify-between py-3 px-3 rounded-xl hover:bg-slate-800/50 transition-colors duration-150 group"
+                >
+                  <div className="min-w-0 pr-4">
+                    <h4 className="text-sm font-semibold text-white group-hover:text-cyan-50 transition-colors truncate">
+                      {dl.notes?.title || "Unknown File"}
+                    </h4>
+                    <span className="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-md">
+                      {dl.notes?.course || "Global"}
+                    </span>
+                  </div>
+                  <div className="text-xs text-slate-500 flex items-center gap-1 whitespace-nowrap">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {new Date(dl.downloaded_at).toLocaleTimeString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
