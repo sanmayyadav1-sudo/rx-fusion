@@ -208,9 +208,9 @@ function LoginForm() {
           hasRedirectedRef.current = true;
           const rawRedirect = searchParams.get("redirectTo");
           const safeRedirect = validateRedirectTo(rawRedirect) === "/" ? "/dashboard" : validateRedirectTo(rawRedirect);
-          router.push(safeRedirect);
+          window.location.href = safeRedirect;
         }
-      }, 500);
+      }, 300);
 
     } catch (err: unknown) {
       console.error(err);

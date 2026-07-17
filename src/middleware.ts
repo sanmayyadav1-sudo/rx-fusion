@@ -84,16 +84,18 @@ export async function middleware(request: NextRequest) {
     if (pathname.startsWith("/admin")) {
       return redirect("/rx-admin-access");
     }
+  }
 
-    // Verify student profile completeness using authenticated user email
-    const userEmail = user.email?.trim().toLowerCase();
-    const { data: studentProfile } = userEmail
-      ? await supabase
-          .from("student_profiles")
-          .select("full_name")
-          .eq("email", userEmail)
-          .maybeSingle()
-      : { data: null };
+  // 2. Check for student identity (either via Supabase Auth user email or student cookie)
+  const rawEmail = user?.email?.trim().toLowerCase() || request.cookies.get("rxfusion_student_email")?.value;
+
+  if (rawEmail) {
+    const decodedEmail = decodeURIComponent(rawEmail).trim().toLowerCase();
+    const { data: studentProfile } = await supabase
+      .from("student_profiles")
+      .select("full_name")
+      .eq("email", decodedEmail)
+      .maybeSingle();
 
     const hasProfile = !!(studentProfile && studentProfile.full_name && studentProfile.full_name.trim());
 
@@ -108,21 +110,23 @@ export async function middleware(request: NextRequest) {
         return redirect("/dashboard");
       }
     }
+
+    if (pathname.startsWith("/admin")) {
+      return redirect("/rx-admin-access");
+    }
+
     return supabaseResponse;
   }
 
-  // 2. No active session (user is null / unauthenticated).
-  // Guard the personalized dashboard route
+  // 3. No active session or cookie (user is null / unauthenticated).
   if (pathname === "/dashboard") {
     return redirect("/login", { redirectTo: "/dashboard" });
   }
 
-  // If attempting to access admin dashboard, redirect to /rx-admin-access
   if (pathname.startsWith("/admin")) {
     return redirect("/rx-admin-access", { redirectTo: pathname });
   }
 
-  // All other routes are public and allowed without an active session
   return supabaseResponse;
 }
 
