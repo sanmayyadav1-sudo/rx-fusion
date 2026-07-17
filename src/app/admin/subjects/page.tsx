@@ -129,7 +129,7 @@ export default function ManageSubjects() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Left selector — 2 cols */}
-        <div className="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 h-fit">
+        <div className="lg:col-span-2 bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-5 h-fit shadow-xl shadow-slate-950/20">
           <h2 className="text-md font-bold text-white flex items-center gap-2 mb-5">
             <BookOpen className="w-5 h-5 text-cyan-400" />
             <span>Select Stream</span>
@@ -137,13 +137,13 @@ export default function ManageSubjects() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Course
               </label>
               <select
                 value={course}
                 onChange={(e) => setCourse(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 cursor-pointer"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
               >
                 <option value="Pharm D" className="bg-slate-900">Pharm D (Doctor of Pharmacy)</option>
                 <option value="B Pharm" className="bg-slate-900">B Pharm (Bachelor of Pharmacy)</option>
@@ -152,13 +152,13 @@ export default function ManageSubjects() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 {periodLabel}
               </label>
               <select
                 value={yearNumber}
                 onChange={(e) => setYearNumber(Number(e.target.value))}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 cursor-pointer"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
               >
                 {Array.from({ length: maxYears }, (_, i) => i + 1).map((val) => (
                   <option key={val} value={val} className="bg-slate-900">
@@ -171,7 +171,7 @@ export default function ManageSubjects() {
         </div>
 
         {/* Right subjects panel — 3 cols */}
-        <div className="lg:col-span-3 bg-slate-900/60 border border-slate-800 rounded-2xl p-5">
+        <div className="lg:col-span-3 bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-5 shadow-xl shadow-slate-950/20">
           <h2 className="text-md font-bold text-white mb-6">
             Subjects for {course} — {periodLabel} {yearNumber}
           </h2>
@@ -181,8 +181,8 @@ export default function ManageSubjects() {
               <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
             </div>
           ) : subjects.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
-              <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
+            <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/10 border border-slate-800/60 border-dashed rounded-2xl">
+              <div className="w-10 h-10 rounded-xl bg-slate-800/40 flex items-center justify-center mb-3">
                 <BookOpen className="w-5 h-5 text-slate-500" />
               </div>
               <p className="text-sm font-medium text-slate-400">No subjects yet</p>
@@ -193,7 +193,7 @@ export default function ManageSubjects() {
           ) : (
             <div className="flex flex-wrap gap-2 mb-6">
               {subjects.map(subject => (
-                <div key={subject.id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 group">
+                <div key={subject.id} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 group hover:border-cyan-500/30 transition-all duration-150">
                   <span className="text-sm text-white">{subject.subject_name}</span>
                   <button onClick={() => handleDeleteSubject(subject.id)}
                     className="text-slate-500 hover:text-red-400 transition-colors">
@@ -205,7 +205,7 @@ export default function ManageSubjects() {
           )}
 
           {/* Add subject inline row */}
-          <div className="flex gap-2 mt-4 pt-4 border-t border-slate-800">
+          <div className="flex gap-2 mt-4 pt-4 border-t border-slate-800/60">
             <form onSubmit={handleAddSubject} className="flex gap-2 w-full">
               <input
                 type="text"
@@ -213,12 +213,12 @@ export default function ManageSubjects() {
                 placeholder="e.g. Pharmacology-I"
                 value={newSubjectName}
                 onChange={(e) => setNewSubjectName(e.target.value)}
-                className="flex-1 px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                className="flex-1 px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
               />
               <button
                 type="submit"
                 disabled={saving || !newSubjectName.trim()}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 transition-all duration-200 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

@@ -155,45 +155,36 @@ export default function CategoriesCrud() {
     }
   };
 
-  const typeColorMap = {
-    notes: "bg-cyan-500/10 text-cyan-400",
-    blogs: "bg-violet-500/10 text-violet-400",
-    resources: "bg-emerald-500/10 text-emerald-400",
-  };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 text-slate-200">
       {/* Page Header */}
-      <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">
-            Categories Panel
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Classify and organize study materials, blogs, and downloadable resources.
-          </p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Categories Panel</h1>
+          <p className="text-sm text-slate-500 mt-1">Classify and organize study materials, blogs, and downloadable resources.</p>
         </div>
       </div>
 
       {/* Error feedback */}
       {error && (
-        <div className="flex items-start gap-3 p-4 bg-red-950/20 border border-red-900/40 rounded-xl text-sm text-red-300 animate-fade-in">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+        <div className="p-3.5 bg-red-950/20 border border-red-900/40 rounded-xl text-xs text-red-355 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
           <span>{error}</span>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
         {/* Create Category Form — 2 cols */}
-        <div className="lg:col-span-2 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
-          <h2 className="text-md font-bold text-white mb-5 flex items-center gap-2">
-            <Plus className="w-5 h-5 text-cyan-400" />
+        <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20 backdrop-blur-md">
+          <h2 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-5 flex items-center gap-2 border-b border-slate-800/60 pb-3">
+            <Plus className="w-4 h-4 text-cyan-400" />
             <span>{editingId ? "Edit Category" : "Create Category"}</span>
           </h2>
 
-          <form onSubmit={handleCreateCategory} className="space-y-5">
+          <form onSubmit={handleCreateCategory} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Name
               </label>
               <input
@@ -201,13 +192,13 @@ export default function CategoriesCrud() {
                 required
                 value={name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 placeholder="e.g. Pharmacology II"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Slug (Auto-generated)
               </label>
               <input
@@ -215,19 +206,19 @@ export default function CategoriesCrud() {
                 required
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 placeholder="pharmacology-ii"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Module Type
               </label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as "notes" | "blogs" | "resources")}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 cursor-pointer"
+                className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
               >
                 <option value="notes" className="bg-slate-900">Notes</option>
                 <option value="blogs" className="bg-slate-900">Blogs</option>
@@ -238,7 +229,7 @@ export default function CategoriesCrud() {
             <button
               type="submit"
               disabled={saving}
-              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 active:scale-95 disabled:opacity-50"
             >
               {saving ? (
                 <>
@@ -253,7 +244,7 @@ export default function CategoriesCrud() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="w-full mt-2 flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                className="w-full mt-2 flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-xs font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
               >
                 Cancel Edit
               </button>
@@ -262,50 +253,53 @@ export default function CategoriesCrud() {
         </div>
 
         {/* Active Categories — 3 cols */}
-        <div className="lg:col-span-3 bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
-          <h2 className="text-md font-bold text-white mb-5 flex items-center gap-2">
-            <FolderTree className="w-5 h-5 text-cyan-400" />
+        <div className="lg:col-span-3 bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20 backdrop-blur-md">
+          <h2 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-5 flex items-center gap-2 border-b border-slate-800/60 pb-3">
+            <FolderTree className="w-4 h-4 text-cyan-400" />
             <span>Active Categories</span>
           </h2>
 
           {loading ? (
-            <div className="flex justify-center py-12">
+            <div className="py-12 flex flex-col justify-center items-center text-slate-400 gap-2">
               <Loader2 className="w-6 h-6 text-cyan-400 animate-spin" />
+              <span className="text-xs font-semibold">Loading categories...</span>
             </div>
           ) : categories.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
-              <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
+            <div className="py-12 text-center text-slate-550 bg-slate-900/10 border-dashed border border-slate-850/60 rounded-2xl">
+              <div className="w-10 h-10 rounded-xl bg-slate-800/40 flex items-center justify-center mb-3 mx-auto">
                 <FolderTree className="w-5 h-5 text-slate-500" />
               </div>
-              <p className="text-sm font-medium text-slate-400">No categories yet</p>
-              <p className="text-xs text-slate-600 mt-1">
-                Categories you create will appear here.
-              </p>
+              <p className="text-xs font-bold text-slate-400">No categories yet</p>
+              <p className="text-[11px] text-slate-500 mt-1">Categories you create will appear here.</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {categories.map(cat => (
-                <div key={cat.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 hover:border-slate-600 transition-all duration-150 group">
+                <div key={cat.id} className="flex items-center justify-between p-3.5 rounded-xl bg-slate-850/30 border border-slate-800/60 hover:border-slate-700/60 transition-all duration-150 group">
                   <div className="flex items-center gap-3">
                     <div className="w-7 h-7 rounded-lg bg-cyan-500/10 flex items-center justify-center">
                       <Tag className="w-3.5 h-3.5 text-cyan-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-white">{cat.name}</p>
-                      <p className="text-xs text-slate-500 font-mono">{cat.slug}</p>
+                      <p className="text-xs font-bold text-slate-200 group-hover:text-cyan-50 transition-colors">{cat.name}</p>
+                      <p className="text-[10px] text-slate-500 font-mono mt-0.5">{cat.slug}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${typeColorMap[cat.type]}`}>
+                    <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border uppercase tracking-wider ${
+                      cat.type === "notes" ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/20" :
+                      cat.type === "blogs" ? "bg-violet-500/10 text-violet-400 border-violet-500/20" :
+                      "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                    }`}>
                       {cat.type}
                     </span>
                     <button onClick={() => handleEditClick(cat)}
-                      className="p-1.5 rounded-lg text-slate-500 hover:text-cyan-400 hover:bg-cyan-500/10 transition-all duration-150 opacity-0 group-hover:opacity-100"
+                      className="p-1.5 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800/60 hover:border-cyan-500/20 transition-all duration-150 opacity-0 group-hover:opacity-100"
                       title="Edit">
                       <Edit className="w-3.5 h-3.5" />
                     </button>
                     <button onClick={() => handleDeleteCategory(cat.id)}
-                      className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 opacity-0 group-hover:opacity-100"
+                      className="p-1.5 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-455 text-slate-400 border border-slate-800/60 hover:border-rose-500/20 transition-all duration-150 opacity-0 group-hover:opacity-100"
                       title="Delete">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

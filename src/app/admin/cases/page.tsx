@@ -334,7 +334,7 @@ export default function CasesAdmin() {
             if (showForm) resetForm();
             else setShowForm(true);
           }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{showForm ? "Hide Form" : "Compose Clinical Case"}</span>
@@ -357,7 +357,7 @@ export default function CasesAdmin() {
 
       {/* Compose Form */}
       {showForm && (
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-4xl animate-fade-in">
+        <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 mb-6 max-w-4xl shadow-xl shadow-slate-950/20 animate-fade-in">
           <h2 className="text-md font-bold text-white mb-6">
             {editId ? "Edit Case Report File" : "Compose New Clinical Case"}
           </h2>
@@ -366,7 +366,7 @@ export default function CasesAdmin() {
             {/* Title & Slug */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Case Title *
                 </label>
                 <input
@@ -374,13 +374,13 @@ export default function CasesAdmin() {
                   required
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. Management of Type-2 Diabetes in Geriatric Patient"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Slug (URL Parameter) *
                 </label>
                 <input
@@ -388,7 +388,7 @@ export default function CasesAdmin() {
                   required
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="diabetes-management-geriatric"
                 />
               </div>
@@ -397,13 +397,13 @@ export default function CasesAdmin() {
             {/* Department, Disease, Age, Gender */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Department
                 </label>
                 <select
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
                   {DEPARTMENTS.map(dept => (
                     <option key={dept} value={dept} className="bg-slate-900">{dept}</option>
@@ -412,7 +412,7 @@ export default function CasesAdmin() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Disease / Diagnosis *
                 </label>
                 <input
@@ -420,13 +420,13 @@ export default function CasesAdmin() {
                   required
                   value={disease}
                   onChange={(e) => setDisease(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. Essential Hypertension"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Patient Age *
                 </label>
                 <input
@@ -436,19 +436,19 @@ export default function CasesAdmin() {
                   max={120}
                   value={age}
                   onChange={(e) => setAge(e.target.value === "" ? "" : Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. 65"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Patient Gender
                 </label>
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
                   <option value="Male" className="bg-slate-900">Male</option>
                   <option value="Female" className="bg-slate-900">Female</option>
@@ -460,7 +460,7 @@ export default function CasesAdmin() {
             {/* Author */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Case Reviewer / Author
                 </label>
                 <input
@@ -468,61 +468,61 @@ export default function CasesAdmin() {
                   required
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-slate-800 my-5" />
+            <div className="h-px bg-slate-800/60 my-5" />
 
             {/* SOAP Section */}
-            <div className="bg-slate-950/40 p-4 border border-slate-800 rounded-xl space-y-4">
-              <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1">
+            <div className="bg-slate-950/40 p-4 border border-slate-800/60 rounded-xl space-y-4">
+              <h3 className="text-xs font-bold text-cyan-400 uppercase tracking-widest flex items-center gap-1">
                 <FileText className="w-4 h-4" />
                 <span>SOAP Charting Sections</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Subjective (S)</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-0.5">Subjective (S)</label>
                   <textarea
                     rows={4}
                     value={subjective}
                     onChange={(e) => setSubjective(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl text-xs text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-2 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Patient complaints, symptoms, drug history narrative..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Objective (O)</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-0.5">Objective (O)</label>
                   <textarea
                     rows={4}
                     value={objective}
                     onChange={(e) => setObjective(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl text-xs text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-2 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Vital signs, blood tests, laboratory reports, physical findings..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Assessment (A)</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-0.5">Assessment (A)</label>
                   <textarea
                     rows={4}
                     value={assessment}
                     onChange={(e) => setAssessment(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl text-xs text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-2 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Pharmacist assessment, drug-related problems (DRP), disease controls..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Plan (P)</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 ml-0.5">Plan (P)</label>
                   <textarea
                     rows={4}
                     value={plan}
                     onChange={(e) => setPlan(e.target.value)}
-                    className="w-full px-4 py-2 rounded-xl text-xs text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-2 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Therapeutic recommendations, dosage adjustments, counseling plans..."
                   />
                 </div>
@@ -532,67 +532,67 @@ export default function CasesAdmin() {
             {/* Case Content Fields */}
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Chief Complaint
                 </label>
                 <textarea
                   rows={3}
                   value={chiefComplaint}
                   onChange={(e) => setChiefComplaint(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Primary reason patient sought medical help..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   History of Present Illness (HPI)
                 </label>
                 <textarea
                   rows={3}
                   value={history}
                   onChange={(e) => setHistory(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Chronological timeline of symptoms, social/family history..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Medication History
                 </label>
                 <textarea
                   rows={3}
                   value={medicationHistory}
                   onChange={(e) => setMedicationHistory(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Home medications, compliance, previous drug reactions..."
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                     Lab / Clinical Findings
                   </label>
                   <textarea
                     rows={4}
                     value={findings}
                     onChange={(e) => setFindings(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Lab values, ECG summaries, radiological assessments..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                     Treatment Plan Details
                   </label>
                   <textarea
                     rows={4}
                     value={treatment}
                     onChange={(e) => setTreatment(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Prescribed pharmaceutical regimens, dosages, frequency..."
                   />
                 </div>
@@ -600,54 +600,54 @@ export default function CasesAdmin() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                     Monitoring Parameters
                   </label>
                   <textarea
                     rows={3}
                     value={monitoring}
                     onChange={(e) => setMonitoring(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Adverse reactions to monitor, renal/hepatic audits..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                     Clinical Outcome
                   </label>
                   <textarea
                     rows={3}
                     value={outcome}
                     onChange={(e) => setOutcome(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Discharge status, clinical recovery stats..."
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Clinical Discussion & Therapeutic Rationale
                 </label>
                 <textarea
                   rows={4}
                   value={discussion}
                   onChange={(e) => setDiscussion(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Explain why drugs were selected, guidelines referenced (e.g. ACC/AHA, JNC8)..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Learning Points & Clinical Pearls
                 </label>
                 <textarea
                   rows={3}
                   value={learningPoints}
                   onChange={(e) => setLearningPoints(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Major takeaways for pharmacy students..."
                 />
               </div>
@@ -656,17 +656,17 @@ export default function CasesAdmin() {
             {/* Existing Attachments list */}
             {existingAttachments.length > 0 && (
               <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-0.5">
                   Current Case Attachments
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {existingAttachments.map((url, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-slate-950 border border-slate-800 rounded-xl text-xs">
+                    <div key={index} className="flex items-center justify-between p-3 bg-slate-950/40 border border-slate-800/60 rounded-xl text-xs">
                       <span className="truncate text-slate-400 max-w-[200px]">{url}</span>
                       <button
                         type="button"
                         onClick={() => removeAttachment(index)}
-                        className="text-red-400 hover:text-red-300 font-bold"
+                        className="text-rose-400 hover:text-rose-350 font-bold"
                       >
                         Delete
                       </button>
@@ -678,10 +678,10 @@ export default function CasesAdmin() {
 
             {/* Attachments Multi-upload */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Upload Reports / Case PDFs (Multi-select)
               </label>
-              <label className="flex flex-col items-center justify-center w-full h-24 rounded-xl border-2 border-dashed border-slate-700 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all group">
+              <label className="flex flex-col items-center justify-center w-full h-24 rounded-xl border-2 border-dashed border-slate-700/60 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all group">
                 <Upload className="w-5 h-5 text-slate-500 group-hover:text-cyan-400 mb-1" />
                 <span className="text-xs text-slate-500 group-hover:text-slate-300">
                   {newFiles && newFiles.length > 0
@@ -694,16 +694,16 @@ export default function CasesAdmin() {
 
             {/* Status Select Box */}
             <div className="max-w-xs">
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Posting Status
               </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as "draft" | "published")}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
               >
-                <option value="draft">Save Draft</option>
-                <option value="published">Publish Instantly</option>
+                <option value="draft" className="bg-slate-900">Save Draft</option>
+                <option value="published" className="bg-slate-900">Publish Instantly</option>
               </select>
             </div>
 
@@ -712,7 +712,7 @@ export default function CasesAdmin() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 disabled:opacity-50 transition-all"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95 disabled:opacity-50"
               >
                 {saving ? (
                   <>
@@ -726,7 +726,7 @@ export default function CasesAdmin() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:text-white border border-slate-750 hover:bg-slate-700 transition-all"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
               >
                 Cancel
               </button>
@@ -736,7 +736,7 @@ export default function CasesAdmin() {
       )}
 
       {/* Case Studies Inventory Table */}
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
+      <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20">
         <h2 className="text-md font-bold text-white mb-6">Clinical Case Files Repository</h2>
 
         {loading ? (
@@ -744,8 +744,8 @@ export default function CasesAdmin() {
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
           </div>
         ) : cases.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
-            <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/10 border border-slate-800/60 border-dashed rounded-2xl">
+            <div className="w-10 h-10 rounded-xl bg-slate-800/40 flex items-center justify-center mb-3">
               <Stethoscope className="w-5 h-5 text-slate-500" />
             </div>
             <p className="text-sm font-medium text-slate-400">No cases recorded yet</p>
@@ -757,18 +757,18 @@ export default function CasesAdmin() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-slate-800/60 text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-950/40">
                   {["Case Info", "Department", "Patient Profile", "Status", "Actions"].map((h) => (
-                    <th key={h} className="text-left text-xs font-bold text-slate-500 uppercase tracking-wider py-3 px-4 first:pl-0">
+                    <th key={h} className="py-4 px-4">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-800/60">
                 {cases.map((c) => (
-                  <tr key={c.id} className="border-b border-slate-800/60 hover:bg-slate-800/20 transition-colors group">
-                    <td className="py-3.5 px-4 first:pl-0">
+                  <tr key={c.id} className="text-sm font-medium hover:bg-slate-800/20 transition-colors duration-150 group">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
                           <Stethoscope className="w-4 h-4 text-emerald-400" />
@@ -783,31 +783,31 @@ export default function CasesAdmin() {
                         </div>
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-slate-450">{c.department}</td>
-                    <td className="py-3.5 px-4 text-xs text-slate-400">
+                    <td className="py-4 px-4 text-xs font-semibold text-slate-400">{c.department}</td>
+                    <td className="py-4 px-4 text-xs text-slate-400">
                       {c.gender}, {c.age} Years Old
                     </td>
-                    <td className="py-3.5 px-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
+                    <td className="py-4 px-4">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
                         c.status === "published"
                           ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                          : "bg-slate-800 text-slate-400 border-slate-700"
+                          : "bg-slate-800/60 text-slate-400 border-slate-700/30"
                       }`}>
                         {c.status}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleEditClick(c)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-450 text-slate-400 transition-colors"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                           title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteCase(c.id, c.attachments)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-colors"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-450 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />

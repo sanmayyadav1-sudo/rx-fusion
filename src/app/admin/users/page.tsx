@@ -247,7 +247,7 @@ export default function AdminUsersPage() {
   const totalDownloadsPages = Math.ceil(totalDownloads / limit);
 
   return (
-    <div className="min-h-screen bg-[#070b13] pb-16">
+    <div className="min-h-screen bg-slate-950 pb-16">
       {/* Background visual accents */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[300px] pointer-events-none -z-10 overflow-hidden">
         <div className="absolute top-[-20%] left-[-10%] w-[45%] aspect-square rounded-full bg-cyan-500/5 blur-[120px]" />
@@ -339,11 +339,11 @@ export default function AdminUsersPage() {
                   placeholder="Search by Name, Email, Mobile, College, Course..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-24 py-2.5 rounded-xl text-xs sm:text-sm bg-slate-950/60 border border-slate-850 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500/60 transition-colors"
+                  className="w-full pl-10 pr-24 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
                 <button
                   type="submit"
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-white text-3xs sm:text-2xs font-bold rounded-lg transition-colors"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-3xs sm:text-2xs font-semibold rounded-lg shadow-md transition-all duration-200 active:scale-95"
                 >
                   Search
                 </button>
@@ -354,7 +354,7 @@ export default function AdminUsersPage() {
                 <select
                   value={filter}
                   onChange={(e) => { setFilter(e.target.value); setPage(1); }}
-                  className="px-3 py-2 bg-slate-950/60 border border-slate-850 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-cyan-500/60 cursor-pointer"
+                  className="px-3 py-2 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
                   <option value="all" className="bg-slate-900">All Students</option>
                   <option value="free_available" className="bg-slate-900">Free Downloads Available</option>
@@ -365,7 +365,7 @@ export default function AdminUsersPage() {
                 <select
                   value={sort}
                   onChange={(e) => { setSort(e.target.value); setPage(1); }}
-                  className="px-3 py-2 bg-slate-950/60 border border-slate-850 rounded-xl text-xs sm:text-sm text-slate-300 focus:outline-none focus:border-cyan-500/60 cursor-pointer"
+                  className="px-3 py-2 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
                   <option value="recently_active" className="bg-slate-900">Recently Active</option>
                   <option value="newest" className="bg-slate-900">Recently Joined</option>
@@ -415,7 +415,7 @@ export default function AdminUsersPage() {
                   <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                       <thead>
-                        <tr className="border-b border-slate-800 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                        <tr className="border-b border-slate-800/60 text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-950/40">
                           <th className="py-4 px-4">Student</th>
                           <th className="py-4 px-4">Email</th>
                           <th className="py-4 px-4">Course & Year</th>
@@ -425,7 +425,7 @@ export default function AdminUsersPage() {
                           <th className="py-4 px-4 text-right">Actions</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-800/50">
+                      <tbody className="divide-y divide-slate-800/60">
                         {users.map((item) => {
                           const active = isCurrentlyActive(item.last_seen);
                           const limitReached = item.free_downloads_used >= item.download_limit;
@@ -433,7 +433,7 @@ export default function AdminUsersPage() {
                             <tr 
                               key={item.id}
                               onClick={() => setSelectedUser(item)}
-                              className="hover:bg-slate-800/30 transition-all cursor-pointer text-sm font-medium"
+                              className="hover:bg-slate-800/20 transition-colors duration-150 cursor-pointer text-sm font-medium"
                             >
                               <td className="py-4 px-4 text-white">
                                 <div className="flex items-center gap-2">
@@ -447,10 +447,10 @@ export default function AdminUsersPage() {
                               </td>
                               <td className="py-4 px-4 text-slate-400 max-w-[150px] truncate">{item.college_name}</td>
                               <td className="py-4 px-4 text-center">
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold ${
+                                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border ${
                                   limitReached
-                                    ? "bg-rose-500/10 text-rose-450 border border-rose-500/20"
-                                    : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                                    ? "bg-slate-800/60 text-slate-400 border-slate-700/30"
+                                    : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 }`}>
                                   {item.free_downloads_used} / {item.download_limit}
                                 </span>
@@ -459,7 +459,7 @@ export default function AdminUsersPage() {
                               <td className="py-4 px-4 text-right" onClick={(e) => e.stopPropagation()}>
                                 <button
                                   onClick={() => setDeleteStudentConfirm(item)}
-                                  className="p-2 text-slate-500 hover:text-red-400 rounded-lg hover:bg-red-500/10 transition-colors"
+                                  className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-450 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                                   title="Delete Student"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -481,7 +481,7 @@ export default function AdminUsersPage() {
                         <div
                           key={item.id}
                           onClick={() => setSelectedUser(item)}
-                          className="p-4 bg-slate-950/40 border border-slate-850 rounded-xl space-y-3 active:bg-slate-800/30 transition-all"
+                          className="p-4 bg-slate-900/40 border border-slate-800/60 rounded-xl space-y-3 active:bg-slate-800/20 transition-all duration-150 shadow-sm shadow-slate-950/20"
                         >
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-bold text-white truncate max-w-[150px] flex items-center gap-1.5">
@@ -489,16 +489,16 @@ export default function AdminUsersPage() {
                               <span>{item.full_name}</span>
                             </span>
                             <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border ${
                                 limitReached
-                                  ? "bg-rose-500/10 text-rose-450 border border-rose-500/20"
-                                  : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                                  ? "bg-slate-800/60 text-slate-400 border-slate-700/30"
+                                  : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                               }`}>
                                 {item.free_downloads_used} / {item.download_limit}
                               </span>
                               <button
                                 onClick={() => setDeleteStudentConfirm(item)}
-                                className="p-1.5 text-slate-550 hover:text-red-400 rounded-lg hover:bg-red-500/10 transition-colors"
+                                className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-450 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                                 title="Delete Student"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -526,7 +526,7 @@ export default function AdminUsersPage() {
 
                   {/* Pagination footer */}
                   {totalPages > 1 && (
-                    <div className="flex items-center justify-between border-t border-slate-800/80 pt-6 mt-4">
+                    <div className="flex items-center justify-between border-t border-slate-800/60 pt-6 mt-4">
                       <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">
                         Page {page} of {totalPages}
                       </span>
@@ -534,14 +534,14 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => setPage(Math.max(page - 1, 1))}
                           disabled={page === 1}
-                          className="p-1.5 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white disabled:opacity-40 transition-colors"
+                          className="p-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600 text-slate-300 hover:text-white disabled:opacity-40 transition-all duration-200 active:scale-95"
                         >
                           <ChevronLeft className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setPage(Math.min(page + 1, totalPages))}
                           disabled={page === totalPages}
-                          className="p-1.5 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white disabled:opacity-40 transition-colors"
+                          className="p-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600 text-slate-300 hover:text-white disabled:opacity-40 transition-all duration-200 active:scale-95"
                         >
                           <ChevronRight className="w-4 h-4" />
                         </button>
@@ -574,7 +574,7 @@ export default function AdminUsersPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-800 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                      <tr className="border-b border-slate-800/60 text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-950/40">
                         <th className="py-4 px-4">Student</th>
                         <th className="py-4 px-4">Student Email</th>
                         <th className="py-4 px-4">Note Title</th>
@@ -582,14 +582,14 @@ export default function AdminUsersPage() {
                         <th className="py-4 px-4">Download Date</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/50">
+                    <tbody className="divide-y divide-slate-800/60">
                       {downloads.map((item) => (
-                        <tr key={item.id} className="text-sm font-medium hover:bg-slate-800/10">
+                        <tr key={item.id} className="text-sm font-medium hover:bg-slate-800/20 transition-colors duration-150">
                           <td className="py-4 px-4 text-white">{item.student_profiles?.full_name || "Unknown Student"}</td>
                           <td className="py-4 px-4 text-slate-400">{item.student_profiles?.email || "N/A"}</td>
                           <td className="py-4 px-4 text-cyan-400">{item.note_title}</td>
                           <td className="py-4 px-4 font-mono text-xs text-slate-500">{item.note_identifier}</td>
-                          <td className="py-4 px-4 text-slate-450">{new Date(item.downloaded_at).toLocaleString("en-IN")}</td>
+                          <td className="py-4 px-4 text-slate-400">{new Date(item.downloaded_at).toLocaleString("en-IN")}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -598,7 +598,7 @@ export default function AdminUsersPage() {
 
                 {/* Downloads Pagination */}
                 {totalDownloadsPages > 1 && (
-                  <div className="flex items-center justify-between border-t border-slate-800/80 pt-6 mt-4">
+                  <div className="flex items-center justify-between border-t border-slate-800/60 pt-6 mt-4">
                     <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">
                       Page {downloadsPage} of {totalDownloadsPages}
                     </span>
@@ -606,14 +606,14 @@ export default function AdminUsersPage() {
                       <button
                         onClick={() => setDownloadsPage(Math.max(downloadsPage - 1, 1))}
                         disabled={downloadsPage === 1}
-                        className="p-1.5 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white disabled:opacity-40 transition-colors"
+                        className="p-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600 text-slate-300 hover:text-white disabled:opacity-40 transition-all duration-200 active:scale-95"
                       >
                         <ChevronLeft className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setDownloadsPage(Math.min(downloadsPage + 1, totalDownloadsPages))}
                         disabled={downloadsPage === totalDownloadsPages}
-                        className="p-1.5 bg-slate-900 border border-slate-800 rounded-lg text-slate-400 hover:text-white disabled:opacity-40 transition-colors"
+                        className="p-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600 text-slate-300 hover:text-white disabled:opacity-40 transition-all duration-200 active:scale-95"
                       >
                         <ChevronRight className="w-4 h-4" />
                       </button>
@@ -628,18 +628,18 @@ export default function AdminUsersPage() {
 
       {/* Student Details Dialog Modal */}
       {selectedUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-xs animate-fade-in">
-          <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-lg bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl shadow-2xl overflow-hidden animate-scale-up">
             
             {/* Modal Header */}
-            <div className="flex justify-between items-center p-6 border-b border-slate-800">
+            <div className="flex justify-between items-center p-6 border-b border-slate-800/60">
               <h3 className="text-lg font-bold text-white flex items-center gap-2">
                 <Users className="w-5 h-5 text-cyan-400" />
                 <span>Student Details Portal</span>
               </h3>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition-colors"
+                className="p-1.5 rounded-lg bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600 text-slate-300 hover:text-white transition-all duration-200 active:scale-95"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -647,7 +647,7 @@ export default function AdminUsersPage() {
 
             {/* Modal Content */}
             <div className="p-6 space-y-5">
-              <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl flex items-center justify-between">
+              <div className="p-4 bg-slate-950/40 border border-slate-800/60 rounded-xl flex items-center justify-between">
                 <div>
                   <h4 className="text-base font-bold text-white">{selectedUser.full_name}</h4>
                   <p className="text-xs text-slate-500 mt-0.5">{selectedUser.email}</p>
@@ -655,7 +655,7 @@ export default function AdminUsersPage() {
                 <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${
                   isCurrentlyActive(selectedUser.last_seen)
                     ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-450" 
-                    : "bg-slate-800 border-slate-700 text-slate-450"
+                    : "bg-slate-800/60 border-slate-700/30 text-slate-400"
                 }`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${isCurrentlyActive(selectedUser.last_seen) ? "bg-emerald-400" : "bg-slate-400"}`} />
                   {isCurrentlyActive(selectedUser.last_seen) ? "Active Now" : "Offline"}
@@ -698,14 +698,14 @@ export default function AdminUsersPage() {
               </div>
 
               {/* Downloads status */}
-              <div className="border-t border-slate-800/80 pt-4 mt-2">
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Downloads Metrics</h4>
+              <div className="border-t border-slate-800/60 pt-4 mt-2">
+                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Downloads Metrics</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="p-3 bg-slate-950 border border-slate-850 rounded-xl">
+                  <div className="p-3 bg-slate-950/40 border border-slate-800/60 rounded-xl">
                     <span className="block text-[9px] text-slate-500 uppercase tracking-wider font-bold mb-1">Downloads Used</span>
                     <span className="text-white font-extrabold text-lg">{selectedUser.free_downloads_used}</span>
                   </div>
-                  <div className="p-3 bg-slate-950 border border-slate-850 rounded-xl">
+                  <div className="p-3 bg-slate-950/40 border border-slate-800/60 rounded-xl">
                     <span className="block text-[9px] text-slate-500 uppercase tracking-wider font-bold mb-1">Downloads Remaining</span>
                     <span className="text-cyan-400 font-extrabold text-lg">
                       {Math.max(selectedUser.download_limit - selectedUser.free_downloads_used, 0)}
@@ -715,7 +715,7 @@ export default function AdminUsersPage() {
               </div>
 
               {/* Meta logs */}
-              <div className="grid grid-cols-2 gap-4 text-xs pt-4 border-t border-slate-800/80">
+              <div className="grid grid-cols-2 gap-4 text-xs pt-4 border-t border-slate-800/60">
                 <div>
                   <span className="block text-[9px] text-slate-500 uppercase tracking-wider font-bold mb-0.5">Registered Date</span>
                   <span className="text-slate-400">{new Date(selectedUser.created_at).toLocaleString("en-IN")}</span>
@@ -728,10 +728,10 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 bg-slate-950 border-t border-slate-800 flex justify-between items-center gap-2 flex-wrap">
+            <div className="p-4 bg-slate-950/40 border-t border-slate-800/60 flex justify-between items-center gap-2 flex-wrap">
               <button
                 onClick={() => handleCopyId(selectedUser.id)}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-semibold transition-colors mr-auto"
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-all duration-200 active:scale-95 mr-auto"
               >
                 {copiedId ? <Check className="w-3.5 h-3.5 text-emerald-450" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedId ? "Copied!" : "Copy Student ID"}</span>
@@ -741,14 +741,14 @@ export default function AdminUsersPage() {
                   setSelectedUser(null);
                   setDeleteStudentConfirm(selectedUser);
                 }}
-                className="px-3.5 py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 hover:border-red-800/40 text-red-400 hover:text-red-300 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-rose-500/10 hover:shadow-rose-500/20 transition-all duration-200 active:scale-95 flex items-center gap-1.5"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete Student</span>
               </button>
               <button
                 onClick={() => setSelectedUser(null)}
-                className="px-4.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold transition-all"
+                className="px-4.5 py-2 rounded-xl text-xs font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
               >
                 Close
               </button>
@@ -759,18 +759,18 @@ export default function AdminUsersPage() {
 
       {/* Delete Student Confirmation Modal */}
       {deleteStudentConfirm && (
-        <div className="fixed inset-0 bg-[#070b13]/80 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-fade-in">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 animate-scale-up">
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl max-w-sm w-full p-6 shadow-2xl space-y-4 animate-scale-up">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-red-500" />
+              <AlertCircle className="w-5 h-5 text-rose-500" />
               <span>DELETE STUDENT?</span>
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
               You are about to permanently delete this student profile.
             </p>
-            <div className="p-3 bg-slate-950 border border-slate-850 rounded-xl space-y-1">
-              <p className="text-xs font-bold text-white">Student: <span className="font-semibold text-slate-350">{deleteStudentConfirm.full_name}</span></p>
-              <p className="text-xs font-bold text-white">Email: <span className="font-semibold text-slate-450">{deleteStudentConfirm.email}</span></p>
+            <div className="p-3 bg-slate-950/40 border border-slate-800/60 rounded-xl space-y-1">
+              <p className="text-xs font-bold text-white">Student: <span className="font-semibold text-slate-300">{deleteStudentConfirm.full_name}</span></p>
+              <p className="text-xs font-bold text-white">Email: <span className="font-semibold text-slate-400">{deleteStudentConfirm.email}</span></p>
             </div>
             <p className="text-[10px] text-slate-500 leading-relaxed">
               This action may remove the student&apos;s RxFusion profile and related student-owned data.
@@ -778,14 +778,14 @@ export default function AdminUsersPage() {
             <div className="flex justify-end gap-2 pt-2">
               <button
                 onClick={() => setDeleteStudentConfirm(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-750 text-slate-200 text-xs font-bold rounded-xl transition-all"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
                 disabled={deletingId !== null}
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDeleteStudent(deleteStudentConfirm.id)}
-                className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-xl transition-all disabled:opacity-50 flex items-center gap-1.5"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white shadow-lg shadow-rose-500/10 hover:shadow-rose-500/20 transition-all duration-200 active:scale-95 flex items-center gap-1.5"
                 disabled={deletingId !== null}
               >
                 {deletingId ? (

@@ -288,7 +288,7 @@ export default function DrugsAdmin() {
             if (showForm) resetForm();
             else setShowForm(true);
           }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{showForm ? "Hide Form" : "Create Drug Profile"}</span>
@@ -311,7 +311,7 @@ export default function DrugsAdmin() {
 
       {/* Editor Form */}
       {showForm && (
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-4xl animate-fade-in">
+        <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 mb-6 max-w-4xl shadow-xl shadow-slate-950/20 animate-fade-in">
           <h2 className="text-md font-bold text-white mb-6">
             {editId ? "Edit Pharmacology Profile" : "Create New Pharmacology Profile"}
           </h2>
@@ -320,7 +320,7 @@ export default function DrugsAdmin() {
             {/* Row 1: Drug Name & Generic Name */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Drug Name *
                 </label>
                 <input
@@ -328,13 +328,13 @@ export default function DrugsAdmin() {
                   required
                   value={drugName}
                   onChange={(e) => handleNameChange(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. Lisinopril"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Generic Name *
                 </label>
                 <input
@@ -342,7 +342,7 @@ export default function DrugsAdmin() {
                   required
                   value={genericName}
                   onChange={(e) => setGenericName(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. Lisinopril dihydrate"
                 />
               </div>
@@ -351,7 +351,7 @@ export default function DrugsAdmin() {
             {/* Row 2: Slug & Class */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Slug (URL Parameter) *
                 </label>
                 <input
@@ -359,13 +359,13 @@ export default function DrugsAdmin() {
                   required
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="lisinopril"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Drug Class *
                 </label>
                 <input
@@ -373,7 +373,7 @@ export default function DrugsAdmin() {
                   required
                   value={drugClass}
                   onChange={(e) => setDrugClass(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. ACE Inhibitor"
                 />
               </div>
@@ -382,7 +382,7 @@ export default function DrugsAdmin() {
             {/* Row 3: Author & Publish/Schedule Date */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Author
                 </label>
                 <input
@@ -390,144 +390,144 @@ export default function DrugsAdmin() {
                   required
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Publish / Schedule Date (Optional)
                 </label>
                 <input
                   type="datetime-local"
                   value={publishDate}
                   onChange={(e) => setPublishDate(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
             </div>
 
             {/* Image File upload */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Drug Image Cover
               </label>
-              <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-slate-700 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-200 group">
+              <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-slate-700/60 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-200 group">
                 <Upload className="w-6 h-6 text-slate-500 group-hover:text-cyan-400 transition-colors mb-2" />
-                <span className="text-sm text-slate-500 group-hover:text-slate-300">
+                <span className="text-sm text-slate-500 group-hover:text-slate-300 font-medium">
                   {imageFile ? imageFile.name : "Click to select drug molecular/capsule image"}
                 </span>
                 <input type="file" className="hidden" onChange={handleImageChange} accept="image/*" />
               </label>
             </div>
 
-            <div className="h-px bg-slate-800 my-5" />
+            <div className="h-px bg-slate-800/60 my-5" />
 
             {/* Rich-Text Textareas */}
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Mechanism of Action (MOA)
                 </label>
                 <textarea
                   rows={4}
                   value={moa}
                   onChange={(e) => setMoa(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Describe molecular drug targets, receptor actions, cascades..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Therapeutic Uses
                 </label>
                 <textarea
                   rows={3}
                   value={uses}
                   onChange={(e) => setUses(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Primary clinical indications, off-label uses..."
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Side Effects
                 </label>
                 <textarea
                   rows={3}
                   value={sideEffects}
                   onChange={(e) => setSideEffects(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Common adverse reactions, toxicities..."
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                     Contraindications
                   </label>
                   <textarea
                     rows={3}
                     value={contraindications}
                     onChange={(e) => setContraindications(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Absolute and relative contraindications..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                     Drug Interactions
                   </label>
                   <textarea
                     rows={3}
                     value={interactions}
                     onChange={(e) => setInteractions(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Key CYP450 interactions, synergisms..."
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Clinical Pearl
                 </label>
                 <textarea
                   rows={3}
                   value={clinicalPearl}
                   onChange={(e) => setClinicalPearl(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Practical prescribing/monitoring tips for practicing pharmacists..."
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                     Viva Questions
                   </label>
                   <textarea
                     rows={4}
                     value={vivaQuestions}
                     onChange={(e) => setVivaQuestions(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Questions commonly asked by examiners..."
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                     Exam Point
                   </label>
                   <textarea
                     rows={4}
                     value={examPoint}
                     onChange={(e) => setExamPoint(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                     placeholder="Must-know summary keywords for theory papers..."
                   />
                 </div>
@@ -536,13 +536,13 @@ export default function DrugsAdmin() {
 
             {/* Status Select Box */}
             <div className="max-w-xs">
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Posting Status
               </label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as "draft" | "published" | "scheduled")}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
               >
                 <option value="draft" className="bg-slate-900">Save Draft</option>
                 <option value="published" className="bg-slate-900">Publish Instantly</option>
@@ -554,7 +554,7 @@ export default function DrugsAdmin() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 disabled:opacity-50 transition-all"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95 disabled:opacity-50"
               >
                 {saving ? (
                   <>
@@ -568,7 +568,7 @@ export default function DrugsAdmin() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:text-white border border-slate-750 hover:bg-slate-700 transition-all"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
               >
                 Cancel
               </button>
@@ -578,7 +578,7 @@ export default function DrugsAdmin() {
       )}
 
       {/* Drugs Inventory Table */}
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
+      <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20">
         <h2 className="text-md font-bold text-white mb-6">Drugs Archive Repository</h2>
 
         {loading ? (
@@ -586,8 +586,8 @@ export default function DrugsAdmin() {
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
           </div>
         ) : drugs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
-            <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/10 border border-slate-800/60 border-dashed rounded-2xl">
+            <div className="w-10 h-10 rounded-xl bg-slate-800/40 flex items-center justify-center mb-3">
               <Pill className="w-5 h-5 text-slate-500" />
             </div>
             <p className="text-sm font-medium text-slate-400">No drugs listed yet</p>
@@ -599,18 +599,18 @@ export default function DrugsAdmin() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-slate-800/60 text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-950/40">
                   {["Drug Info", "Class", "Status", "Publish Date", "Actions"].map((h) => (
-                    <th key={h} className="text-left text-xs font-bold text-slate-500 uppercase tracking-wider py-3 px-4 first:pl-0">
+                    <th key={h} className="py-4 px-4">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-800/60">
                 {drugs.map((d) => (
-                  <tr key={d.id} className="border-b border-slate-800/60 hover:bg-slate-800/20 transition-colors group">
-                    <td className="py-3.5 px-4 first:pl-0">
+                  <tr key={d.id} className="text-sm font-medium hover:bg-slate-800/20 transition-colors duration-150 group">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
                           <Pill className="w-4 h-4 text-cyan-400" />
@@ -625,33 +625,33 @@ export default function DrugsAdmin() {
                         </div>
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-slate-450">{d.drug_class}</td>
-                    <td className="py-3.5 px-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
+                    <td className="py-4 px-4 text-xs font-semibold text-slate-400">{d.drug_class}</td>
+                    <td className="py-4 px-4">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider ${
                         d.status === "published"
                           ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                           : d.status === "scheduled"
                           ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
-                          : "bg-slate-800 text-slate-400 border-slate-700"
+                          : "bg-slate-800/60 text-slate-400 border-slate-700/30"
                       }`}>
                         {d.status}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-xs text-slate-500">
+                    <td className="py-4 px-4 text-xs text-slate-500">
                       {new Date(d.created_at).toLocaleDateString()}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleEditClick(d)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-450 text-slate-400 transition-colors"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                           title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteDrug(d.id, d.image_url)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-colors"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-450 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />

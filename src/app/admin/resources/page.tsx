@@ -232,16 +232,12 @@ export default function ResourcesCrud() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6 text-slate-200">
       {/* Page Header */}
-      <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">
-            Curriculum Resources
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Publish PCI blueprints, reference syllabuses, and ebook references.
-          </p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Curriculum Resources</h1>
+          <p className="text-sm text-slate-500 mt-1">Publish PCI blueprints, reference syllabuses, and ebook references.</p>
         </div>
         <button
           onClick={() => {
@@ -251,7 +247,7 @@ export default function ResourcesCrud() {
               setShowForm(true);
             }
           }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{showForm ? "Hide Form" : "Add Resource"}</span>
@@ -260,23 +256,23 @@ export default function ResourcesCrud() {
 
       {/* Error feedback */}
       {error && (
-        <div className="flex items-start gap-3 p-4 bg-red-950/20 border border-red-900/40 rounded-xl text-sm text-red-300 animate-fade-in max-w-3xl">
-          <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+        <div className="p-3.5 bg-red-950/20 border border-red-900/40 rounded-xl text-xs text-red-355 flex items-center gap-2 max-w-3xl">
+          <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Editor Form */}
       {showForm && (
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-3xl animate-fade-in">
-          <h2 className="text-md font-bold text-white mb-6">
+        <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 max-w-3xl shadow-xl shadow-slate-950/20 backdrop-blur-md animate-fade-in">
+          <h2 className="text-sm font-bold text-white mb-6 uppercase tracking-widest border-b border-slate-800/60 pb-3">
             {editingId ? "Edit Generic Curriculum Resource" : "Upload Generic Curriculum Resource"}
           </h2>
 
           <form onSubmit={handleSaveResource} className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Resource Title
                 </label>
                 <input
@@ -284,19 +280,19 @@ export default function ResourcesCrud() {
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. PCI B Pharm Syllabus 2026 Guidelines"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Category
                 </label>
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 cursor-pointer"
+                  className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id} className="bg-slate-900">{c.name}</option>
@@ -307,25 +303,25 @@ export default function ResourcesCrud() {
 
             {/* File/URL Toggle */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-0.5">
                 Resource Source
               </label>
-              <div className="flex gap-1 p-1 bg-slate-800 rounded-xl w-fit mb-4">
+              <div className="flex gap-1 p-1 bg-slate-950/60 border border-slate-850/50 rounded-xl w-fit mb-4">
                 <button type="button" onClick={() => { setInputMode("file"); setFileUrl(""); }}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${inputMode === "file" ? "bg-slate-700 text-white shadow" : "text-slate-400 hover:text-white"}`}>
+                  className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${inputMode === "file" ? "bg-slate-800 text-white shadow-md border border-slate-700/50" : "text-slate-400 hover:text-white"}`}>
                   Upload File
                 </button>
                 <button type="button" onClick={() => { setInputMode("url"); setFile(null); }}
-                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${inputMode === "url" ? "bg-slate-700 text-white shadow" : "text-slate-400 hover:text-white"}`}>
+                  className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 ${inputMode === "url" ? "bg-slate-800 text-white shadow-md border border-slate-700/50" : "text-slate-400 hover:text-white"}`}>
                   Paste URL
                 </button>
               </div>
 
               {/* Conditional input */}
               {inputMode === "file" ? (
-                <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-slate-700 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-200 group">
-                  <Upload className="w-6 h-6 text-slate-500 group-hover:text-cyan-400 transition-colors mb-2" />
-                  <span className="text-sm text-slate-500 group-hover:text-slate-300">
+                <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-slate-800/80 cursor-pointer hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all duration-200 group">
+                  <Upload className="w-6 h-6 text-slate-500 group-hover:text-cyan-400 transition-colors mb-2 animate-bounce-subtle" />
+                  <span className="text-xs font-semibold text-slate-500 group-hover:text-slate-350 transition-colors">
                     {file ? file.name : "Click to select file"}
                   </span>
                   <input type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={handleFileChange} />
@@ -336,33 +332,33 @@ export default function ResourcesCrud() {
                   placeholder="https://example.com/syllabus.pdf"
                   value={fileUrl}
                   onChange={(e) => setFileUrl(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 font-mono"
                 />
               )}
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Resource Description
               </label>
               <textarea
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 resize-none"
+                className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                 placeholder="Include brief outlines, regulatory boards, or document notes..."
               />
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-2 pt-2">
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
               >
                 {saving ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin" />
                     <span>Saving...</span>
                   </>
                 ) : (
@@ -373,7 +369,7 @@ export default function ResourcesCrud() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                  className="px-5 py-2.5 rounded-xl text-xs font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
                 >
                   Cancel Edit
                 </button>
@@ -384,65 +380,63 @@ export default function ResourcesCrud() {
       )}
 
       {/* Resources Table List */}
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
+      <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl overflow-hidden backdrop-blur-md shadow-xl shadow-slate-950/20">
         {loading ? (
-          <div className="flex justify-center py-16">
+          <div className="py-20 flex flex-col justify-center items-center text-slate-400 gap-2">
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
+            <span className="text-xs font-semibold">Loading resources...</span>
           </div>
         ) : resources.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
-            <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
-              <BookMarked className="w-5 h-5 text-slate-500" />
-            </div>
-            <p className="text-sm font-medium text-slate-400">No resources yet</p>
-            <p className="text-xs text-slate-600 mt-1">
-              Resources you upload will appear here.
-            </p>
+          <div className="py-20 text-center text-slate-500 bg-slate-900/10 border-dashed border border-slate-850/60 rounded-2xl m-6">
+            <BookMarked className="w-10 h-10 mx-auto text-slate-655 mb-2" />
+            <p className="text-xs font-bold text-slate-400">No resources yet</p>
+            <p className="text-[11px] text-slate-500 mt-1">Resources you upload will appear here.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm border-collapse">
+            <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-slate-800">
-                  {["Title", "Category", "Publish Date", "Actions"].map(h => (
-                    <th key={h} className="text-left text-xs font-bold text-slate-500 uppercase tracking-wider py-3 px-4 first:pl-0">{h}</th>
-                  ))}
+                <tr className="border-b border-slate-800/60 text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-950/40">
+                  <th className="p-4 w-2/5">Title</th>
+                  <th className="p-4 w-1/5">Category</th>
+                  <th className="p-4 w-1/5">Publish Date</th>
+                  <th className="p-4 w-1/5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-800/60">
                 {resources.map((res) => (
-                  <tr key={res.id} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors duration-150 group">
-                    <td className="py-3.5 px-4 first:pl-0">
+                  <tr key={res.id} className="hover:bg-slate-800/20 transition-colors duration-150 group">
+                    <td className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                        <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform duration-200">
                           <BookMarked className="w-4 h-4 text-cyan-400" />
                         </div>
-                        <span className="text-sm font-semibold text-white group-hover:text-cyan-50 transition-colors line-clamp-1">
+                        <span className="font-semibold text-slate-200 group-hover:text-cyan-50 transition-colors line-clamp-1">
                           {res.title}
                         </span>
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-slate-500">
+                    <td className="p-4 font-bold text-slate-400">
                       {res.categories?.name || "General Resource"}
                     </td>
-                    <td className="py-3.5 px-4 text-xs text-slate-500 font-medium">
-                      {new Date(res.created_at).toLocaleDateString()}
+                    <td className="p-4 font-medium text-slate-450">
+                      {new Date(res.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                     </td>
-                    <td className="py-3.5 px-4">
-                      <div className="flex items-center gap-2">
+                    <td className="p-4 text-right">
+                      <div className="flex justify-end gap-1.5">
                         <a href={res.file_url} target="_blank" rel="noreferrer"
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                           title="Download">
                           <Download className="w-4 h-4" />
                         </a>
                         <button onClick={() => handleEditClick(res)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                           title="Edit">
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteResource(res.id, res.file_url)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-455 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />

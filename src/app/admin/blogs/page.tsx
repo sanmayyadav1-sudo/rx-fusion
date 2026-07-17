@@ -233,7 +233,7 @@ export default function BlogsCrud() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in text-slate-200">
       {/* Page Header */}
       <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
         <div>
@@ -252,7 +252,7 @@ export default function BlogsCrud() {
               setShowForm(true);
             }
           }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{showForm ? "Hide Editor" : "Write Article"}</span>
@@ -269,7 +269,7 @@ export default function BlogsCrud() {
 
       {/* Editor Form */}
       {showForm && (
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-4xl animate-fade-in">
+        <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 mb-6 max-w-4xl shadow-xl shadow-slate-950/20 animate-fade-in">
           <h2 className="text-md font-bold text-white mb-6">
             {editingId ? "Edit Scientific Blog Post" : "Compose Scientific Blog Post"}
           </h2>
@@ -278,7 +278,7 @@ export default function BlogsCrud() {
             {/* Title & Slug */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Title
                 </label>
                 <input
@@ -286,13 +286,13 @@ export default function BlogsCrud() {
                   required
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. Mechanism of Action of ACE Inhibitors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Slug (URL Parameter)
                 </label>
                 <input
@@ -300,19 +300,19 @@ export default function BlogsCrud() {
                   required
                   value={slug}
                   onChange={(e) => setSlug(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="mechanism-of-action-of-ace-inhibitors"
                 />
               </div>
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-slate-800 my-5" />
+            <div className="h-px bg-slate-800/60 my-5" />
 
             {/* Author & Category */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Author
                 </label>
                 <input
@@ -320,18 +320,18 @@ export default function BlogsCrud() {
                   required
                   value={author}
                   onChange={(e) => setAuthor(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Category
                 </label>
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 cursor-pointer"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id} className="bg-slate-900">{c.name}</option>
@@ -341,16 +341,16 @@ export default function BlogsCrud() {
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-slate-800 my-5" />
+            <div className="h-px bg-slate-800/60 my-5" />
 
             {/* Featured Image Upload Zone */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Featured Image
               </label>
-              <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-slate-700 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-200 group">
+              <label className="flex flex-col items-center justify-center w-full h-28 rounded-xl border-2 border-dashed border-slate-700/60 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all duration-200 group">
                 <Upload className="w-6 h-6 text-slate-500 group-hover:text-cyan-400 transition-colors mb-2" />
-                <span className="text-sm text-slate-500 group-hover:text-slate-300">
+                <span className="text-sm text-slate-555 group-hover:text-slate-300 font-medium">
                   {imageFile ? imageFile.name : "Click to select cover photo"}
                 </span>
                 <input type="file" className="hidden" onChange={handleImageChange} accept="image/*" />
@@ -358,11 +358,11 @@ export default function BlogsCrud() {
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-slate-800 my-5" />
+            <div className="h-px bg-slate-800/60 my-5" />
 
             {/* Content Body textarea with character count */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Content Body
               </label>
               <div className="relative">
@@ -371,10 +371,10 @@ export default function BlogsCrud() {
                   required
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 resize-none"
+                  className="w-full px-4 py-3 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Write your scientific review here. Supports HTML or raw formatting..."
                 />
-                <span className="absolute bottom-3 right-3 text-xs text-slate-600">
+                <span className="absolute bottom-3 right-3 text-xs text-slate-500 font-semibold">
                   {content.length} chars
                 </span>
               </div>
@@ -384,7 +384,7 @@ export default function BlogsCrud() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? (
                   <>
@@ -399,7 +399,7 @@ export default function BlogsCrud() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
                 >
                   Cancel Edit
                 </button>
@@ -410,18 +410,18 @@ export default function BlogsCrud() {
       )}
 
       {/* Blogs list */}
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
+      <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20">
         {loading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
           </div>
         ) : blogs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
-            <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/10 border border-slate-800/60 border-dashed rounded-2xl">
+            <div className="w-10 h-10 rounded-xl bg-slate-800/40 flex items-center justify-center mb-3">
               <BookOpen className="w-5 h-5 text-slate-500" />
             </div>
             <p className="text-sm font-medium text-slate-400">No blogs yet</p>
-            <p className="text-xs text-slate-600 mt-1">
+            <p className="text-xs text-slate-650 mt-1">
               Articles you compose will appear here.
             </p>
           </div>
@@ -429,16 +429,16 @@ export default function BlogsCrud() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-slate-800/60 text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-950/40">
                   {["Title", "Author", "Category", "Publish Date", "Actions"].map(h => (
-                    <th key={h} className="text-left text-xs font-bold text-slate-500 uppercase tracking-wider py-3 px-4 first:pl-0">{h}</th>
+                    <th key={h} className="py-4 px-4">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-800/60">
                 {blogs.map((blog) => (
-                  <tr key={blog.id} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors duration-150 group">
-                    <td className="py-3.5 px-4 first:pl-0">
+                  <tr key={blog.id} className="text-sm font-medium hover:bg-slate-800/20 transition-colors duration-150 group">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
                           <BookOpen className="w-4 h-4 text-violet-400" />
@@ -448,24 +448,24 @@ export default function BlogsCrud() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-slate-400">{blog.author}</td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-slate-500">
+                    <td className="py-4 px-4 text-xs font-semibold text-slate-400">{blog.author}</td>
+                    <td className="py-4 px-4 text-xs font-semibold text-slate-400">
                       {blog.categories?.name || "Uncategorized"}
                     </td>
-                    <td className="py-3.5 px-4 text-xs text-slate-500">
+                    <td className="py-4 px-4 text-xs text-slate-400">
                       {new Date(blog.published_date).toLocaleDateString()}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleEditClick(blog)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                           title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteBlog(blog.id, blog.featured_image)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-450 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />

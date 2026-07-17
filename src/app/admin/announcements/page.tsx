@@ -333,7 +333,7 @@ export default function AnnouncementsAdmin() {
             if (showForm) resetForm();
             else setShowForm(true);
           }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{showForm ? "Hide Form" : "Create Announcement"}</span>
@@ -356,7 +356,7 @@ export default function AnnouncementsAdmin() {
 
       {/* Form editor */}
       {showForm && (
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-4xl animate-fade-in">
+        <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 mb-6 max-w-4xl shadow-xl shadow-slate-950/20 animate-fade-in">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-md font-bold text-white">
               {editId ? "Edit Announcement Campaign" : "New Announcement Campaign"}
@@ -364,7 +364,7 @@ export default function AnnouncementsAdmin() {
             <button
               type="button"
               onClick={() => setShowPreview(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white border border-slate-700/60 hover:bg-slate-700 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
             >
               <Eye className="w-4 h-4 text-cyan-400" />
               <span>Preview Mockup</span>
@@ -375,7 +375,7 @@ export default function AnnouncementsAdmin() {
             {/* Title & Type */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Announcement Title *
                 </label>
                 <input
@@ -383,19 +383,19 @@ export default function AnnouncementsAdmin() {
                   required
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. Schedule for End Semester Examinations"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Announcement Category (Type)
                 </label>
                 <select
                   value={type}
                   onChange={(e) => setType(e.target.value as Announcement["type"])}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
                   <option value="announcement" className="bg-slate-900">Announcement</option>
                   <option value="exam_update" className="bg-slate-900">Exam Update</option>
@@ -410,7 +410,7 @@ export default function AnnouncementsAdmin() {
 
             {/* Message Body */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Message Content *
               </label>
               <textarea
@@ -418,7 +418,7 @@ export default function AnnouncementsAdmin() {
                 required
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all resize-none"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                 placeholder="Compose the announcement details. Standard HTML linebreaks are preserved."
               />
             </div>
@@ -426,34 +426,34 @@ export default function AnnouncementsAdmin() {
             {/* Banner Upload */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Banner Image (Optional)
                 </label>
-                <label className="flex flex-col items-center justify-center w-full h-24 rounded-xl border-2 border-dashed border-slate-700 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all group">
+                <label className="flex flex-col items-center justify-center w-full h-24 rounded-xl border-2 border-dashed border-slate-700/60 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all group">
                   <Upload className="w-5 h-5 text-slate-500 group-hover:text-cyan-400 mb-1" />
-                  <span className="text-xs text-slate-500 group-hover:text-slate-300">
+                  <span className="text-xs text-slate-500 group-hover:text-slate-300 font-medium">
                     {bannerFile ? bannerFile.name : existingBannerUrl ? "Image Linked (Click to change)" : "Select image cover asset"}
                   </span>
                   <input type="file" className="hidden" onChange={handleBannerChange} accept="image/*" />
                 </label>
                 {existingBannerUrl && !bannerFile && (
-                  <span className="text-[10px] text-slate-550 block mt-1 truncate">Current: {existingBannerUrl}</span>
+                  <span className="text-[10px] text-slate-500 block mt-1 truncate">Current: {existingBannerUrl}</span>
                 )}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   PDF Attachment (Optional)
                 </label>
-                <label className="flex flex-col items-center justify-center w-full h-24 rounded-xl border-2 border-dashed border-slate-700 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all group">
+                <label className="flex flex-col items-center justify-center w-full h-24 rounded-xl border-2 border-dashed border-slate-700/60 cursor-pointer hover:border-cyan-500/50 hover:bg-cyan-500/5 transition-all group">
                   <Upload className="w-5 h-5 text-slate-500 group-hover:text-cyan-400 mb-1" />
-                  <span className="text-xs text-slate-500 group-hover:text-slate-300">
+                  <span className="text-xs text-slate-500 group-hover:text-slate-300 font-medium">
                     {pdfFile ? pdfFile.name : existingPdfUrl ? "Document Linked (Click to change)" : "Select PDF syllabus/table file"}
                   </span>
                   <input type="file" className="hidden" onChange={handlePdfChange} accept=".pdf" />
                 </label>
                 {existingPdfUrl && !pdfFile && (
-                  <span className="text-[10px] text-slate-550 block mt-1 truncate">Current: {existingPdfUrl}</span>
+                  <span className="text-[10px] text-slate-500 block mt-1 truncate">Current: {existingPdfUrl}</span>
                 )}
               </div>
             </div>
@@ -461,27 +461,27 @@ export default function AnnouncementsAdmin() {
             {/* CTA Button Text & Button URL */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Action Button Label (Optional)
                 </label>
                 <input
                   type="text"
                   value={buttonText}
                   onChange={(e) => setButtonText(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. Read Circular"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Action Button URL
                 </label>
                 <input
                   type="url"
                   value={buttonUrl}
                   onChange={(e) => setButtonUrl(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="https://example.com/exam-timetable"
                 />
               </div>
@@ -490,26 +490,26 @@ export default function AnnouncementsAdmin() {
             {/* Start Date & End Date */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Start Scheduling Date (Optional)
                 </label>
                 <input
                   type="datetime-local"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Expiry Scheduling Date (Optional)
                 </label>
                 <input
                   type="datetime-local"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 />
               </div>
             </div>
@@ -517,22 +517,22 @@ export default function AnnouncementsAdmin() {
             {/* Priority & Auto-Hide & Session limits & Active status */}
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 items-center">
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Priority level
                 </label>
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as Announcement["priority"])}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 focus:outline-none focus:border-cyan-500/50 transition-all cursor-pointer"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                 >
-                  <option value="high">High Priority</option>
-                  <option value="medium">Medium Priority</option>
-                  <option value="low">Low Priority</option>
+                  <option value="high" className="bg-slate-900">High Priority</option>
+                  <option value="medium" className="bg-slate-900">Medium Priority</option>
+                  <option value="low" className="bg-slate-900">Low Priority</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                   Auto-Hide (Seconds)
                 </label>
                 <input
@@ -540,32 +540,32 @@ export default function AnnouncementsAdmin() {
                   min={1}
                   value={autoHideDuration}
                   onChange={(e) => setAutoHideDuration(e.target.value === "" ? "" : Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 transition-all"
+                  className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                   placeholder="e.g. 10 (Optional)"
                 />
               </div>
 
               <div className="flex flex-col justify-end pt-2">
-                <span className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Display Limit</span>
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-0.5">Display Limit</span>
                 <label className="flex items-center gap-2.5 cursor-pointer text-sm font-semibold text-slate-300">
                   <input
                     type="checkbox"
                     checked={showOncePerSession}
                     onChange={(e) => setShowOncePerSession(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-700 text-cyan-500 bg-slate-800 focus:ring-0"
+                    className="w-4 h-4 rounded border-slate-700 text-cyan-500 bg-slate-850 focus:ring-0 focus:outline-none cursor-pointer"
                   />
                   <span>Show Once Per Session</span>
                 </label>
               </div>
 
               <div className="flex flex-col justify-end pt-2">
-                <span className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Publishing Status</span>
+                <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 ml-0.5">Publishing Status</span>
                 <label className="flex items-center gap-2.5 cursor-pointer text-sm font-semibold text-slate-300">
                   <input
                     type="checkbox"
                     checked={isActive}
                     onChange={(e) => setIsActive(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-700 text-cyan-500 bg-slate-800 focus:ring-0"
+                    className="w-4 h-4 rounded border-slate-700 text-cyan-500 bg-slate-850 focus:ring-0 focus:outline-none cursor-pointer"
                   />
                   <span>Mark Active</span>
                 </label>
@@ -573,11 +573,11 @@ export default function AnnouncementsAdmin() {
             </div>
 
             {/* Actions */}
-            <div className="flex gap-3 pt-4 border-t border-slate-850">
+            <div className="flex gap-3 pt-4 border-t border-slate-800/60">
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 disabled:opacity-50 transition-all"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95 disabled:opacity-50"
               >
                 {saving ? (
                   <>
@@ -591,7 +591,7 @@ export default function AnnouncementsAdmin() {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:text-white border border-slate-750 hover:bg-slate-700 transition-all"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
               >
                 Cancel
               </button>
@@ -601,7 +601,7 @@ export default function AnnouncementsAdmin() {
       )}
 
       {/* Announcements Campaigns List */}
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
+      <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20">
         <h2 className="text-md font-bold text-white mb-6">Announcement Campaigns</h2>
 
         {loading ? (
@@ -609,8 +609,8 @@ export default function AnnouncementsAdmin() {
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
           </div>
         ) : announcements.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
-            <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/10 border border-slate-800/60 border-dashed rounded-2xl">
+            <div className="w-10 h-10 rounded-xl bg-slate-800/40 flex items-center justify-center mb-3">
               <Megaphone className="w-5 h-5 text-slate-500" />
             </div>
             <p className="text-sm font-medium text-slate-400">No popups configured yet</p>
@@ -622,18 +622,18 @@ export default function AnnouncementsAdmin() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-slate-800/60 text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-950/40">
                   {["Announcement Info", "Category", "Priority", "Scheduling", "Status", "Actions"].map((h) => (
-                    <th key={h} className="text-left text-xs font-bold text-slate-500 uppercase tracking-wider py-3 px-4 first:pl-0">
+                    <th key={h} className="py-4 px-4">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-800/60">
                 {announcements.map((ann) => (
-                  <tr key={ann.id} className="border-b border-slate-800/60 hover:bg-slate-800/20 transition-colors group">
-                    <td className="py-3.5 px-4 first:pl-0">
+                  <tr key={ann.id} className="text-sm font-medium hover:bg-slate-800/20 transition-colors duration-150 group">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
                           <Megaphone className="w-4 h-4 text-cyan-400" />
@@ -648,17 +648,17 @@ export default function AnnouncementsAdmin() {
                         </div>
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-xs">
+                    <td className="py-4 px-4 text-xs">
                       <span className="capitalize font-semibold text-slate-400">
                         {ann.type.replace(/_/g, " ")}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold border uppercase tracking-wider ${getPriorityColor(ann.priority)}`}>
+                    <td className="py-4 px-4">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border uppercase tracking-wider ${getPriorityColor(ann.priority)}`}>
                         {ann.priority}
                       </span>
                     </td>
-                    <td className="py-3.5 px-4 text-xs text-slate-500 space-y-1">
+                    <td className="py-4 px-4 text-xs text-slate-400 space-y-1">
                       {ann.start_date || ann.end_date ? (
                         <>
                           {ann.start_date && (
@@ -672,10 +672,10 @@ export default function AnnouncementsAdmin() {
                         <span>Immediate / Permanent</span>
                       )}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <button
                         onClick={() => handleToggleActive(ann)}
-                        className="text-slate-400 hover:text-white transition-colors"
+                        className="text-slate-400 hover:text-white transition-colors focus:outline-none"
                         title={ann.is_active ? "Mark Inactive" : "Mark Active"}
                       >
                         {ann.is_active ? (
@@ -691,18 +691,18 @@ export default function AnnouncementsAdmin() {
                         )}
                       </button>
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleEditClick(ann)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-450 text-slate-400 transition-colors"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                           title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(ann)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-colors"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-450 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -719,12 +719,12 @@ export default function AnnouncementsAdmin() {
 
       {/* Simulated Live Preview Mockup Modal */}
       {showPreview && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl p-6 space-y-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-md bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl overflow-hidden shadow-2xl p-6 space-y-6 animate-scale-up">
             {/* Top Close */}
             <button
               onClick={() => setShowPreview(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-full bg-slate-800 text-slate-400 hover:text-white transition-colors"
+              className="absolute top-4 right-4 p-1.5 rounded-full bg-slate-800/60 hover:bg-slate-700/80 border border-slate-700/50 hover:border-slate-600 text-slate-300 hover:text-white transition-all duration-200 active:scale-95"
             >
               <X className="w-4 h-4" />
             </button>
@@ -741,18 +741,18 @@ export default function AnnouncementsAdmin() {
 
             <div className="space-y-4">
               {/* Type Badge */}
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-800/60 text-slate-300 border border-slate-700/30">
                 {type.replace(/_/g, " ")}
               </span>
 
               {/* Title */}
-              <h3 className="text-xl font-bold text-white tracking-tight leading-snug">
+              <h3 className="text-xl font-extrabold text-white tracking-tight leading-snug">
                 {title || "Template Announcement Title"}
               </h3>
 
               {/* Banner image simulator */}
               {bannerFile || existingBannerUrl ? (
-                <div className="w-full aspect-video rounded-xl bg-slate-950 overflow-hidden flex items-center justify-center border border-slate-800">
+                <div className="w-full aspect-video rounded-xl bg-slate-950/40 overflow-hidden flex items-center justify-center border border-slate-800/60">
                   {bannerFile ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -772,13 +772,13 @@ export default function AnnouncementsAdmin() {
               ) : null}
 
               {/* Message */}
-              <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap font-medium">
                 {message || "This is a preview of your notification contents. Specify announcement text to display detailed guidance."}
               </p>
 
               {/* PDF Document attachment mockup */}
               {(pdfFile || existingPdfUrl) && (
-                <div className="flex items-center gap-2 p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-xs font-semibold text-emerald-400 cursor-pointer">
+                <div className="flex items-center gap-2 p-3 bg-slate-950/40 border border-slate-800/60 rounded-xl text-xs font-bold text-emerald-400 cursor-pointer">
                   <FileText className="w-4 h-4 flex-shrink-0" />
                   <span className="truncate">Download circular document ({pdfFile ? pdfFile.name : "Linked Document"})</span>
                   <Download className="w-3.5 h-3.5 ml-auto text-emerald-500" />
@@ -791,7 +791,7 @@ export default function AnnouncementsAdmin() {
                   href={buttonUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-1.5 w-full py-3 rounded-xl font-bold text-sm bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 transition-all"
+                  className="flex items-center justify-center gap-1.5 w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95"
                 >
                   <span>{buttonText || "Learn More"}</span>
                   <ExternalLink className="w-4 h-4" />
@@ -800,12 +800,12 @@ export default function AnnouncementsAdmin() {
             </div>
 
             {/* Footer controls simulator */}
-            <div className="flex items-center justify-between border-t border-slate-800/80 pt-4 text-xs text-slate-500">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" disabled className="w-3.5 h-3.5 rounded border-slate-700 bg-slate-800" />
+            <div className="flex items-center justify-between border-t border-slate-800/60 pt-4 text-xs text-slate-500">
+              <label className="flex items-center gap-2 cursor-pointer font-semibold">
+                <input type="checkbox" disabled className="w-3.5 h-3.5 rounded border-slate-700 bg-slate-850" />
                 <span>Don&apos;t Show Again Today</span>
               </label>
-              <span>Priority: <strong className="uppercase text-slate-400">{priority}</strong></span>
+              <span className="font-semibold">Priority: <strong className="uppercase text-slate-400">{priority}</strong></span>
             </div>
           </div>
         </div>

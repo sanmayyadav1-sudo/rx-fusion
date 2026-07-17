@@ -118,7 +118,7 @@ export default function NewsCrud() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in text-slate-200">
       {/* Page Header */}
       <div className="flex items-start justify-between gap-4 mb-8 flex-wrap">
         <div>
@@ -137,7 +137,7 @@ export default function NewsCrud() {
               setShowForm(true);
             }
           }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{showForm ? "Hide Form" : "Create Notice"}</span>
@@ -146,15 +146,15 @@ export default function NewsCrud() {
 
       {/* Editor Form */}
       {showForm && (
-        <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 mb-6 max-w-3xl animate-fade-in">
+        <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 mb-6 max-w-3xl shadow-xl shadow-slate-950/20 animate-fade-in">
           <h2 className="text-md font-bold text-white mb-6">
             {editingId ? "Edit Board Notice" : "Create General Board Notice"}
           </h2>
 
           {/* Priority Toggle */}
-          <div className="flex items-center gap-3 mb-5 p-3 rounded-xl bg-slate-800/50 border border-slate-700/60">
+          <div className="flex items-center gap-3 mb-5 p-3 rounded-xl bg-slate-950/40 border border-slate-800/60">
             <Bell className="w-4 h-4 text-amber-400" />
-            <span className="text-sm text-slate-300 flex-1">Mark as important notice</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest flex-1">Mark as important notice</span>
             <button
               type="button"
               onClick={() => setIsImportant(!isImportant)}
@@ -166,7 +166,7 @@ export default function NewsCrud() {
 
           <form onSubmit={handleSaveNews} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Notice Title
               </label>
               <input
@@ -174,26 +174,26 @@ export default function NewsCrud() {
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 placeholder="e.g. PCI Syllabus Updates for D Pharm Year 2"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Source Name (Optional)
               </label>
               <input
                 type="text"
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200"
+                className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 placeholder="e.g. Pharmacy Council of India Portal"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
                 Notice Content
               </label>
               <div className="relative">
@@ -202,10 +202,10 @@ export default function NewsCrud() {
                   required
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl text-sm text-white bg-slate-800/60 border border-slate-700/60 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-200 resize-none"
+                  className="w-full px-4 py-3 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 resize-none"
                   placeholder="Include detailed exam dates, links, or notice explanations..."
                 />
-                <span className="absolute bottom-3 right-3 text-xs text-slate-600">
+                <span className="absolute bottom-3 right-3 text-xs text-slate-500 font-semibold">
                   {content.length} chars
                 </span>
               </div>
@@ -215,7 +215,7 @@ export default function NewsCrud() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-cyan-500 text-white hover:bg-cyan-400 shadow-md shadow-cyan-500/20 hover:shadow-cyan-500/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? (
                   <>
@@ -230,7 +230,7 @@ export default function NewsCrud() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white transition-all duration-200"
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-slate-800/60 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/50 hover:border-slate-600 transition-all duration-200 active:scale-95"
                 >
                   Cancel Edit
                 </button>
@@ -241,18 +241,18 @@ export default function NewsCrud() {
       )}
 
       {/* News Table List */}
-      <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6">
+      <div className="bg-slate-900/40 backdrop-blur-md border border-slate-800/60 rounded-2xl p-6 shadow-xl shadow-slate-950/20">
         {loading ? (
           <div className="flex justify-center py-16">
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
           </div>
         ) : news.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/40 border border-slate-800/60 border-dashed rounded-2xl">
-            <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center mb-3">
+          <div className="flex flex-col items-center justify-center py-12 text-center bg-slate-900/10 border border-slate-800/60 border-dashed rounded-2xl">
+            <div className="w-10 h-10 rounded-xl bg-slate-800/40 flex items-center justify-center mb-3">
               <Newspaper className="w-5 h-5 text-slate-500" />
             </div>
             <p className="text-sm font-medium text-slate-400">No notices yet</p>
-            <p className="text-xs text-slate-600 mt-1">
+            <p className="text-xs text-slate-650 mt-1">
               Notices you publish will appear here.
             </p>
           </div>
@@ -260,16 +260,16 @@ export default function NewsCrud() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-slate-800">
+                <tr className="border-b border-slate-800/60 text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-950/40">
                   {["Title", "Source", "Publish Date", "Actions"].map(h => (
-                    <th key={h} className="text-left text-xs font-bold text-slate-500 uppercase tracking-wider py-3 px-4 first:pl-0">{h}</th>
+                    <th key={h} className="py-4 px-4">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-800/60">
                 {news.map((item) => (
-                  <tr key={item.id} className="border-b border-slate-800/60 hover:bg-slate-800/30 transition-colors duration-150 group">
-                    <td className="py-3.5 px-4 first:pl-0">
+                  <tr key={item.id} className="text-sm font-medium hover:bg-slate-800/20 transition-colors duration-150 group">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
                           <Newspaper className="w-4 h-4 text-emerald-400" />
@@ -279,23 +279,23 @@ export default function NewsCrud() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3.5 px-4 text-xs font-semibold text-slate-500">
+                    <td className="py-4 px-4 text-xs font-semibold text-slate-400">
                       {item.source || "General Admin"}
                     </td>
-                    <td className="py-3.5 px-4 text-xs text-slate-500 font-medium">
+                    <td className="py-4 px-4 text-xs text-slate-400">
                       {new Date(item.published_date).toLocaleDateString()}
                     </td>
-                    <td className="py-3.5 px-4">
+                    <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleEditClick(item)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-400 border border-slate-800 hover:border-cyan-500/20 transition-all duration-150"
                           title="Edit"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteNews(item.id)}
-                          className="p-2 rounded-lg bg-slate-800 hover:bg-red-500/10 hover:text-red-400 text-slate-400 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-455 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
