@@ -35,6 +35,7 @@ export default function VivaCrud() {
   const [course, setCourse] = useState("B Pharm");
   const [year, setYear] = useState(1);
   const [category, setCategory] = useState("General");
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchQuestions();
@@ -125,20 +126,25 @@ export default function VivaCrud() {
     setShowForm(true);
   };
 
-  const handleDeleteClick = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this Viva question?")) return;
+  const handleDeleteClick = (id: string) => {
+    setDeleteConfirmId(id);
+  };
 
+  const confirmDelete = async () => {
+    if (!deleteConfirmId) return;
     try {
       const { error } = await supabase
         .from("viva_questions")
         .delete()
-        .eq("id", id);
+        .eq("id", deleteConfirmId);
 
       if (error) throw error;
       fetchQuestions();
     } catch (err) {
       console.error("Error deleting question:", err);
       alert("Failed to delete question.");
+    } finally {
+      setDeleteConfirmId(null);
     }
   };
 
@@ -421,6 +427,32 @@ export default function VivaCrud() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-slate-900 border border-slate-800 text-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
+            <h3 className="text-base font-extrabold text-white">Delete Viva Question?</h3>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Are you sure you want to delete this Viva question? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700/80 text-slate-300 text-xs font-semibold rounded-xl transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white text-xs font-bold rounded-xl shadow-md shadow-red-500/20 transition-all"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
