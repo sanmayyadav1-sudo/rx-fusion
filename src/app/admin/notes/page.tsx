@@ -231,6 +231,23 @@ export default function NotesCrud() {
       let finalFileUrl = "";
 
       if (file) {
+        // If editing and replacing file, clean up old file from storage first
+        if (editingId) {
+          const oldNote = notes.find(n => n.id === editingId);
+          if (oldNote?.file_url) {
+            try {
+              const url = new URL(oldNote.file_url);
+              const pathMatch = url.pathname.match(/\/notes\/(.+)$/);
+              if (pathMatch?.[1]) {
+                const oldStoragePath = decodeURIComponent(pathMatch[1]);
+                await supabase.storage.from("notes").remove([oldStoragePath]);
+              }
+            } catch (e) {
+              console.warn("Could not clean up previous file during replace:", e);
+            }
+          }
+        }
+
         // 1. Upload File to Supabase Storage
         const fileExt = file.name.split(".").pop();
         const uniqueFileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
