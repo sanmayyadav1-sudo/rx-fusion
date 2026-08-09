@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { supabase } from "@/lib/supabase";
+import { createServerSupabaseClient } from "@/lib/supabaseServer";
 import CollegeDetailClient from "./CollegeDetailClient";
 
 interface Props {
@@ -7,6 +7,7 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const supabase = createServerSupabaseClient();
   const { data: college } = await supabase
     .from("colleges")
     .select("name, short_description")

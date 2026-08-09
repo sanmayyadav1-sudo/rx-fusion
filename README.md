@@ -29,8 +29,23 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Deploy on Netlify
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This repository is configured for one-click deployment on **Netlify**.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Deployment Setup
+
+1. Push your code to a Git repository (GitHub, GitLab, or Bitbucket).
+2. Log in to [Netlify](https://app.netlify.com/) and click **"Add new site" > "Import an existing project"**.
+3. Select your repository.
+4. Netlify will auto-detect the configuration settings from [`netlify.toml`](file:///e:/Plugins/Get%20Shit%20Done/rx-fusion-main/rx-fusion-main/netlify.toml):
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `.next`
+   - **Node.js Version**: `20`
+5. Configure Environment Variables under **Site configuration > Environment variables**:
+   - `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase Project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase Anonymous Key
+   - `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase Service Role Key (for server actions/API routes)
+6. Click **Deploy site**.
+
+Netlify will automatically build the Next.js App Router application using `@netlify/plugin-nextjs`, handling SSR, dynamic routes, API routes, and middleware.
