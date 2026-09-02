@@ -19,6 +19,17 @@ function getSupabaseClient() {
   });
 }
 
+function normalizeCourseName(courseStr: string): string {
+  if (!courseStr) return courseStr;
+  const trimmed = courseStr.trim();
+  const lower = trimmed.toLowerCase().replace(/\./g, "");
+  if (lower === "pharm d" || lower === "pharmd") return "Pharm D";
+  if (lower === "b pharm" || lower === "bpharm") return "B Pharm";
+  if (lower === "d pharm" || lower === "dpharm") return "D Pharm";
+  if (lower === "m pharm" || lower === "mpharm") return "M Pharm";
+  return trimmed;
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const email = searchParams.get("email")?.trim().toLowerCase();
@@ -101,21 +112,11 @@ export async function POST(request: NextRequest) {
       }
 
       // Check if email already exists
-      const { data: existingProfile, error: getError } = await supabase
+      const { data: existingProfile } = await supabase
         .from("student_profiles")
         .select("*")
         .eq("email", normalizedEmail)
         .maybeSingle();
-
-      if (getError) {
-        console.error("STUDENT PROFILE CHECK ERROR", {
-          code: getError?.code,
-          message: getError?.message,
-          details: getError?.details,
-          hint: getError?.hint,
-          error: getError
-        });
-      }
 
       if (existingProfile) {
         // Retrieve and log in returning student, update last seen
@@ -127,12 +128,14 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: true, profile: existingProfile });
       }
 
+      const normalizedCourse = normalizeCourseName(course);
+
       // Create new profile
       const { data: profile, error } = await supabase
         .from("student_profiles")
         .insert({
           full_name: fullName.trim(),
-          course: course.trim(),
+          course: normalizedCourse,
           custom_course: course === "Other" ? customCourse?.trim() || null : null,
           current_year: currentYear.trim(),
           college_name: collegeName.trim(),

@@ -55,7 +55,7 @@ interface NoteDownloadRecord {
 interface SummaryStats {
   totalUsers: number;
   activeNow: number;
-  activeToday: number; // Used for "Limit Reached" to preserve structure
+  limitReached: number;
   newUsers: number;
 }
 
@@ -74,7 +74,7 @@ export default function AdminUsersPage() {
   const [summary, setSummary] = useState<SummaryStats>({
     totalUsers: 0,
     activeNow: 0,
-    activeToday: 0,
+    limitReached: 0,
     newUsers: 0,
   });
   
@@ -127,7 +127,7 @@ export default function AdminUsersPage() {
       setSummary(result.summary || {
         totalUsers: 0,
         activeNow: 0,
-        activeToday: 0,
+        limitReached: 0,
         newUsers: 0,
       });
     } catch (err: unknown) {
@@ -307,7 +307,7 @@ export default function AdminUsersPage() {
               {[
                 { label: "Total Students", value: summary.totalUsers, icon: <Users className="w-5 h-5" />, color: "cyan" },
                 { label: "Active Now", value: summary.activeNow, icon: <Activity className="w-5 h-5" />, color: "emerald" },
-                { label: "Limit Reached", value: summary.activeToday, icon: <Clock className="w-5 h-5" />, color: "rose" },
+                { label: "Limit Reached", value: summary.limitReached, icon: <Clock className="w-5 h-5" />, color: "rose" },
                 { label: "Recently Joined", value: summary.newUsers, icon: <UserPlus className="w-5 h-5" />, color: "blue" },
               ].map((stat) => {
                 const colorMap: Record<string, string> = {

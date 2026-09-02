@@ -16,10 +16,10 @@ export async function GET(request: NextRequest) {
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   try {
-    // 1. Fetch the correct file_url from the database using noteId
+    // 1. Fetch the correct file_url and title from the database using noteId
     const { data: note, error: fetchError } = await supabase
       .from("notes")
-      .select("file_url")
+      .select("file_url, title")
       .eq("id", noteId)
       .single();
 
@@ -28,10 +28,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Note not found or invalid." }, { status: 404 });
     }
 
-    // 2. Write download metrics log
+    // 2. Write download metrics log to note_downloads table
     const { error: logError } = await supabase
-      .from("downloads")
-      .insert([{ note_id: noteId }]);
+      .from("note_downloads")
+      .insert([{ note_identifier: noteId, note_title: note.title || "Untitled Note" }]);
 
     if (logError) {
       console.error("Database log insertion failed:", logError);

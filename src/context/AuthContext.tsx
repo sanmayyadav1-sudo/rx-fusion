@@ -179,11 +179,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           }
           setLoading(false);
         } else {
-          const studentEmail = getCookie("rxfusion_student_email");
-          if (!studentEmail) {
+          if (event === "SIGNED_OUT") {
+            deleteCookie("rxfusion_student_email");
             setSession(null);
             setUser(null);
             setProfile(null);
+          } else {
+            const studentEmail = getCookie("rxfusion_student_email");
+            if (!studentEmail) {
+              setSession(null);
+              setUser(null);
+              setProfile(null);
+            }
           }
         }
       }

@@ -8,18 +8,16 @@ export async function middleware(request: NextRequest) {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const supabaseKey = supabaseServiceKey || supabaseAnonKey;
 
-  if (!supabaseUrl || !supabaseKey) {
+  if (!supabaseUrl || !supabaseAnonKey) {
     console.error("Supabase environment variables are missing. Bypassing middleware auth.");
     return NextResponse.next();
   }
 
-  // Instantiate server client in middleware
+  // Instantiate server client in middleware using public anon key
   const supabase = createServerClient(
     supabaseUrl,
-    supabaseKey,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {

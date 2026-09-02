@@ -26,7 +26,7 @@ export default function WhatsappPopup({ isOpen, onClose, profile }: WhatsappPopu
     const rawMessage = `Hello RxFusion 👋\n\nI have used my 2 free notes downloads on the RxFusion website and I want access to more notes.\n\nMy Details:\n\nName: ${name}\nCourse: ${course}\nYear: ${year}\nCollege: ${college}\nMobile: ${mobile}\nEmail: ${email}\n\nPlease help me get access to more RxFusion notes.\n\nThank you.`;
 
     const encodedMessage = encodeURIComponent(rawMessage);
-    const whatsappUrl = `https://wa.me/919060005771?text=${encodedMessage}`;
+    const whatsappUrl = `https://wa.me/917350410894?text=${encodedMessage}`;
     
     // Open in a new tab
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");

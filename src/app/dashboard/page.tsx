@@ -511,7 +511,7 @@ export default function StudentDashboard() {
           {/* Main learning content areas (Left 2 columns) */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* 1. Continue Learning (Recently Viewed) */}
+            {/* 1. Continue Learning (Recently Viewed & Progress) */}
             <section className="bg-white border border-slate-200/60 rounded-3xl p-6 space-y-5 shadow-xs">
               <h2 className="text-base sm:text-lg font-bold text-slate-800 flex items-center gap-2">
                 <Clock className="w-4 h-4 text-cyan-500" />
@@ -520,14 +520,38 @@ export default function StudentDashboard() {
 
               {loadingActivity ? (
                 <div className="flex items-center gap-2 text-xs text-slate-400 py-4">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Loading history...</span>
+                  <Loader2 className="w-4 h-4 animate-spin text-cyan-500" />
+                  <span>Loading learning activity...</span>
                 </div>
               ) : activities.length === 0 ? (
-                <div className="p-6 text-center border border-dashed border-slate-150 rounded-2xl bg-slate-50/50">
-                  <Compass className="w-8 h-8 text-slate-350 mx-auto mb-2" />
-                  <p className="text-xs text-slate-800 font-bold">No recently viewed items.</p>
-                  <p className="text-[10px] text-slate-450 mt-0.5">Start browsing notes and drugs to track your progress here!</p>
+                <div className="p-6 sm:p-8 text-center border border-dashed border-slate-200 rounded-3xl bg-slate-50/50 space-y-4">
+                  <Compass className="w-10 h-10 text-slate-400 mx-auto" />
+                  <div className="space-y-1">
+                    <p className="text-xs sm:text-sm text-slate-800 font-bold">You haven&apos;t completed any learning activities yet.</p>
+                    <p className="text-[11px] text-slate-500 max-w-md mx-auto">
+                      Start exploring pharmacy notes, taking daily quizzes, or studying flashcards to track your learning progress here.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                    <Link
+                      href="/quiz"
+                      className="px-3.5 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
+                    >
+                      Take Daily Quiz
+                    </Link>
+                    <Link
+                      href="/flashcards"
+                      className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-all"
+                    >
+                      Explore Flashcards
+                    </Link>
+                    <Link
+                      href="/cases"
+                      className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-all"
+                    >
+                      Browse Clinical Cases
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -535,28 +559,35 @@ export default function StudentDashboard() {
                     const iconMap: Record<string, React.ReactNode> = {
                       notes: <FileText className="w-4 h-4 text-cyan-500" />,
                       drugs: <Pill className="w-4 h-4 text-emerald-500" />,
-                      cases: <Activity className="w-4 h-4 text-violet-500" />
+                      cases: <Activity className="w-4 h-4 text-violet-500" />,
+                      quiz: <Sparkles className="w-4 h-4 text-amber-500" />,
+                      flashcards: <Layers className="w-4 h-4 text-sky-500" />,
+                      blogs: <BookOpen className="w-4 h-4 text-blue-500" />,
+                      colleges: <School className="w-4 h-4 text-indigo-500" />
                     };
                     return (
                       <Link 
                         key={act.id}
                         href={act.content_url}
-                        className="flex items-center justify-between p-3.5 hover:bg-slate-50 border border-slate-100 rounded-2xl group transition-all"
+                        className="flex items-center justify-between p-3.5 hover:bg-slate-50 border border-slate-100/80 rounded-2xl group transition-all"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 shrink-0">
                             {iconMap[act.content_type] || <FileText className="w-4 h-4 text-cyan-500" />}
                           </div>
                           <div>
                             <p className="text-xs font-bold text-slate-850 line-clamp-1 group-hover:text-cyan-600 transition-colors">
                               {act.content_title}
                             </p>
-                            <p className="text-[10px] text-slate-400 mt-0.5">
-                              Viewed {new Date(act.viewed_at).toLocaleDateString()}
+                            <p className="text-[10px] text-slate-400 font-medium mt-0.5">
+                              Activity recorded {new Date(act.viewed_at).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
-                        <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />
+                        <div className="flex items-center gap-1 text-[11px] font-bold text-cyan-600 group-hover:text-cyan-500">
+                          <span className="hidden sm:inline">Continue</span>
+                          <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
                       </Link>
                     );
                   })}

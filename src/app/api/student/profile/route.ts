@@ -19,6 +19,17 @@ function getSupabaseClient() {
   });
 }
 
+function normalizeCourseName(courseStr: string): string {
+  if (!courseStr) return courseStr;
+  const trimmed = courseStr.trim();
+  const lower = trimmed.toLowerCase().replace(/\./g, "");
+  if (lower === "pharm d" || lower === "pharmd") return "Pharm D";
+  if (lower === "b pharm" || lower === "bpharm") return "B Pharm";
+  if (lower === "d pharm" || lower === "dpharm") return "D Pharm";
+  if (lower === "m pharm" || lower === "mpharm") return "M Pharm";
+  return trimmed;
+}
+
 // PUT: Update student profile details
 export async function PUT(request: NextRequest) {
   try {
@@ -34,12 +45,13 @@ export async function PUT(request: NextRequest) {
     }
 
     const supabase = getSupabaseClient();
+    const normalizedCourse = normalizeCourseName(course);
 
     const { data: updatedProfile, error } = await supabase
       .from("student_profiles")
       .update({
         full_name: fullName.trim(),
-        course: course.trim(),
+        course: normalizedCourse,
         custom_course: course === "Other" ? customCourse?.trim() || null : null,
         current_year: currentYear.trim(),
         college_name: collegeName.trim(),

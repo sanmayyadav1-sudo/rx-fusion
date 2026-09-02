@@ -91,12 +91,12 @@ export default function ContactPage() {
                   Get in touch with us for RxFusion support and general queries.
                 </p>
                 <div className="text-sm font-bold text-slate-700">
-                  +91 9060005771
+                  +917350410894
                 </div>
               </div>
               <div className="mt-5">
                 <a
-                  href={`https://wa.me/919060005771?text=${encodeURIComponent("Hello RxFusion 👋\n\nI am visiting the RxFusion website and I have a query. Please help me.\n\nThank you.")}`}
+                  href={`https://wa.me/917350410894?text=${encodeURIComponent("Hello RxFusion 👋\n\nI am visiting the RxFusion website and I have a query. Please help me.\n\nThank you.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs transition-colors duration-150 shadow-xs active:translate-y-0.5"
@@ -115,7 +115,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <span className="text-xs font-bold text-cyan-600 uppercase tracking-wider block">Email</span>
-                    <h3 className="text-base font-extrabold text-slate-800 leading-tight">Email RxFusion</h3>
+                    <h3 className="text-base font-extrabold text-slate-800 leading-tight">Email Support</h3>
                   </div>
                 </div>
                 <p className="text-xs text-slate-500 leading-relaxed">
@@ -130,7 +130,7 @@ export default function ContactPage() {
                   href={`mailto:rxfusion.support@gmail.com?subject=${encodeURIComponent("RxFusion Website Query")}&body=${encodeURIComponent("Hello RxFusion Team,\n\nI am contacting you regarding a query about RxFusion.\n\nMy Query:\n\nThank you.")}`}
                   className="w-full inline-flex items-center justify-center px-4 py-2.5 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-bold text-xs transition-colors duration-150 shadow-xs active:translate-y-0.5"
                 >
-                  Send Email
+                  Email Support
                 </a>
               </div>
             </div>

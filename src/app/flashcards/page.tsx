@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { 
@@ -13,7 +13,11 @@ import {
   Shuffle,
   CheckCircle,
   HelpCircle as FlipIcon,
-  Tag
+  Tag,
+  BookOpen,
+  GraduationCap,
+  ArrowLeft,
+  FolderOpen
 } from "lucide-react";
 import BookmarkButton from "@/components/BookmarkButton";
 
@@ -35,12 +39,10 @@ export default function FlashcardsPage() {
   const [learnedIds, setLearnedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filters state
+  // Hierarchy Selection State
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCourse, setSelectedCourse] = useState("");
-  const [selectedYear, setSelectedYear] = useState<number | "">("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
 
   // Quiz deck state
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -92,34 +94,87 @@ export default function FlashcardsPage() {
     }
   };
 
-  // Reset indices and shuffles when base cards filter changes
+  // Derive available years (1st to 6th year)
+  const AVAILABLE_YEARS = [1, 2, 3, 4, 5, 6];
+
+  // Derive year label
+  const getYearLabel = (y: number) => {
+    switch (y) {
+      case 1: return "1st Year";
+      case 2: return "2nd Year";
+      case 3: return "3rd Year";
+      case 4: return "4th Year";
+      case 5: return "5th Year";
+      case 6: return "6th Year / Internship";
+      default: return `Year ${y}`;
+    }
+  };
+
+  // Subjects available for selected year
+  const availableSubjectsForYear = useMemo(() => {
+    if (selectedYear === null) return [];
+    const forYear = flashcards.filter(c => Number(c.year) === Number(selectedYear));
+    const subjectNames = Array.from(new Set(forYear.map(c => c.subject))).sort();
+    return subjectNames.map(s => {
+      const count = forYear.filter(c => c.subject === s).length;
+      return { name: s, count };
+    });
+  }, [flashcards, selectedYear]);
+
+  // Flashcards for current active deck (Selected Year + Selected Subject)
   const activeDeck = useMemo(() => {
-    const filtered = flashcards.filter((card) => {
-      const matchesSearch = 
+    if (selectedYear === null || selectedSubject === null) return [];
+
+    const filtered = flashcards.filter(card => {
+      const matchesYear = Number(card.year) === Number(selectedYear);
+      const matchesSubject = card.subject.toLowerCase() === selectedSubject.toLowerCase();
+      const matchesSearch = searchQuery === "" ||
         card.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
         card.definition.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        card.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (card.topic && card.topic.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      const matchesCourse = selectedCourse === "" || card.course === selectedCourse;
-      const matchesYear = selectedYear === "" || card.year === Number(selectedYear);
-      const matchesSubject = selectedSubject === "" || card.subject === selectedSubject;
-      const matchesCategory = selectedCategory === "" || card.category === selectedCategory;
-
-      return matchesSearch && matchesCourse && matchesYear && matchesSubject && matchesCategory;
+      return matchesYear && matchesSubject && matchesSearch;
     });
 
     if (isShuffled) {
-      // Keep existing shuffle deck order if we are already shuffled, but filter it
       return shuffledCards.filter(c => filtered.some(f => f.id === c.id));
     }
     return filtered;
-  }, [flashcards, searchQuery, selectedCourse, selectedYear, selectedSubject, selectedCategory, isShuffled, shuffledCards]);
+  }, [flashcards, selectedYear, selectedSubject, searchQuery, isShuffled, shuffledCards]);
 
+  // Reset card deck state on subject/year change
   useEffect(() => {
     setCurrentIndex(0);
     setIsFlipped(false);
-  }, [selectedCourse, selectedYear, selectedSubject, selectedCategory, searchQuery]);
+    setIsShuffled(false);
+  }, [selectedYear, selectedSubject, searchQuery]);
+
+  // Log activity when entering a specific subject deck
+  const logDeckActivity = useCallback(async (year: number, subjectName: string) => {
+    if (!profile) return;
+    try {
+      await fetch("/api/student/activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId: profile.id,
+          contentType: "flashcards",
+          contentId: `flashcards-${year}-${subjectName}`,
+          contentTitle: `${getYearLabel(year)} — ${subjectName} Flashcards`,
+          contentUrl: "/flashcards"
+        })
+      });
+    } catch (err) {
+      console.error("Error logging flashcard activity:", err);
+    }
+  }, [profile]);
+
+  const handleSelectSubject = (subjectName: string) => {
+    setSelectedSubject(subjectName);
+    if (selectedYear !== null) {
+      logDeckActivity(selectedYear, subjectName);
+    }
+  };
 
   const handleNext = () => {
     if (currentIndex < activeDeck.length - 1) {
@@ -157,9 +212,7 @@ export default function FlashcardsPage() {
 
     setMarkingLearned(true);
     try {
-      // Optimistic local state update
       setLearnedIds(prev => [...prev, currentCard.id]);
-
       const res = await fetch("/api/student/flashcards", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -170,7 +223,6 @@ export default function FlashcardsPage() {
       });
 
       if (!res.ok) {
-        // revert if failed
         setLearnedIds(prev => prev.filter(id => id !== currentCard.id));
       }
     } catch (err) {
@@ -181,27 +233,11 @@ export default function FlashcardsPage() {
     }
   };
 
-  // Filter lists derivations
-  const courses = useMemo(() => Array.from(new Set(flashcards.map(c => c.course))).sort(), [flashcards]);
-  const subjects = useMemo(() => {
-    const list = flashcards.filter(c => selectedCourse === "" || c.course === selectedCourse).map(c => c.subject);
-    return Array.from(new Set(list)).sort();
-  }, [flashcards, selectedCourse]);
-
-  const categories = useMemo(() => {
-    const list = flashcards.map(c => c.category).filter(Boolean) as string[];
-    return Array.from(new Set(list)).sort();
-  }, [flashcards]);
-
-  const maxYearOptions = selectedCourse === "Pharm D" ? 6 : selectedCourse === "D Pharm" ? 2 : 4;
-  const periodLabel = selectedCourse === "B Pharm" ? "Semester" : "Year";
-
   const currentCard = activeDeck[currentIndex];
   const isLearned = currentCard ? learnedIds.includes(currentCard.id) : false;
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
-      
       <main className="flex-grow pt-20 sm:pt-28 pb-16 relative">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[380px] pointer-events-none -z-10 overflow-hidden">
           <div className="absolute top-[-10%] left-[-15%] w-[45%] aspect-square rounded-full bg-cyan-500/5 blur-[120px]" />
@@ -209,6 +245,7 @@ export default function FlashcardsPage() {
         </div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-8">
+          
           {/* Header */}
           <header className="text-center max-w-2xl mx-auto space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-cyan-50 border border-cyan-100 text-[10px] font-bold text-cyan-650 uppercase tracking-widest">
@@ -219,227 +256,336 @@ export default function FlashcardsPage() {
               Pharmacy Flashcards
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 font-semibold leading-relaxed">
-              Memorize drug parameters, pharmaceutical calculations, and biological pathways through active recall.
+              Memorize drug mechanisms, clinical definitions, and pharmacological parameters step by step.
             </p>
           </header>
 
-          {/* Filters Bar */}
-          <section className="bg-white border border-slate-200/60 rounded-3xl p-5 shadow-xs space-y-4">
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-4 top-3.5" />
-              <input
-                type="text"
-                placeholder="Search flashcards term, keywords, or subject..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200/50 rounded-2xl text-xs text-slate-800 focus:outline-none focus:border-cyan-500 placeholder-slate-400"
-              />
-            </div>
+          {/* Breadcrumb Navigation */}
+          <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 bg-white border border-slate-200/60 p-3 rounded-2xl shadow-xs">
+            <button
+              onClick={() => { setSelectedYear(null); setSelectedSubject(null); }}
+              className="hover:text-cyan-600 transition-colors flex items-center gap-1"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Flashcards</span>
+            </button>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div>
-                <label className="block text-[9px] font-bold text-slate-450 uppercase tracking-wider mb-1.5 ml-1">Stream</label>
-                <select
-                  value={selectedCourse}
-                  onChange={(e) => { setSelectedCourse(e.target.value); setSelectedYear(""); setSelectedSubject(""); }}
-                  className="w-full bg-slate-50 border border-slate-200/50 rounded-xl p-2.5 text-xs text-slate-650 focus:outline-none focus:border-cyan-500 cursor-pointer font-medium"
+            {selectedYear !== null && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-350" />
+                <button
+                  onClick={() => setSelectedSubject(null)}
+                  className={`hover:text-cyan-600 transition-colors ${selectedSubject === null ? "text-cyan-600 font-bold" : ""}`}
                 >
-                  <option value="">All Streams</option>
-                  {courses.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
+                  {getYearLabel(selectedYear)}
+                </button>
+              </>
+            )}
 
-              <div>
-                <label className="block text-[9px] font-bold text-slate-450 uppercase tracking-wider mb-1.5 ml-1">{periodLabel}</label>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => setSelectedYear(e.target.value === "" ? "" : Number(e.target.value))}
-                  className="w-full bg-slate-50 border border-slate-200/50 rounded-xl p-2.5 text-xs text-slate-650 focus:outline-none focus:border-cyan-500 cursor-pointer font-medium"
-                >
-                  <option value="">All Periods</option>
-                  {Array.from({ length: maxYearOptions }).map((_, i) => (
-                    <option key={i + 1} value={i + 1}>{periodLabel} {i + 1}</option>
-                  ))}
-                </select>
-              </div>
+            {selectedSubject !== null && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-350" />
+                <span className="text-slate-850 font-bold">{selectedSubject}</span>
+              </>
+            )}
+          </nav>
 
-              <div>
-                <label className="block text-[9px] font-bold text-slate-450 uppercase tracking-wider mb-1.5 ml-1">Subject</label>
-                <select
-                  value={selectedSubject}
-                  onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200/50 rounded-xl p-2.5 text-xs text-slate-650 focus:outline-none focus:border-cyan-500 cursor-pointer font-medium"
-                >
-                  <option value="">All Subjects</option>
-                  {subjects.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[9px] font-bold text-slate-450 uppercase tracking-wider mb-1.5 ml-1">Category</label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200/50 rounded-xl p-2.5 text-xs text-slate-650 focus:outline-none focus:border-cyan-500 cursor-pointer font-medium"
-                >
-                  <option value="">All Categories</option>
-                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-            </div>
-          </section>
-
-          {/* Flashcard Showcase Card */}
           {loading ? (
             <div className="bg-white border border-slate-200/60 rounded-3xl p-12 text-center flex flex-col items-center justify-center min-h-[320px]">
               <Loader2 className="w-8 h-8 text-cyan-500 animate-spin mb-2" />
-              <p className="text-sm text-slate-500">Loading flashcards...</p>
+              <p className="text-sm text-slate-500">Loading flashcards directory...</p>
             </div>
-          ) : activeDeck.length === 0 ? (
-            <div className="py-20 text-center bg-white border border-slate-200/60 rounded-3xl shadow-3xs">
-              <HelpCircle className="w-12 h-12 text-slate-350 mx-auto mb-3" />
-              <p className="text-sm font-bold text-slate-800">No flashcards match selection</p>
-              <p className="text-xs text-slate-500 max-w-xs mx-auto mt-1 leading-relaxed">
-                Adjust the course, year, or subject filters to locate cards.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              
-              {/* Interactive Flipping Card Container */}
-              <div 
-                onClick={() => setIsFlipped(!isFlipped)}
-                className="perspective-1000 w-full min-h-[280px] sm:min-h-[320px] cursor-pointer relative select-none"
-              >
-                {/* Inner Card Wrapper with Flip transformation */}
-                <div 
-                  className={`w-full h-full min-h-[280px] sm:min-h-[320px] absolute inset-0 transition-transform duration-500 transform-style-3d border border-slate-200/60 rounded-3xl bg-white shadow-xs p-6 sm:p-10 flex flex-col justify-between items-center text-center ${
-                    isFlipped ? "rotate-y-180" : ""
-                  }`}
-                >
-                  {/* FRONT VIEW */}
-                  <div className={`w-full h-full flex flex-col justify-between items-center backface-hidden ${isFlipped ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
-                    <div className="w-full flex justify-between items-center text-slate-400">
-                      <span className="text-[10px] font-extrabold uppercase bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
-                        {currentCard.subject}
-                      </span>
-                      <span className="text-[10px] font-bold">
-                        {currentIndex + 1} / {activeDeck.length}
-                      </span>
-                    </div>
+          ) : selectedYear === null ? (
+            
+            /* STEP 1: SELECT YEAR */
+            <section className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <GraduationCap className="w-5 h-5 text-cyan-500" />
+                  <span>Step 1 — Select Academic Year</span>
+                </h2>
+                <span className="text-xs font-semibold text-slate-400">Choose your year of study</span>
+              </div>
 
-                    <div className="my-auto space-y-4 max-w-xl">
-                      <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-snug">
-                        {currentCard.term}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {AVAILABLE_YEARS.map((y) => {
+                  const cardsInYear = flashcards.filter(c => Number(c.year) === y);
+                  const subjectsCount = new Set(cardsInYear.map(c => c.subject)).size;
+                  return (
+                    <button
+                      key={y}
+                      onClick={() => setSelectedYear(y)}
+                      className="p-5 bg-white border border-slate-200/60 hover:border-cyan-400 rounded-3xl text-left shadow-xs hover:shadow-md transition-all group duration-200"
+                    >
+                      <div className="w-10 h-10 rounded-2xl bg-cyan-50 group-hover:bg-cyan-500 text-cyan-600 group-hover:text-white flex items-center justify-center mb-3 transition-colors">
+                        <GraduationCap className="w-5 h-5" />
+                      </div>
+                      <h3 className="text-base font-extrabold text-slate-900 group-hover:text-cyan-600 transition-colors">
+                        {getYearLabel(y)}
                       </h3>
-                      {currentCard.topic && (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-50 border border-cyan-150 rounded-xl text-xs font-bold text-cyan-600">
-                          <Tag className="w-3.5 h-3.5" />
-                          {currentCard.topic}
-                        </span>
-                      )}
-                    </div>
+                      <p className="text-xs text-slate-500 font-medium mt-1">
+                        {cardsInYear.length} Flashcards • {subjectsCount} Subjects
+                      </p>
+                      <div className="mt-4 flex items-center text-xs font-bold text-cyan-600 group-hover:translate-x-1 transition-transform gap-1">
+                        <span>Select Year</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
 
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 border-t border-slate-100/60 pt-4 w-full justify-center">
-                      <FlipIcon className="w-3.5 h-3.5 text-cyan-500" />
-                      <span>Tap Card to Reveal Definition</span>
+          ) : selectedSubject === null ? (
+
+            /* STEP 2: SELECT SUBJECT */
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedYear(null)}
+                    className="p-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
+                    title="Back to Years"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <FolderOpen className="w-5 h-5 text-cyan-500" />
+                    <span>Step 2 — Select Subject ({getYearLabel(selectedYear)})</span>
+                  </h2>
+                </div>
+              </div>
+
+              {availableSubjectsForYear.length === 0 ? (
+                <div className="py-16 text-center bg-white border border-slate-200/60 rounded-3xl shadow-3xs p-6 space-y-3">
+                  <HelpCircle className="w-12 h-12 text-slate-350 mx-auto" />
+                  <p className="text-base font-bold text-slate-800">No flashcards available for this year yet.</p>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    Flashcards for {getYearLabel(selectedYear)} are currently being curated by our editorial team. Please check back soon!
+                  </p>
+                  <button
+                    onClick={() => setSelectedYear(null)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 rounded-xl hover:bg-slate-200 transition-colors mt-2"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Choose Another Year</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {availableSubjectsForYear.map((sub) => (
+                    <button
+                      key={sub.name}
+                      onClick={() => handleSelectSubject(sub.name)}
+                      className="p-5 bg-white border border-slate-200/60 hover:border-cyan-400 rounded-3xl text-left shadow-xs hover:shadow-md transition-all group duration-200 flex justify-between items-center"
+                    >
+                      <div className="space-y-1">
+                        <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-cyan-600 transition-colors">
+                          {sub.name}
+                        </h3>
+                        <p className="text-xs text-slate-450 font-semibold">
+                          {sub.count} Cards Available
+                        </p>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-slate-50 group-hover:bg-cyan-50 text-slate-400 group-hover:text-cyan-600 flex items-center justify-center transition-colors">
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </section>
+
+          ) : (
+
+            /* STEP 3: STUDY FLASHCARD DECK */
+            <section className="space-y-6">
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-slate-200/60 p-4 rounded-3xl shadow-xs">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setSelectedSubject(null)}
+                    className="p-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
+                    title="Back to Subjects"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase text-cyan-600 bg-cyan-50 border border-cyan-100 px-2 py-0.5 rounded-md">
+                      {getYearLabel(selectedYear)}
+                    </span>
+                    <h2 className="text-base font-extrabold text-slate-900 mt-0.5">
+                      {selectedSubject}
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="relative w-full sm:w-64">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <input
+                    type="text"
+                    placeholder="Search in this deck..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200/50 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-cyan-500 placeholder-slate-400"
+                  />
+                </div>
+              </div>
+
+              {activeDeck.length === 0 ? (
+                <div className="py-16 text-center bg-white border border-slate-200/60 rounded-3xl shadow-3xs p-6 space-y-3">
+                  <HelpCircle className="w-12 h-12 text-slate-350 mx-auto" />
+                  <p className="text-base font-bold text-slate-800">No flashcards are available for this subject yet.</p>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    Try searching for another keyword or select a different subject.
+                  </p>
+                  <button
+                    onClick={() => setSelectedSubject(null)}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 rounded-xl hover:bg-slate-200 transition-colors mt-2"
+                  >
+                    <ArrowLeft className="w-3.5 h-3.5" />
+                    <span>Choose Another Subject</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  
+                  {/* Interactive Flipping Card Container */}
+                  <div 
+                    onClick={() => setIsFlipped(!isFlipped)}
+                    className="perspective-1000 w-full min-h-[280px] sm:min-h-[320px] cursor-pointer relative select-none"
+                  >
+                    {/* Inner Card Wrapper with Flip transformation */}
+                    <div 
+                      className={`w-full h-full min-h-[280px] sm:min-h-[320px] absolute inset-0 transition-transform duration-500 transform-style-3d border border-slate-200/60 rounded-3xl bg-white shadow-xs p-6 sm:p-10 flex flex-col justify-between items-center text-center ${
+                        isFlipped ? "rotate-y-180" : ""
+                      }`}
+                    >
+                      {/* FRONT VIEW */}
+                      <div className={`w-full h-full flex flex-col justify-between items-center backface-hidden ${isFlipped ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
+                        <div className="w-full flex justify-between items-center text-slate-400">
+                          <span className="text-[10px] font-extrabold uppercase bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+                            {currentCard.subject}
+                          </span>
+                          <span className="text-[10px] font-bold">
+                            {currentIndex + 1} / {activeDeck.length}
+                          </span>
+                        </div>
+
+                        <div className="my-auto space-y-4 max-w-xl">
+                          <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight leading-snug">
+                            {currentCard.term}
+                          </h3>
+                          {currentCard.topic && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-cyan-50 border border-cyan-150 rounded-xl text-xs font-bold text-cyan-600">
+                              <Tag className="w-3.5 h-3.5" />
+                              {currentCard.topic}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 border-t border-slate-100/60 pt-4 w-full justify-center">
+                          <FlipIcon className="w-3.5 h-3.5 text-cyan-500" />
+                          <span>Tap Card to Reveal Definition</span>
+                        </div>
+                      </div>
+
+                      {/* BACK VIEW */}
+                      <div className={`w-full h-full flex flex-col justify-between items-center backface-hidden rotate-y-180 ${isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                        <div className="w-full flex justify-between items-center text-slate-400">
+                          <span className="text-[10px] font-extrabold uppercase bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded-md">
+                            Answer Definition
+                          </span>
+                          <span className="text-[10px] font-bold">
+                            {currentIndex + 1} / {activeDeck.length}
+                          </span>
+                        </div>
+
+                        <div className="my-auto max-w-xl text-center space-y-3">
+                          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Meaning</p>
+                          <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-semibold whitespace-pre-line">
+                            {currentCard.definition}
+                          </p>
+                        </div>
+
+                        <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 border-t border-slate-100/60 pt-4 w-full justify-center">
+                          <FlipIcon className="w-3.5 h-3.5 text-emerald-500" />
+                          <span>Tap to Flip Back</span>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
 
-                  {/* BACK VIEW */}
-                  <div className={`w-full h-full flex flex-col justify-between items-center backface-hidden rotate-y-180 ${isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-                    <div className="w-full flex justify-between items-center text-slate-400">
-                      <span className="text-[10px] font-extrabold uppercase bg-emerald-50 text-emerald-600 border border-emerald-100 px-2 py-0.5 rounded-md">
-                        Answer Definition
-                      </span>
-                      <span className="text-[10px] font-bold">
+                  {/* Action Toolbar */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-slate-200/60 px-5 py-4 rounded-3xl shadow-xs">
+                    
+                    {/* Shuffle / Randomizer */}
+                    <button
+                      onClick={handleShuffle}
+                      className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-all active:scale-95 ${
+                        isShuffled 
+                          ? "bg-cyan-50 border-cyan-200 text-cyan-600 font-extrabold shadow-3xs" 
+                          : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
+                      }`}
+                      title="Randomize Deck Order"
+                    >
+                      <Shuffle className="w-4 h-4 shrink-0" />
+                      <span>Shuffle</span>
+                    </button>
+
+                    {/* Card Scrolling Navigator */}
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handlePrev}
+                        disabled={currentIndex === 0}
+                        className="p-2 border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent rounded-xl transition-all"
+                      >
+                        <ChevronLeft className="w-5 h-5 text-slate-600" />
+                      </button>
+                      <span className="text-xs font-bold text-slate-500 px-1">
                         {currentIndex + 1} / {activeDeck.length}
                       </span>
+                      <button
+                        onClick={handleNext}
+                        disabled={currentIndex === activeDeck.length - 1}
+                        className="p-2 border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent rounded-xl transition-all"
+                      >
+                        <ChevronRight className="w-5 h-5 text-slate-600" />
+                      </button>
                     </div>
 
-                    <div className="my-auto max-w-xl text-center space-y-3">
-                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Meaning</p>
-                      <p className="text-sm sm:text-base text-slate-700 leading-relaxed font-semibold whitespace-pre-line">
-                        {currentCard.definition}
-                      </p>
+                    {/* Bookmark & Learned state */}
+                    <div className="flex items-center gap-2">
+                      <BookmarkButton 
+                        contentType="flashcards"
+                        contentId={currentCard.id}
+                        showText={true}
+                        className="border-slate-200"
+                      />
+                      <button
+                        disabled={isLearned || markingLearned}
+                        onClick={handleMarkAsLearned}
+                        className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
+                          isLearned
+                            ? "bg-emerald-50 border-emerald-150 text-emerald-600 font-extrabold"
+                            : "bg-cyan-500 hover:bg-cyan-650 text-white border-cyan-500"
+                        }`}
+                      >
+                        <CheckCircle className="w-4 h-4 shrink-0" />
+                        <span>{isLearned ? "Learned" : "Mark as Learned"}</span>
+                      </button>
                     </div>
 
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5 border-t border-slate-100/60 pt-4 w-full justify-center">
-                      <FlipIcon className="w-3.5 h-3.5 text-emerald-500" />
-                      <span>Tap to Flip Back</span>
-                    </div>
                   </div>
 
                 </div>
-              </div>
+              )}
+            </section>
 
-              {/* Action Toolbar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 bg-white border border-slate-200/60 px-5 py-4 rounded-3xl shadow-xs">
-                
-                {/* Shuffle / Randomizer */}
-                <button
-                  onClick={handleShuffle}
-                  className={`flex items-center gap-1.5 px-4 py-2 border rounded-xl text-xs font-bold transition-all active:scale-95 ${
-                    isShuffled 
-                      ? "bg-cyan-50 border-cyan-200 text-cyan-600 font-extrabold shadow-3xs" 
-                      : "bg-white border-slate-200 text-slate-650 hover:bg-slate-50"
-                  }`}
-                  title="Randomize Deck Order"
-                >
-                  <Shuffle className="w-4 h-4 shrink-0" />
-                  <span>Shuffle</span>
-                </button>
-
-                {/* Card Scrolling Navigator */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handlePrev}
-                    disabled={currentIndex === 0}
-                    className="p-2 border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent rounded-xl transition-all"
-                  >
-                    <ChevronLeft className="w-5 h-5 text-slate-600" />
-                  </button>
-                  <span className="text-xs font-bold text-slate-500 px-1">
-                    {currentIndex + 1} / {activeDeck.length}
-                  </span>
-                  <button
-                    onClick={handleNext}
-                    disabled={currentIndex === activeDeck.length - 1}
-                    className="p-2 border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-transparent rounded-xl transition-all"
-                  >
-                    <ChevronRight className="w-5 h-5 text-slate-600" />
-                  </button>
-                </div>
-
-                {/* Bookmark & Learned state */}
-                <div className="flex items-center gap-2">
-                  <BookmarkButton 
-                    contentType="flashcards"
-                    contentId={currentCard.id}
-                    showText={true}
-                    className="border-slate-200"
-                  />
-                  <button
-                    disabled={isLearned || markingLearned}
-                    onClick={handleMarkAsLearned}
-                    className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition-all active:scale-95 border ${
-                      isLearned
-                        ? "bg-emerald-50 border-emerald-150 text-emerald-600 font-extrabold"
-                        : "bg-cyan-500 hover:bg-cyan-650 text-white border-cyan-500"
-                    }`}
-                  >
-                    <CheckCircle className="w-4 h-4 shrink-0" />
-                    <span>{isLearned ? "Learned" : "Mark as Learned"}</span>
-                  </button>
-                </div>
-
-              </div>
-
-            </div>
           )}
         </div>
       </main>
-
     </div>
   );
 }

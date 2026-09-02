@@ -11,7 +11,7 @@ export default function WhatsAppFloatingButton() {
     return null;
   }
 
-  const phoneNumber = "919060005771";
+  const phoneNumber = "917350410894";
   const message = "Hello RxFusion 👋\n\nI am visiting the RxFusion website and I have a query. Please help me.\n\nThank you.";
   const encodedMessage = encodeURIComponent(message);
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;

@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
       summary: {
         totalUsers: totalUsersCount || 0,
         activeNow: activeNowCount || 0,
-        activeToday: limitReachedCount || 0, // Reuse the key as limitReachedCount for dashboard compatibility
+        limitReached: limitReachedCount || 0,
         newUsers: newUsersCount || 0,
       }
     });

@@ -120,6 +120,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
     }
 
+    // Log/update recent quiz activity
+    try {
+      const { data: allAttempts } = await supabase
+        .from("quiz_attempts")
+        .select("is_correct")
+        .eq("student_id", studentId);
+
+      const totalCount = allAttempts?.length || 1;
+      const correctCount = allAttempts?.filter(a => a.is_correct).length || (isCorrect ? 1 : 0);
+      const percentage = Math.round((correctCount / totalCount) * 100);
+
+      await supabase
+        .from("student_recent_activity")
+        .upsert({
+          student_id: studentId,
+          content_type: "quiz",
+          content_id: "daily_quiz",
+          content_title: `Daily Quiz — Score: ${correctCount}/${totalCount} (${percentage}%)`,
+          content_url: "/quiz",
+          viewed_at: new Date().toISOString()
+        }, {
+          onConflict: "student_id,content_type,content_id"
+        });
+    } catch (actErr) {
+      console.error("Error updating quiz activity:", actErr);
+    }
+
     return NextResponse.json({ success: true, attempt: data });
   } catch (err: unknown) {
     console.error("Exception in POST quiz attempt:", err);

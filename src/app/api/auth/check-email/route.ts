@@ -28,9 +28,9 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // Query profiles where email matches. We check if full_name is present (which indicates completed profile)
+    // Query student_profiles where email matches. We check if full_name is present (which indicates completed profile)
     const { data: profile, error } = await serviceSupabase
-      .from("profiles")
+      .from("student_profiles")
       .select("id, full_name, email")
       .ilike("email", normalizedEmail)
       .maybeSingle();

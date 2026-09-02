@@ -80,7 +80,7 @@ export default function SecureNoteViewerPage() {
             contentType: "notes",
             contentId: data.id,
             contentTitle: data.title,
-            contentUrl: `/notes/${encodeURIComponent(data.course)}`
+            contentUrl: `/notes/view/${data.id}`
           })
         }).catch(err => console.error("Error logging note activity:", err));
         
