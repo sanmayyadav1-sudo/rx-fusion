@@ -1,44 +1,14 @@
-import { createServerSupabaseClient } from "@/lib/supabaseServer";
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { requireAdmin, getServiceSupabaseClient } from "@/lib/authHelpers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  // 1. Initialize server client
-  const supabase = createServerSupabaseClient();
-  
-  // 2. Fetch the requesting user's profile and check role
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // 1. Enforce strict server-side admin authentication and authorization
+  const auth = await requireAdmin(request);
+  if (auth.errorResponse) return auth.errorResponse;
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError || profile?.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
-  }
-
-  // 3. Authenticated as Admin! We can fetch downloads using Service Role client
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseServiceKey || supabaseServiceKey === "placeholder-service-role-key") {
-    console.error("Missing or placeholder SUPABASE_SERVICE_ROLE_KEY environment variable.");
-    return NextResponse.json({ error: "Internal Server Error: Missing Service Key" }, { status: 500 });
-  }
-
-  const serviceSupabase = createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    }
-  });
+  const serviceSupabase = getServiceSupabaseClient();
 
   // Parse pagination params
   const { searchParams } = new URL(request.url);

@@ -223,6 +223,7 @@ export default function VivaCrud() {
                     className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                   >
                     <option value="B Pharm" className="bg-slate-900">B Pharm</option>
+                    <option value="M Pharm" className="bg-slate-900">M Pharm</option>
                     <option value="Pharm D" className="bg-slate-900">Pharm D</option>
                     <option value="D Pharm" className="bg-slate-900">D Pharm</option>
                   </select>

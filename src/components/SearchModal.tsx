@@ -143,7 +143,12 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
       />
 
       {/* Modal Dialog container */}
-      <div className="bg-white border border-slate-200/80 w-full max-w-2xl rounded-3xl shadow-2xl relative overflow-hidden flex flex-col max-h-[75vh] animate-fade-in">
+      <div 
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search RxFusion"
+        className="bg-white border border-slate-200/80 w-full max-w-2xl rounded-3xl shadow-2xl relative overflow-hidden flex flex-col max-h-[75vh] animate-fade-in"
+      >
         {/* Search Input bar */}
         <div className="p-4 border-b border-slate-100 flex items-center gap-3 relative">
           <Search className="w-5 h-5 text-slate-400 shrink-0" />

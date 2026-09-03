@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { verifyStudentSessionToken, STUDENT_SESSION_COOKIE_NAME } from "@/lib/authHelpers";
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -84,8 +85,14 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2. Check for student identity (either via Supabase Auth user email or student cookie)
-  const rawEmail = user?.email?.trim().toLowerCase() || request.cookies.get("rxfusion_student_email")?.value;
+  // 2. Check for student identity (via signed session cookie or Supabase Auth user email)
+  const sessionToken = request.cookies.get(STUDENT_SESSION_COOKIE_NAME)?.value;
+  const sessionPayload = sessionToken ? await verifyStudentSessionToken(sessionToken) : null;
+
+  const rawEmail =
+    user?.email?.trim().toLowerCase() ||
+    sessionPayload?.email ||
+    request.cookies.get("rxfusion_student_email")?.value;
 
   if (rawEmail) {
     const decodedEmail = decodeURIComponent(rawEmail).trim().toLowerCase();
@@ -116,7 +123,7 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse;
   }
 
-  // 3. No active session or cookie (user is null / unauthenticated).
+  // 3. No active session or cookie (user is unauthenticated).
   if (pathname === "/dashboard") {
     return redirect("/login", { redirectTo: "/dashboard" });
   }

@@ -454,6 +454,7 @@ export default function NotesCrud() {
                   className="w-full px-4 py-2.5 rounded-xl text-sm text-white bg-slate-800/40 border border-slate-700/50 placeholder:text-slate-400 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200"
                 >
                   <option value="Pharm D" className="bg-slate-900">Pharm D (Doctor of Pharmacy)</option>
+                  <option value="M Pharm" className="bg-slate-900">M Pharm (Master of Pharmacy)</option>
                   <option value="B Pharm" className="bg-slate-900">B Pharm (Bachelor of Pharmacy)</option>
                   <option value="D Pharm" className="bg-slate-900">D Pharm (Diploma in Pharmacy)</option>
                 </select>
@@ -617,6 +618,7 @@ export default function NotesCrud() {
         >
           <option value="all" className="bg-slate-900">All Courses</option>
           <option value="Pharm D" className="bg-slate-900">Pharm D</option>
+          <option value="M Pharm" className="bg-slate-900">M Pharm</option>
           <option value="B Pharm" className="bg-slate-900">B Pharm</option>
           <option value="D Pharm" className="bg-slate-900">D Pharm</option>
         </select>

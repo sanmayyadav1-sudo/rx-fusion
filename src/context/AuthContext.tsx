@@ -39,25 +39,6 @@ const AuthContext = createContext<AuthContextType>({
   setStudentProfile: () => {},
 });
 
-function getCookie(name: string) {
-  if (typeof document === "undefined") return "";
-  return document.cookie.split("; ").reduce((r, v) => {
-    const parts = v.split("=");
-    return parts[0] === name ? decodeURIComponent(parts[1]) : r;
-  }, "");
-}
-
-function setCookie(name: string, value: string, days = 365) {
-  if (typeof document === "undefined") return;
-  const expires = new Date(Date.now() + days * 864e5).toUTCString();
-  document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
-}
-
-function deleteCookie(name: string) {
-  if (typeof document === "undefined") return;
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-}
-
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -73,10 +54,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         aud: "authenticated",
         role: "authenticated",
       } as unknown as User);
-      setCookie("rxfusion_student_email", p.email);
     } else {
       setUser(null);
-      deleteCookie("rxfusion_student_email");
     }
   };
 
@@ -84,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     let active = true;
 
     async function initializeAuth() {
-      // 1. Check if standard Supabase Auth session exists
+      // 1. Check if standard Supabase Auth session exists (for Admins)
       const { data: { session: currentSession } } = await supabase.auth.getSession();
       
       if (!active) return;
@@ -109,46 +88,40 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
         setLoading(false);
       } else {
-        // 2. Check for student profile cookie session
-        const studentEmail = getCookie("rxfusion_student_email");
-        if (studentEmail) {
-          try {
-            const res = await fetch(`/api/auth/student?email=${encodeURIComponent(studentEmail)}`);
-            if (res.ok && active) {
-              const data = await res.json();
-              if (data.found && data.profile) {
-                const p = data.profile;
-                setProfile({
-                  id: p.id,
-                  email: p.email,
-                  role: "user",
-                  full_name: p.full_name,
-                  course: p.course,
-                  custom_course: p.custom_course,
-                  current_year: p.current_year,
-                  college_name: p.college_name,
-                  mobile_number: p.mobile_number,
-                  free_downloads_used: p.free_downloads_used,
-                  download_limit: p.download_limit,
-                  updated_at: p.updated_at,
-                });
-                setUser({
-                  id: p.id,
-                  email: p.email,
-                  aud: "authenticated",
-                  role: "authenticated",
-                } as unknown as User);
-              } else {
-                deleteCookie("rxfusion_student_email");
-                setProfile(null);
-                setUser(null);
-              }
+        // 2. Check for student session via server API route using HttpOnly signed cookie
+        try {
+          const res = await fetch("/api/auth/student");
+          if (res.ok && active) {
+            const data = await res.json();
+            if (data.found && data.profile) {
+              const p = data.profile;
+              setProfile({
+                id: p.id,
+                email: p.email,
+                role: "user",
+                full_name: p.full_name,
+                course: p.course,
+                custom_course: p.custom_course,
+                current_year: p.current_year,
+                college_name: p.college_name,
+                mobile_number: p.mobile_number,
+                free_downloads_used: p.free_downloads_used,
+                download_limit: p.download_limit,
+                updated_at: p.updated_at,
+              });
+              setUser({
+                id: p.id,
+                email: p.email,
+                aud: "authenticated",
+                role: "authenticated",
+              } as unknown as User);
             } else {
+              setProfile(null);
+              setUser(null);
             }
-          } catch (err) {
-            console.error("Student profile fetch failed:", err);
           }
-        } else {
+        } catch (err) {
+          console.error("Student profile fetch failed:", err);
         }
         setLoading(false);
       }
@@ -180,17 +153,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setLoading(false);
         } else {
           if (event === "SIGNED_OUT") {
-            deleteCookie("rxfusion_student_email");
             setSession(null);
             setUser(null);
             setProfile(null);
-          } else {
-            const studentEmail = getCookie("rxfusion_student_email");
-            if (!studentEmail) {
-              setSession(null);
-              setUser(null);
-              setProfile(null);
-            }
           }
         }
       }
@@ -204,7 +169,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = async () => {
     setLoading(true);
-    deleteCookie("rxfusion_student_email");
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // Ignore logout errors
+    }
     await supabase.auth.signOut();
     setSession(null);
     setUser(null);

@@ -24,8 +24,9 @@ export default function BookmarkButton({
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [checking, setChecking] = useState(false);
   const [toggling, setToggling] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Check initial bookmark state
+  // Check initial bookmark state for authenticated user
   useEffect(() => {
     if (authLoading) return;
     if (!profile || !contentId) {
@@ -36,7 +37,7 @@ export default function BookmarkButton({
     async function checkBookmarkStatus() {
       setChecking(true);
       try {
-        const res = await fetch(`/api/student/bookmarks?studentId=${profile?.id}&contentType=${contentType}`);
+        const res = await fetch(`/api/student/bookmarks?contentType=${contentType}`);
         if (res.ok) {
           const data = await res.json();
           const bookmarksList = data.bookmarks || [];
@@ -67,37 +68,46 @@ export default function BookmarkButton({
     }
 
     setToggling(true);
+    setErrorMessage(null);
+    const previousState = isBookmarked;
+
     try {
       if (isBookmarked) {
-        // DELETE bookmark request
+        // Optimistic update
+        setIsBookmarked(false);
         const res = await fetch(
-          `/api/student/bookmarks?studentId=${profile.id}&contentType=${contentType}&contentId=${contentId}`,
+          `/api/student/bookmarks?contentType=${contentType}&contentId=${encodeURIComponent(contentId)}`,
           { method: "DELETE" }
         );
-        if (res.ok) {
-          setIsBookmarked(false);
-        } else {
-          console.error("Failed to delete bookmark");
+        if (!res.ok) {
+          setIsBookmarked(previousState);
+          const data = await res.json().catch(() => ({}));
+          setErrorMessage(data.error || "Failed to remove bookmark");
+          setTimeout(() => setErrorMessage(null), 3000);
         }
       } else {
-        // POST bookmark request
+        // Optimistic update
+        setIsBookmarked(true);
         const res = await fetch("/api/student/bookmarks", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            studentId: profile.id,
             contentType,
             contentId
           })
         });
-        if (res.ok) {
-          setIsBookmarked(true);
-        } else {
-          console.error("Failed to create bookmark");
+        if (!res.ok) {
+          setIsBookmarked(previousState);
+          const data = await res.json().catch(() => ({}));
+          setErrorMessage(data.error || "Failed to save bookmark");
+          setTimeout(() => setErrorMessage(null), 3000);
         }
       }
     } catch (err) {
       console.error("Error toggling bookmark status:", err);
+      setIsBookmarked(previousState);
+      setErrorMessage("Network error");
+      setTimeout(() => setErrorMessage(null), 3000);
     } finally {
       setToggling(false);
     }
@@ -110,24 +120,32 @@ export default function BookmarkButton({
   } ${className}`;
 
   return (
-    <button
-      onClick={handleToggleBookmark}
-      disabled={checking || toggling}
-      className={buttonStyle}
-      title={isBookmarked ? "Saved to your dashboard" : "Save to your dashboard"}
-    >
-      {checking || toggling ? (
-        <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
-      ) : (
-        <Bookmark 
-          className={`w-3.5 h-3.5 transition-colors ${
-            isBookmarked ? "fill-cyan-500 text-cyan-500" : "text-slate-400"
-          }`} 
-        />
+    <div className="inline-relative flex flex-col items-center">
+      <button
+        onClick={handleToggleBookmark}
+        disabled={checking || toggling}
+        className={buttonStyle}
+        title={isBookmarked ? "Saved to your dashboard" : "Save to your dashboard"}
+      >
+        {checking || toggling ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
+        ) : (
+          <Bookmark 
+            className={`w-3.5 h-3.5 transition-colors ${
+              isBookmarked ? "fill-cyan-500 text-cyan-500" : "text-slate-400"
+            }`} 
+          />
+        )}
+        {showText && (
+          <span>{isBookmarked ? "Saved" : "Save"}</span>
+        )}
+      </button>
+
+      {errorMessage && (
+        <span className="absolute bottom-full mb-1 text-[9px] font-bold text-rose-500 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded shadow-xs whitespace-nowrap animate-fade-in z-20">
+          {errorMessage}
+        </span>
       )}
-      {showText && (
-        <span>{isBookmarked ? "Saved" : "Save"}</span>
-      )}
-    </button>
+    </div>
   );
 }

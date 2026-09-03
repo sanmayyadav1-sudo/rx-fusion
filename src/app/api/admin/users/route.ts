@@ -1,51 +1,22 @@
-import { createServerSupabaseClient } from "@/lib/supabaseServer";
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { requireAdmin, getServiceSupabaseClient } from "@/lib/authHelpers";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  // 1. Initialize server client with requesting user's cookies to authenticate them
-  const supabase = createServerSupabaseClient();
-  
-  // 2. Fetch the requesting user's profile and check role
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // 1. Enforce strict server-side admin authentication and authorization
+  const auth = await requireAdmin(request);
+  if (auth.errorResponse) return auth.errorResponse;
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
+  const serviceSupabase = getServiceSupabaseClient();
 
-  if (profileError || profile?.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
-  }
-
-  // 3. Authenticated as Admin! We can fetch users using Service Role client
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseServiceKey || supabaseServiceKey === "placeholder-service-role-key") {
-    console.error("Missing or placeholder SUPABASE_SERVICE_ROLE_KEY environment variable.");
-    return NextResponse.json({ error: "Internal Server Error: Missing Service Key" }, { status: 500 });
-  }
-
-  const serviceSupabase = createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    }
-  });
-  
   // Parse query parameters
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search") || "";
-  const filter = searchParams.get("filter") || "all"; // all, free_available, limit_reached, recently_joined
-  const sort = searchParams.get("sort") || "recently_active"; // newest, oldest, recently_active, most_downloads
-  const page = parseInt(searchParams.get("page") || "1", 10);
+  const filter = searchParams.get("filter") || "all"; 
+  const sort = searchParams.get("sort") || "recently_active"; 
+  const pageInput = parseInt(searchParams.get("page") || "1", 10);
+  const page = isNaN(pageInput) || pageInput < 1 ? 1 : pageInput;
   const limit = 25;
   const offset = (page - 1) * limit;
 
@@ -69,7 +40,7 @@ export async function GET(request: NextRequest) {
     } else if (filter === "limit_reached") {
       query = query.gte("free_downloads_used", 2);
     } else if (filter === "recently_joined") {
-      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(); // ~7 days
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
       query = query.gte("created_at", sevenDaysAgo);
     }
 
@@ -94,25 +65,21 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Failed to load users from database" }, { status: 500 });
     }
 
-    // Fetch summary statistics
-    // 1. Total registered users
+    // Summary statistics
     const { count: totalUsersCount } = await serviceSupabase
       .from("student_profiles")
       .select("id", { count: "exact", head: true });
 
-    // 2. Active Now count (last_seen within 5 minutes)
     const { count: activeNowCount } = await serviceSupabase
       .from("student_profiles")
       .select("id", { count: "exact", head: true })
       .gte("last_seen", activeThresholdTime);
 
-    // 3. Limit Reached count
     const { count: limitReachedCount } = await serviceSupabase
       .from("student_profiles")
       .select("id", { count: "exact", head: true })
       .gte("free_downloads_used", 2);
 
-    // 4. New Users (joined in the last 7 days)
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
     const { count: newUsersCount } = await serviceSupabase
       .from("student_profiles")
@@ -139,41 +106,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  // 1. Initialize server client with requesting user's cookies to authenticate them
-  const supabase = createServerSupabaseClient();
-  
-  // 2. Fetch the requesting user's profile and check role
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // 1. Enforce strict server-side admin authentication and authorization
+  const auth = await requireAdmin(request);
+  if (auth.errorResponse) return auth.errorResponse;
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profileError || profile?.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden: Admins only" }, { status: 403 });
-  }
-
-  // 3. Authenticated as Admin! We can delete using Service Role client
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!supabaseServiceKey || supabaseServiceKey === "placeholder-service-role-key") {
-    console.error("Missing or placeholder SUPABASE_SERVICE_ROLE_KEY environment variable.");
-    return NextResponse.json({ error: "Internal Server Error: Missing Service Key" }, { status: 500 });
-  }
-
-  const serviceSupabase = createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    }
-  });
-
+  const serviceSupabase = getServiceSupabaseClient();
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
 

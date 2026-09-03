@@ -17,16 +17,17 @@ export default function ActivityTracker() {
     
     const now = Date.now();
     if (now - lastUpdateRef.current < THROTTLE_TIME) {
-      return; // Throttled: Avoid excessive Supabase DB writes
+      return; // Throttled: Avoid excessive API calls
     }
     
     lastUpdateRef.current = now;
 
     try {
-      // Call the secure RPC function to update last_seen
-      const { error } = await supabase.rpc("update_last_seen");
-      if (error) {
-        console.error("Error reporting activity presence:", error.message);
+      // 1. First attempt updating via authenticated student presence API
+      const res = await fetch("/api/student/presence", { method: "POST" });
+      if (!res.ok) {
+        // Fallback for standard admin Supabase Auth users
+        await supabase.rpc("update_last_seen");
       }
     } catch (err) {
       console.error("Failed to report user presence:", err);
@@ -44,7 +45,6 @@ export default function ActivityTracker() {
   useEffect(() => {
     if (!user) return;
 
-    // Listen for tab focus/visibility changes
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         reportActivity();
@@ -64,5 +64,5 @@ export default function ActivityTracker() {
     };
   }, [user, reportActivity]);
 
-  return null; // This is a headless logic component
+  return null; // Headless component
 }

@@ -1,23 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { requireStudent, getServiceSupabaseClient } from "@/lib/authHelpers";
 
 export const dynamic = "force-dynamic";
-
-function getSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!supabaseServiceKey || supabaseServiceKey === "placeholder-service-role-key") {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
-  }
-  
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    }
-  });
-}
 
 function getStoragePath(fileUrl: string): string | null {
   try {
@@ -58,29 +42,19 @@ function getStoragePath(fileUrl: string): string | null {
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await requireStudent(request);
+    if (auth.errorResponse) return auth.errorResponse;
+
     const { searchParams } = new URL(request.url);
     const noteId = searchParams.get("noteId");
-    const studentId = searchParams.get("studentId");
 
-    if (!noteId || !studentId) {
-      return NextResponse.json({ error: "Missing noteId or studentId parameters." }, { status: 400 });
+    if (!noteId) {
+      return NextResponse.json({ error: "Missing noteId parameter." }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
 
-    // 1. Verify student profile exists
-    const { data: student, error: studentError } = await supabase
-      .from("student_profiles")
-      .select("id")
-      .eq("id", studentId)
-      .single();
-
-    if (studentError || !student) {
-      console.warn(`[ProxyPDF] Unauthorized access attempt for student: ${studentId}`);
-      return NextResponse.json({ error: "Unauthorized: Invalid student profile." }, { status: 401 });
-    }
-
-    // 2. Fetch note details
+    // Fetch note details
     const { data: note, error: noteError } = await supabase
       .from("notes")
       .select("file_url")
@@ -92,10 +66,9 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Note file not found." }, { status: 404 });
     }
 
-    // 3. Extract path and fetch from storage
+    // Extract path and fetch from storage
     const filePath = getStoragePath(note.file_url);
     if (!filePath) {
-      // Fallback: if we couldn't parse the storage path, fetch the public file_url directly
       const res = await fetch(note.file_url);
       if (!res.ok) {
         throw new Error("Failed to fetch public file URL directly");

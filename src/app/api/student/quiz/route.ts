@@ -1,31 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { getAuthenticatedStudent, requireStudent, getServiceSupabaseClient } from "@/lib/authHelpers";
 
 export const dynamic = "force-dynamic";
 
-function getSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!supabaseServiceKey || supabaseServiceKey === "placeholder-service-role-key") {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
-  }
-  
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    }
-  });
-}
-
-// GET: Retrieve quiz questions and student quiz statistics/attempts
+// GET: Retrieve quiz questions and authenticated student quiz statistics/attempts
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const studentId = searchParams.get("studentId");
-
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
+    const student = await getAuthenticatedStudent(request);
 
     // 1. Fetch published questions
     const { data: questions, error: qError } = await supabase
@@ -45,7 +27,7 @@ export async function GET(request: NextRequest) {
 
     if (qError) throw qError;
 
-    // 2. Fetch attempts if student is logged in
+    // 2. Fetch attempts if student is authenticated
     const stats = {
       attemptsCount: 0,
       correctCount: 0,
@@ -54,11 +36,11 @@ export async function GET(request: NextRequest) {
       attemptedQuestionIds: [] as string[]
     };
 
-    if (studentId) {
+    if (student) {
       const { data: attempts, error: aError } = await supabase
         .from("quiz_attempts")
         .select("*")
-        .eq("student_id", studentId)
+        .eq("student_id", student.id)
         .order("created_at", { ascending: false });
 
       if (!aError && attempts) {
@@ -82,22 +64,26 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: Save a student's quiz attempt
+// POST: Save an authenticated student's quiz attempt
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { studentId, questionId, selectedOption, isCorrect } = body;
+    const auth = await requireStudent(request);
+    if (auth.errorResponse) return auth.errorResponse;
+    const student = auth.student;
 
-    if (!studentId || !questionId || !selectedOption) {
+    const body = await request.json();
+    const { questionId, selectedOption, isCorrect } = body;
+
+    if (!questionId || !selectedOption) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
 
     const { data, error } = await supabase
       .from("quiz_attempts")
       .upsert({
-        student_id: studentId,
+        student_id: student.id,
         question_id: questionId,
         selected_option: selectedOption,
         is_correct: isCorrect,
@@ -113,11 +99,11 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           isMocked: true,
           success: true,
-          message: "Saved quiz attempt to memory fallback (DB table not yet created)."
+          message: "Saved quiz attempt to memory fallback."
         });
       }
       console.error("Error creating quiz attempt:", error);
-      return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
+      return NextResponse.json({ error: "Failed to record quiz attempt." }, { status: 500 });
     }
 
     // Log/update recent quiz activity
@@ -125,7 +111,7 @@ export async function POST(request: NextRequest) {
       const { data: allAttempts } = await supabase
         .from("quiz_attempts")
         .select("is_correct")
-        .eq("student_id", studentId);
+        .eq("student_id", student.id);
 
       const totalCount = allAttempts?.length || 1;
       const correctCount = allAttempts?.filter(a => a.is_correct).length || (isCorrect ? 1 : 0);
@@ -134,7 +120,7 @@ export async function POST(request: NextRequest) {
       await supabase
         .from("student_recent_activity")
         .upsert({
-          student_id: studentId,
+          student_id: student.id,
           content_type: "quiz",
           content_id: "daily_quiz",
           content_title: `Daily Quiz — Score: ${correctCount}/${totalCount} (${percentage}%)`,
@@ -159,12 +145,10 @@ export async function POST(request: NextRequest) {
 function calculateStreak(attempts: { created_at: string }[]): number {
   if (attempts.length === 0) return 0;
 
-  // Extract unique days with attempts (YYYY-MM-DD format)
   const attemptDates = Array.from(
     new Set(attempts.map(a => new Date(a.created_at).toISOString().split("T")[0]))
   ).map(d => new Date(d));
 
-  // Sort dates descending (newest first)
   attemptDates.sort((a, b) => b.getTime() - a.getTime());
 
   const today = new Date();
@@ -173,12 +157,11 @@ function calculateStreak(attempts: { created_at: string }[]): number {
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
-  // The latest attempt must be today or yesterday to continue a streak
   const latestDate = attemptDates[0];
   latestDate.setHours(0, 0, 0, 0);
 
   if (latestDate.getTime() !== today.getTime() && latestDate.getTime() !== yesterday.getTime()) {
-    return 0; // Streak is broken
+    return 0;
   }
 
   let streak = 1;
@@ -188,7 +171,6 @@ function calculateStreak(attempts: { created_at: string }[]): number {
     const nextDate = attemptDates[i];
     nextDate.setHours(0, 0, 0, 0);
 
-    // Calculate difference in days
     const diffTime = currentRef.getTime() - nextDate.getTime();
     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
@@ -196,10 +178,9 @@ function calculateStreak(attempts: { created_at: string }[]): number {
       streak++;
       currentRef = nextDate;
     } else if (diffDays > 1) {
-      break; // Gap found, streak ends here
+      break;
     }
   }
 
   return streak;
 }
-

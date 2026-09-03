@@ -108,7 +108,7 @@ export default function QuestionBankPage() {
   }, [questions, searchQuery, selectedCourse, selectedYear, selectedType, selectedSubject]);
 
   const maxYearOptions = selectedCourse === "Pharm D" ? 6 : selectedCourse === "D Pharm" ? 2 : 4;
-  const periodLabel = selectedCourse === "B Pharm" ? "Semester" : "Year";
+  const periodLabel = selectedCourse === "B Pharm" || selectedCourse === "M Pharm" ? "Semester" : "Year";
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">

@@ -1,23 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { getServiceSupabaseClient } from "@/lib/authHelpers";
 
 export const dynamic = "force-dynamic";
-
-function getSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!supabaseServiceKey || supabaseServiceKey === "placeholder-service-role-key") {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
-  }
-  
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    }
-  });
-}
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -28,10 +12,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
     const ilikeQuery = `%${query}%`;
 
-    // Perform concurrent case-insensitive ilike search queries
+    // Perform concurrent case-insensitive ilike search queries across all 12 platform entities
     const [
       notesRes,
       drugsRes,
@@ -41,7 +25,10 @@ export async function GET(request: NextRequest) {
       resourcesRes,
       collegesRes,
       vivaRes,
-      labsRes
+      labsRes,
+      flashcardsRes,
+      qbankRes,
+      qpapersRes
     ] = await Promise.all([
       supabase
         .from("notes")
@@ -90,6 +77,24 @@ export async function GET(request: NextRequest) {
         .from("lab_manuals")
         .select("id, title, experiment_number, aim, subject, course, year")
         .or(`title.ilike.${ilikeQuery},subject.ilike.${ilikeQuery}`)
+        .limit(5),
+      supabase
+        .from("flashcards")
+        .select("id, term, definition, subject, course, year")
+        .eq("is_published", true)
+        .or(`term.ilike.${ilikeQuery},definition.ilike.${ilikeQuery},subject.ilike.${ilikeQuery}`)
+        .limit(5),
+      supabase
+        .from("question_bank")
+        .select("id, question, subject, course, year")
+        .eq("is_published", true)
+        .or(`question.ilike.${ilikeQuery},subject.ilike.${ilikeQuery}`)
+        .limit(5),
+      supabase
+        .from("question_papers")
+        .select("id, title, subject, university, course, year")
+        .eq("is_published", true)
+        .or(`title.ilike.${ilikeQuery},subject.ilike.${ilikeQuery},university.ilike.${ilikeQuery}`)
         .limit(5)
     ]);
 
@@ -181,7 +186,37 @@ export async function GET(request: NextRequest) {
         title: `${item.experiment_number ? `${item.experiment_number}: ` : ""}${item.title}`,
         description: `Aim: ${item.aim}`,
         category: "Lab Manual",
-        url: `/labs/${item.id}`
+        url: `/labs`
+      }));
+    }
+
+    if (flashcardsRes.data && flashcardsRes.data.length > 0) {
+      results.flashcards = flashcardsRes.data.map((item) => ({
+        id: item.id,
+        title: item.term,
+        description: item.definition ? `Definition: ${item.definition}` : `Subject: ${item.subject}`,
+        category: "Flashcard",
+        url: "/flashcards"
+      }));
+    }
+
+    if (qbankRes.data && qbankRes.data.length > 0) {
+      results.question_bank = qbankRes.data.map((item) => ({
+        id: item.id,
+        title: item.question,
+        description: `Subject: ${item.subject} | Course: ${item.course}`,
+        category: "Question Bank",
+        url: "/question-bank"
+      }));
+    }
+
+    if (qpapersRes.data && qpapersRes.data.length > 0) {
+      results.question_papers = qpapersRes.data.map((item) => ({
+        id: item.id,
+        title: item.title,
+        description: `University: ${item.university} | Subject: ${item.subject}`,
+        category: "Question Paper",
+        url: "/question-papers"
       }));
     }
 

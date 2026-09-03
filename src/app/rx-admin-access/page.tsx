@@ -81,7 +81,7 @@ function AdminLoginForm() {
         } else if (errCode === "invalid_credentials" || errMsg.toLowerCase().includes("invalid") || errMsg.toLowerCase().includes("incorrect")) {
           setError("Invalid admin email or password.");
         } else {
-          setError("Unable to sign in right now. Please try again.");
+          setError(errMsg || "Unable to sign in right now. Please check your network and credentials.");
         }
         setLoading(false);
         return;
@@ -98,7 +98,7 @@ function AdminLoginForm() {
         if (profileError) {
           console.error("Admin role verification query error:", profileError);
           await supabase.auth.signOut();
-          setError("Unable to verify administrator access. Please try again.");
+          setError(`Unable to verify administrator access: ${profileError.message}`);
           setLoading(false);
           return;
         }
@@ -118,29 +118,30 @@ function AdminLoginForm() {
       }
     } catch (err: unknown) {
       console.error("Admin sign in exception:", err);
-      setError("Unable to sign in right now. Please try again.");
+      const msg = err instanceof Error ? err.message : "Unable to sign in right now. Please try again.";
+      setError(msg);
       setLoading(false);
     }
   };
 
   return (
     <div className="w-full max-w-md animate-fade-in relative z-10">
-      <div className="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+      <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
         {/* Glow visual accents */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
 
         {/* Brand/Heading block */}
         <div className="text-center mb-8 relative z-10">
           <Link href="/" className="inline-flex items-center space-x-2 mb-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-500 to-emerald-450 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-500 to-sky-450 flex items-center justify-center text-white shadow-lg shadow-cyan-500/20">
               <GraduationCap className="w-7 h-7" />
             </div>
           </Link>
-          <h1 className="text-2xl font-bold font-heading text-white">
+          <h1 className="text-2xl font-bold font-heading text-slate-900">
             RxFusion Admin
           </h1>
-          <p className="text-xs text-slate-400 mt-2 px-2 leading-relaxed">
+          <p className="text-xs text-slate-500 mt-2 px-2 leading-relaxed font-medium">
             Administrator access
           </p>
         </div>
@@ -250,7 +251,7 @@ function AdminLoginForm() {
 
 export default function AdminLoginPage() {
   return (
-    <div className="min-h-screen bg-[#0a0f1a] flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center px-4 py-12 relative overflow-hidden">
       {/* Background visual graphics */}
       <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 via-transparent to-transparent pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none" />

@@ -11,6 +11,20 @@ interface WhatsappPopupProps {
 }
 
 export default function WhatsappPopup({ isOpen, onClose, profile }: WhatsappPopupProps) {
+  // Keyboard Escape listener
+  React.useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleContactClick = () => {
@@ -43,7 +57,12 @@ export default function WhatsappPopup({ isOpen, onClose, profile }: WhatsappPopu
       onClick={handleBackdropClick}
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/40 backdrop-blur-xs transition-opacity duration-300 animate-fade-in"
     >
-      <div className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-sm p-6 flex flex-col items-center text-center animate-scale-up overflow-hidden">
+      <div 
+        role="dialog"
+        aria-modal="true"
+        aria-label="Download Limit Reached"
+        className="relative w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-sm p-6 flex flex-col items-center text-center animate-scale-up overflow-hidden"
+      >
         {/* Glow visual accents */}
         <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-full blur-2xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-24 h-24 bg-sky-500/5 rounded-full blur-2xl pointer-events-none" />

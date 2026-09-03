@@ -1,41 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { requireStudent, getServiceSupabaseClient } from "@/lib/authHelpers";
 
 export const dynamic = "force-dynamic";
 
-function getSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!supabaseServiceKey || supabaseServiceKey === "placeholder-service-role-key") {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
-  }
-  
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    }
-  });
-}
-
-// GET: Retrieve a student's bookmarks (and resolve metadata)
+// GET: Retrieve the authenticated student's bookmarks
 export async function GET(request: NextRequest) {
+  const auth = await requireStudent(request);
+  if (auth.errorResponse) return auth.errorResponse;
+  const student = auth.student;
+
   const { searchParams } = new URL(request.url);
-  const studentId = searchParams.get("studentId");
   const contentType = searchParams.get("contentType");
 
-  if (!studentId) {
-    return NextResponse.json({ error: "Missing studentId parameter." }, { status: 400 });
-  }
-
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
     
     let query = supabase
       .from("student_bookmarks")
       .select("*")
-      .eq("student_id", studentId);
+      .eq("student_id", student.id);
 
     if (contentType && contentType !== "all") {
       query = query.eq("content_type", contentType);
@@ -52,7 +35,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ bookmarks: [] });
     }
 
-    // Resolve details for each bookmark type
+    // Resolve metadata details for each bookmark item
     const resolvedBookmarks = await Promise.all(
       bookmarks.map(async (b) => {
         let details: Record<string, unknown> | null = null;
@@ -185,22 +168,26 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: Add a new bookmark
+// POST: Add a new bookmark for the authenticated student
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { studentId, contentType, contentId } = body;
+    const auth = await requireStudent(request);
+    if (auth.errorResponse) return auth.errorResponse;
+    const student = auth.student;
 
-    if (!studentId || !contentType || !contentId) {
-      return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
+    const body = await request.json();
+    const { contentType, contentId } = body;
+
+    if (!contentType || !contentId) {
+      return NextResponse.json({ error: "Missing contentType or contentId." }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
 
     const { data, error } = await supabase
       .from("student_bookmarks")
       .insert({
-        student_id: studentId,
+        student_id: student.id,
         content_type: contentType,
         content_id: contentId
       })
@@ -212,7 +199,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Content is already bookmarked." }, { status: 409 });
       }
       console.error("Error creating bookmark:", error);
-      return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
+      return NextResponse.json({ error: "Failed to save bookmark." }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, bookmark: data });
@@ -223,30 +210,33 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE: Remove a bookmark
+// DELETE: Remove a bookmark for the authenticated student
 export async function DELETE(request: NextRequest) {
   try {
+    const auth = await requireStudent(request);
+    if (auth.errorResponse) return auth.errorResponse;
+    const student = auth.student;
+
     const { searchParams } = new URL(request.url);
-    const studentId = searchParams.get("studentId");
     const contentType = searchParams.get("contentType");
     const contentId = searchParams.get("contentId");
 
-    if (!studentId || !contentType || !contentId) {
+    if (!contentType || !contentId) {
       return NextResponse.json({ error: "Missing required query parameters." }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
 
     const { error } = await supabase
       .from("student_bookmarks")
       .delete()
-      .eq("student_id", studentId)
+      .eq("student_id", student.id)
       .eq("content_type", contentType)
       .eq("content_id", contentId);
 
     if (error) {
       console.error("Error deleting bookmark:", error);
-      return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
+      return NextResponse.json({ error: "Failed to remove bookmark." }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });

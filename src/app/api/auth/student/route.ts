@@ -1,49 +1,52 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { 
+  getServiceSupabaseClient, 
+  getAuthenticatedStudent, 
+  createStudentSessionToken, 
+  setStudentSessionCookie 
+} from "@/lib/authHelpers";
+import { normalizeCourseName } from "@/lib/courseHelpers";
 
 export const dynamic = "force-dynamic";
 
-function getSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!supabaseServiceKey || supabaseServiceKey === "placeholder-service-role-key") {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
-  }
-  
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    }
-  });
-}
-
-function normalizeCourseName(courseStr: string): string {
-  if (!courseStr) return courseStr;
-  const trimmed = courseStr.trim();
-  const lower = trimmed.toLowerCase().replace(/\./g, "");
-  if (lower === "pharm d" || lower === "pharmd") return "Pharm D";
-  if (lower === "b pharm" || lower === "bpharm") return "B Pharm";
-  if (lower === "d pharm" || lower === "dpharm") return "D Pharm";
-  if (lower === "m pharm" || lower === "mpharm") return "M Pharm";
-  return trimmed;
-}
-
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const email = searchParams.get("email")?.trim().toLowerCase();
-
-  if (!email) {
-    return NextResponse.json({ error: "Missing email parameter" }, { status: 400 });
-  }
+  const requestedEmail = searchParams.get("email")?.trim().toLowerCase();
 
   try {
-    const supabase = getSupabaseClient();
+    // First, try resolving authenticated student from session cookie
+    const studentFromSession = await getAuthenticatedStudent(request);
+    
+    if (studentFromSession) {
+      // If an explicit email parameter was requested and doesn't match session, return forbidden
+      if (requestedEmail && studentFromSession.email.toLowerCase() !== requestedEmail) {
+        return NextResponse.json({ error: "Session email mismatch." }, { status: 403 });
+      }
+
+      // Update last_seen timestamp
+      const supabase = getServiceSupabaseClient();
+      await supabase
+        .from("student_profiles")
+        .update({ last_seen: new Date().toISOString() })
+        .eq("id", studentFromSession.id);
+
+      const response = NextResponse.json({ found: true, profile: studentFromSession });
+      // Refresh session cookie
+      const newToken = await createStudentSessionToken(studentFromSession.id, studentFromSession.email);
+      setStudentSessionCookie(response, newToken);
+      return response;
+    }
+
+    // Fallback if no active session cookie but email was provided
+    if (!requestedEmail) {
+      return NextResponse.json({ found: false }, { status: 200 });
+    }
+
+    const supabase = getServiceSupabaseClient();
     const { data: profile, error } = await supabase
       .from("student_profiles")
       .select("*")
-      .eq("email", email)
+      .eq("email", requestedEmail)
       .maybeSingle();
 
     if (error) {
@@ -61,7 +64,10 @@ export async function GET(request: NextRequest) {
       .update({ last_seen: new Date().toISOString() })
       .eq("id", profile.id);
 
-    return NextResponse.json({ found: true, profile });
+    const response = NextResponse.json({ found: true, profile });
+    const sessionToken = await createStudentSessionToken(profile.id, profile.email);
+    setStudentSessionCookie(response, sessionToken);
+    return response;
   } catch (err: unknown) {
     console.error("Exception in GET student profile:", err);
     const msg = err instanceof Error ? err.message : "Internal server error";
@@ -80,7 +86,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Email address is required." }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
 
     if (action === "login") {
       const { data: profile, error } = await supabase
@@ -104,9 +110,12 @@ export async function POST(request: NextRequest) {
         .update({ last_seen: new Date().toISOString() })
         .eq("id", profile.id);
 
-      return NextResponse.json({ success: true, profile });
+      const response = NextResponse.json({ success: true, profile });
+      const sessionToken = await createStudentSessionToken(profile.id, profile.email);
+      setStudentSessionCookie(response, sessionToken);
+      return response;
     } else {
-      // Register (insert or update on conflict)
+      // Register (insert or update returning student)
       if (!fullName?.trim() || !course?.trim() || !currentYear?.trim() || !collegeName?.trim() || !mobileNumber?.trim()) {
         return NextResponse.json({ error: "All profile details are required for registration." }, { status: 400 });
       }
@@ -125,7 +134,10 @@ export async function POST(request: NextRequest) {
           .update({ last_seen: new Date().toISOString() })
           .eq("id", existingProfile.id);
         
-        return NextResponse.json({ success: true, profile: existingProfile });
+        const response = NextResponse.json({ success: true, profile: existingProfile });
+        const sessionToken = await createStudentSessionToken(existingProfile.id, existingProfile.email);
+        setStudentSessionCookie(response, sessionToken);
+        return response;
       }
 
       const normalizedCourse = normalizeCourseName(course);
@@ -158,7 +170,10 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
       }
 
-      return NextResponse.json({ success: true, profile });
+      const response = NextResponse.json({ success: true, profile });
+      const sessionToken = await createStudentSessionToken(profile.id, profile.email);
+      setStudentSessionCookie(response, sessionToken);
+      return response;
     }
   } catch (err: unknown) {
     console.error("Exception in POST student profile:", err);

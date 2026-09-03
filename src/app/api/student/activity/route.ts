@@ -1,40 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { requireStudent, getServiceSupabaseClient } from "@/lib/authHelpers";
 
 export const dynamic = "force-dynamic";
 
-function getSupabaseClient() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  
-  if (!supabaseServiceKey || supabaseServiceKey === "placeholder-service-role-key") {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not configured.");
-  }
-  
-  return createClient(supabaseUrl, supabaseServiceKey, {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    }
-  });
-}
-
-// GET: Retrieve a student's recently viewed items
+// GET: Retrieve the authenticated student's recently viewed items
 export async function GET(request: NextRequest) {
+  const auth = await requireStudent(request);
+  if (auth.errorResponse) return auth.errorResponse;
+  const student = auth.student;
+
   const { searchParams } = new URL(request.url);
-  const studentId = searchParams.get("studentId");
   const limit = parseInt(searchParams.get("limit") || "10", 10);
 
-  if (!studentId) {
-    return NextResponse.json({ error: "Missing studentId parameter." }, { status: 400 });
-  }
-
   try {
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
     const { data: activity, error } = await supabase
       .from("student_recent_activity")
       .select("*")
-      .eq("student_id", studentId)
+      .eq("student_id", student.id)
       .order("viewed_at", { ascending: false })
       .limit(limit);
 
@@ -51,23 +34,27 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST: Add or update a student's recent activity item
+// POST: Add or update the authenticated student's recent activity item
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { studentId, contentType, contentId, contentTitle, contentUrl } = body;
+    const auth = await requireStudent(request);
+    if (auth.errorResponse) return auth.errorResponse;
+    const student = auth.student;
 
-    if (!studentId || !contentType || !contentId || !contentTitle || !contentUrl) {
+    const body = await request.json();
+    const { contentType, contentId, contentTitle, contentUrl } = body;
+
+    if (!contentType || !contentId || !contentTitle || !contentUrl) {
       return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
     }
 
-    const supabase = getSupabaseClient();
+    const supabase = getServiceSupabaseClient();
 
-    // Upsert recent activity for the student
+    // Upsert recent activity for the authenticated student
     const { data, error } = await supabase
       .from("student_recent_activity")
       .upsert({
-        student_id: studentId,
+        student_id: student.id,
         content_type: contentType,
         content_id: contentId,
         content_title: contentTitle,
@@ -81,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error logging student activity:", error);
-      return NextResponse.json({ error: `Database error: ${error.message}` }, { status: 500 });
+      return NextResponse.json({ error: "Failed to log activity." }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, activity: data });

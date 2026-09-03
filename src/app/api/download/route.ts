@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { authorizeNoteDownload } from "@/lib/downloadService";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -9,39 +11,29 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Missing noteId parameter." }, { status: 400 });
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-  
-  // Use standard createClient since this runs in a Server API Route handler
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
   try {
-    // 1. Fetch the correct file_url and title from the database using noteId
-    const { data: note, error: fetchError } = await supabase
-      .from("notes")
-      .select("file_url, title")
-      .eq("id", noteId)
-      .single();
+    const result = await authorizeNoteDownload(request, noteId);
 
-    if (fetchError || !note?.file_url) {
-      console.error("Note fetch failed or file_url is empty:", fetchError);
-      return NextResponse.json({ error: "Note not found or invalid." }, { status: 404 });
+    if (result.errorResponse) {
+      return result.errorResponse;
     }
 
-    // 2. Write download metrics log to note_downloads table
-    const { error: logError } = await supabase
-      .from("note_downloads")
-      .insert([{ note_identifier: noteId, note_title: note.title || "Untitled Note" }]);
-
-    if (logError) {
-      console.error("Database log insertion failed:", logError);
+    if (!result.authorized || !result.fileUrl) {
+      return NextResponse.json(
+        {
+          error: "Free download limit reached. Upgrade or view online.",
+          limitReached: true,
+          freeDownloadsUsed: result.freeDownloadsUsed,
+          downloadLimit: result.downloadLimit
+        },
+        { status: 403 }
+      );
     }
 
-    // 3. Redirect to the resolved secure URL
-    return NextResponse.redirect(note.file_url);
-
-  } catch (err) {
-    console.error("Failed handling note download:", err);
-    return NextResponse.json({ error: "Internal server error." }, { status: 500 });
+    return NextResponse.redirect(result.fileUrl);
+  } catch (err: unknown) {
+    console.error("Failed handling note download direct GET:", err);
+    const msg = err instanceof Error ? err.message : "Internal server error.";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
