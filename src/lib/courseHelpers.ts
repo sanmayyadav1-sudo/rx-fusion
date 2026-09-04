@@ -66,3 +66,56 @@ export function getSemestersForCourseYear(course: string, currentYear: string): 
 
   return [];
 }
+
+/**
+ * Returns list of valid academic years for a given course.
+ */
+export function getYearsForCourse(courseName: string): number[] {
+  const norm = normalizeCourseName(courseName);
+  if (norm === "Pharm D") return [1, 2, 3, 4, 5, 6];
+  if (norm === "B Pharm") return [1, 2, 3, 4];
+  if (norm === "D Pharm") return [1, 2];
+  if (norm === "M Pharm") return [1, 2];
+  return [1, 2, 3, 4];
+}
+
+/**
+ * Returns formatted full title for a course.
+ */
+export function getCourseFullName(courseName: string): string {
+  const norm = normalizeCourseName(courseName);
+  if (norm === "Pharm D") return "Pharm.D (Doctor of Pharmacy)";
+  if (norm === "B Pharm") return "B.Pharm (Bachelor of Pharmacy)";
+  if (norm === "D Pharm") return "D.Pharm (Diploma in Pharmacy)";
+  if (norm === "M Pharm") return "M.Pharm (Master of Pharmacy)";
+  return courseName;
+}
+
+/**
+ * Returns clean short display name for a course.
+ */
+export function getCourseShortName(courseName: string): string {
+  const norm = normalizeCourseName(courseName);
+  if (norm === "Pharm D") return "Pharm.D";
+  if (norm === "B Pharm") return "B.Pharm";
+  if (norm === "D Pharm") return "D.Pharm";
+  if (norm === "M Pharm") return "M.Pharm";
+  return courseName;
+}
+
+/**
+ * Returns human-readable academic year label.
+ */
+export function getYearLabel(year: number, courseName?: string): string {
+  const norm = courseName ? normalizeCourseName(courseName) : "";
+  switch (year) {
+    case 1: return "1st Year";
+    case 2: return "2nd Year";
+    case 3: return "3rd Year";
+    case 4: return "4th Year";
+    case 5: return "5th Year";
+    case 6: return norm === "Pharm D" ? "6th Year / Internship" : "6th Year";
+    default: return `Year ${year}`;
+  }
+}
+

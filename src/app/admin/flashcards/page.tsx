@@ -1,16 +1,23 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabase";
 import { Plus, Trash2, Edit2, Loader2, Search, AlertCircle, X, Check, BookMarked } from "lucide-react";
 import { getSubjectsByCourseAndYear } from "@/lib/subjects";
 import { Subject } from "@/types/supabase";
+import { 
+  getYearsForCourse, 
+  getCourseFullName, 
+  getCourseShortName, 
+  getYearLabel, 
+  normalizeCourseName 
+} from "@/lib/courseHelpers";
 
 interface Flashcard {
   id: string;
   term: string;
   definition: string;
-  course: "Pharm D" | "B Pharm" | "D Pharm";
+  course: string;
   year: number;
   subject: string;
   category: string | null;
@@ -18,6 +25,8 @@ interface Flashcard {
   is_published: boolean;
   created_at: string;
 }
+
+const DEFAULT_COURSES = ["Pharm D", "B Pharm", "D Pharm", "M Pharm"];
 
 export default function FlashcardsCrud() {
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
@@ -41,7 +50,7 @@ export default function FlashcardsCrud() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [term, setTerm] = useState("");
   const [definition, setDefinition] = useState("");
-  const [course, setCourse] = useState<"Pharm D" | "B Pharm" | "D Pharm">("B Pharm");
+  const [course, setCourse] = useState<string>("B Pharm");
   const [year, setYear] = useState(1);
   const [subject, setSubject] = useState("");
   const [category, setCategory] = useState("");
@@ -69,11 +78,28 @@ export default function FlashcardsCrud() {
     }
   };
 
+  // Dynamic available courses (Canonical default + DB courses)
+  const allCourses = useMemo(() => {
+    const dbCourses = Array.from(new Set(flashcards.map(f => normalizeCourseName(f.course)))).filter(Boolean);
+    return Array.from(new Set([...DEFAULT_COURSES, ...dbCourses]));
+  }, [flashcards]);
+
+  // Valid year options for form course
+  const formYearOptions = useMemo(() => {
+    return getYearsForCourse(course);
+  }, [course]);
+
+  // Valid year options for table filter course
+  const filterYearOptions = useMemo(() => {
+    if (!filterCourse) return [1, 2, 3, 4, 5, 6];
+    return getYearsForCourse(filterCourse);
+  }, [filterCourse]);
+
   // Fetch subjects whenever form course or year changes
-  const fetchFormSubjects = useCallback(async () => {
+  const fetchFormSubjects = useCallback(async (selectedC: string, selectedY: number) => {
     setLoadingSubjects(true);
     try {
-      const list = await getSubjectsByCourseAndYear(course, Number(year));
+      const list = await getSubjectsByCourseAndYear(normalizeCourseName(selectedC), Number(selectedY));
       setAvailableSubjects(list);
     } catch (err) {
       console.error("Error fetching form subjects:", err);
@@ -81,13 +107,32 @@ export default function FlashcardsCrud() {
     } finally {
       setLoadingSubjects(false);
     }
-  }, [course, year]);
+  }, []);
 
   useEffect(() => {
     if (showForm) {
-      fetchFormSubjects();
+      fetchFormSubjects(course, year);
     }
-  }, [showForm, fetchFormSubjects]);
+  }, [showForm, course, year, fetchFormSubjects]);
+
+  // Dependent form updates: Course Change
+  const handleCourseChange = (newCourse: string) => {
+    setCourse(newCourse);
+    const validYears = getYearsForCourse(newCourse);
+    const newYear = validYears.includes(year) ? year : 1;
+    setYear(newYear);
+    setSubject("");
+    setIsCustomSubject(false);
+    fetchFormSubjects(newCourse, newYear);
+  };
+
+  // Dependent form updates: Year Change
+  const handleYearChange = (newYear: number) => {
+    setYear(newYear);
+    setSubject("");
+    setIsCustomSubject(false);
+    fetchFormSubjects(course, newYear);
+  };
 
   const handleSaveFlashcard = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,12 +146,16 @@ export default function FlashcardsCrud() {
       setError("Please enter a definition.");
       return;
     }
+    if (!course) {
+      setError("Please select a course.");
+      return;
+    }
     if (!year || isNaN(Number(year)) || Number(year) < 1) {
       setError("Please select an academic year.");
       return;
     }
     if (!subject.trim()) {
-      setError("Please select a subject.");
+      setError("Please select or enter a subject.");
       return;
     }
 
@@ -115,7 +164,7 @@ export default function FlashcardsCrud() {
       const payload = {
         term: term.trim(),
         definition: definition.trim(),
-        course,
+        course: normalizeCourseName(course),
         year: Number(year),
         subject: subject.trim(),
         category: category.trim() || null,
@@ -155,13 +204,15 @@ export default function FlashcardsCrud() {
     setEditingId(f.id);
     setTerm(f.term);
     setDefinition(f.definition);
-    setCourse(f.course);
+    const normCourse = normalizeCourseName(f.course);
+    setCourse(normCourse);
     setYear(f.year);
     setSubject(f.subject);
     setCategory(f.category || "");
     setTopic(f.topic || "");
     setIsPublished(f.is_published);
     setIsCustomSubject(false);
+    fetchFormSubjects(normCourse, f.year);
     setShowForm(true);
   };
 
@@ -197,7 +248,9 @@ export default function FlashcardsCrud() {
     setError(null);
   };
 
+  // Filtered Flashcards
   const filteredFlashcards = flashcards.filter((f) => {
+    const normFCourse = normalizeCourseName(f.course);
     const matchesSearch =
       f.term.toLowerCase().includes(searchQuery.toLowerCase()) ||
       f.definition.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -205,9 +258,9 @@ export default function FlashcardsCrud() {
       (f.category && f.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (f.topic && f.topic.toLowerCase().includes(searchQuery.toLowerCase()));
 
-    const matchesCourse = filterCourse === "" || f.course === filterCourse;
+    const matchesCourse = filterCourse === "" || normFCourse === normalizeCourseName(filterCourse);
     const matchesYear = filterYear === "" || f.year === Number(filterYear);
-    const matchesSubject = filterSubject === "" || f.subject.toLowerCase() === filterSubject.toLowerCase();
+    const matchesSubject = filterSubject === "" || f.subject.toLowerCase().includes(filterSubject.toLowerCase());
 
     return matchesSearch && matchesCourse && matchesYear && matchesSubject;
   });
@@ -216,8 +269,8 @@ export default function FlashcardsCrud() {
     <div className="space-y-6 text-slate-200">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">Flashcards</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage pharmacy terms, definitions, years, and subjects.</p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Flashcards Management</h1>
+          <p className="text-sm text-slate-500 mt-1">Manage pharmacy flashcards organized by Course → Academic Year → Subject.</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
@@ -245,7 +298,7 @@ export default function FlashcardsCrud() {
             </h3>
 
             {error && (
-              <div className="p-3.5 bg-red-950/20 border border-red-900/40 rounded-xl text-xs text-red-355 flex items-center gap-2 mb-4">
+              <div className="p-3.5 bg-red-950/20 border border-red-900/40 rounded-xl text-xs text-red-350 flex items-center gap-2 mb-4">
                 <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
                 <span>{error}</span>
               </div>
@@ -254,38 +307,43 @@ export default function FlashcardsCrud() {
             <form onSubmit={handleSaveFlashcard} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Course</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
+                    Course <span className="text-cyan-400">*</span>
+                  </label>
                   <select
                     value={course}
-                    onChange={(e) => setCourse(e.target.value as "Pharm D" | "B Pharm" | "D Pharm")}
+                    onChange={(e) => handleCourseChange(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                   >
-                    <option value="B Pharm" className="bg-slate-900">B Pharm</option>
-                    <option value="M Pharm" className="bg-slate-900">M Pharm</option>
-                    <option value="Pharm D" className="bg-slate-900">Pharm D</option>
-                    <option value="D Pharm" className="bg-slate-900">D Pharm</option>
+                    {allCourses.map(c => (
+                      <option key={c} value={c} className="bg-slate-900">
+                        {getCourseFullName(c)}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Academic Year / Semester</label>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">
+                    Academic Year <span className="text-cyan-400">*</span>
+                  </label>
                   <select
                     value={year}
-                    onChange={(e) => setYear(Number(e.target.value))}
+                    onChange={(e) => handleYearChange(Number(e.target.value))}
                     className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                   >
-                    {Array.from({ length: course === "Pharm D" ? 6 : course === "D Pharm" ? 2 : 8 }).map((_, i) => (
-                      <option key={i + 1} value={i + 1} className="bg-slate-900">
-                        {course === "Pharm D" || course === "D Pharm" ? `${i + 1}st Year` : `Semester ${i + 1}`}
+                    {formYearOptions.map((y) => (
+                      <option key={y} value={y} className="bg-slate-900">
+                        {getYearLabel(y, course)}
                       </option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              {/* Subject Selection */}
+              {/* Subject Selection (Dependent on Course + Year) */}
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5 flex justify-between items-center">
-                  <span>Subject</span>
+                  <span>Subject <span className="text-cyan-400">*</span></span>
                   <button
                     type="button"
                     onClick={() => setIsCustomSubject(!isCustomSubject)}
@@ -321,7 +379,7 @@ export default function FlashcardsCrud() {
                     )}
                   </select>
                 )}
-                {loadingSubjects && <p className="text-[10px] text-slate-400 mt-1">Loading subjects from database...</p>}
+                {loadingSubjects && <p className="text-[10px] text-slate-400 mt-1">Loading subjects for {getCourseShortName(course)} {getYearLabel(year, course)}...</p>}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -348,7 +406,7 @@ export default function FlashcardsCrud() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Term / Concept Title</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Term / Concept Title (Front)</label>
                 <input
                   type="text"
                   required
@@ -360,7 +418,7 @@ export default function FlashcardsCrud() {
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Definition / Meaning</label>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-0.5">Definition / Meaning (Back)</label>
                 <textarea
                   required
                   value={definition}
@@ -414,7 +472,7 @@ export default function FlashcardsCrud() {
         </div>
       )}
 
-      {/* Filter Toolbar */}
+      {/* Dependent Filter Toolbar */}
       <div className="bg-slate-900/40 border border-slate-800/60 p-4 rounded-2xl flex flex-col md:flex-row gap-3 backdrop-blur-md shadow-xl shadow-slate-950/20">
         <div className="relative flex-1">
           <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
@@ -427,30 +485,45 @@ export default function FlashcardsCrud() {
           />
         </div>
         <div className="flex flex-wrap gap-2">
+          {/* Course Filter */}
           <select
             value={filterCourse}
-            onChange={(e) => setFilterCourse(e.target.value)}
+            onChange={(e) => {
+              const newFCourse = e.target.value;
+              setFilterCourse(newFCourse);
+              // Reset year filter if it falls outside new course range
+              if (newFCourse && filterYear) {
+                const validYears = getYearsForCourse(newFCourse);
+                if (!validYears.includes(Number(filterYear))) {
+                  setFilterYear("");
+                }
+              }
+            }}
             className="bg-slate-800/40 border border-slate-700/50 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500/40 cursor-pointer"
           >
             <option value="" className="bg-slate-900">All Courses</option>
-            <option value="B Pharm" className="bg-slate-900">B Pharm</option>
-            <option value="M Pharm" className="bg-slate-900">M Pharm</option>
-            <option value="Pharm D" className="bg-slate-900">Pharm D</option>
-            <option value="D Pharm" className="bg-slate-900">D Pharm</option>
+            {allCourses.map(c => (
+              <option key={c} value={c} className="bg-slate-900">
+                {getCourseShortName(c)}
+              </option>
+            ))}
           </select>
+
+          {/* Year Filter (Dependent on Course) */}
           <select
             value={filterYear}
             onChange={(e) => setFilterYear(e.target.value)}
             className="bg-slate-800/40 border border-slate-700/50 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500/40 cursor-pointer"
           >
             <option value="" className="bg-slate-900">All Years</option>
-            <option value="1" className="bg-slate-900">1st Year / Sem 1</option>
-            <option value="2" className="bg-slate-900">2nd Year / Sem 2</option>
-            <option value="3" className="bg-slate-900">3rd Year / Sem 3</option>
-            <option value="4" className="bg-slate-900">4th Year / Sem 4</option>
-            <option value="5" className="bg-slate-900">5th Year / Sem 5</option>
-            <option value="6" className="bg-slate-900">6th Year / Sem 6</option>
+            {filterYearOptions.map((y) => (
+              <option key={y} value={y} className="bg-slate-900">
+                {getYearLabel(y, filterCourse)}
+              </option>
+            ))}
           </select>
+
+          {/* Subject Filter */}
           <input
             type="text"
             placeholder="Filter by subject..."
@@ -461,16 +534,16 @@ export default function FlashcardsCrud() {
         </div>
       </div>
 
-      {/* Main Table view */}
+      {/* Main Table View */}
       <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl overflow-hidden backdrop-blur-md shadow-xl shadow-slate-950/20">
         {loading ? (
           <div className="py-20 flex flex-col justify-center items-center text-slate-400 gap-2">
             <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
-            <span className="text-xs font-semibold">Loading flashcards...</span>
+            <span className="text-xs font-semibold">Loading flashcards directory...</span>
           </div>
         ) : filteredFlashcards.length === 0 ? (
           <div className="py-20 text-center text-slate-500 bg-slate-900/10 border-dashed border border-slate-850/60 rounded-2xl m-6">
-            <BookMarked className="w-10 h-10 mx-auto text-slate-655 mb-2" />
+            <BookMarked className="w-10 h-10 mx-auto text-slate-600 mb-2" />
             <p className="text-xs font-bold text-slate-400">No flashcards found</p>
             <p className="text-[11px] text-slate-500 mt-1">Try widening your filters or search keywords.</p>
           </div>
@@ -479,10 +552,10 @@ export default function FlashcardsCrud() {
             <table className="w-full border-collapse text-left text-xs">
               <thead>
                 <tr className="border-b border-slate-800/60 text-slate-400 text-[10px] font-bold uppercase tracking-widest bg-slate-950/40">
-                  <th className="p-4 w-1/4">Course & Category</th>
-                  <th className="p-4 w-1/4">Term</th>
-                  <th className="p-4 w-2/5">Definition</th>
-                  <th className="p-4 w-1/10 text-center">Published</th>
+                  <th className="p-4 w-1/4">Course, Year & Subject</th>
+                  <th className="p-4 w-1/4">Term (Front)</th>
+                  <th className="p-4 w-2/5">Definition (Back)</th>
+                  <th className="p-4 w-1/10 text-center">Status</th>
                   <th className="p-4 w-1/10 text-right">Actions</th>
                 </tr>
               </thead>
@@ -490,9 +563,11 @@ export default function FlashcardsCrud() {
                 {filteredFlashcards.map((f) => (
                   <tr key={f.id} className="hover:bg-slate-800/20 transition-colors duration-150 group">
                     <td className="p-4">
-                      <div className="font-bold text-slate-100">{f.course}</div>
-                      <div className="text-[11px] text-cyan-455 font-bold mt-0.5">{f.subject}</div>
-                      <div className="text-[10px] text-slate-400 mt-1 font-medium">{f.year} Year / Sem</div>
+                      <div className="font-bold text-slate-100">{getCourseShortName(f.course)}</div>
+                      <div className="text-[11px] text-cyan-400 font-bold mt-0.5">{f.subject}</div>
+                      <div className="text-[10px] text-slate-400 mt-1 font-medium">
+                        {getYearLabel(f.year, f.course)}
+                      </div>
                       {f.category && (
                         <div className="mt-2">
                           <span className="px-2 py-0.5 bg-slate-800/60 text-[9px] font-bold border border-slate-700/30 rounded text-slate-350">
@@ -501,10 +576,10 @@ export default function FlashcardsCrud() {
                         </div>
                       )}
                     </td>
-                    <td className="p-4 font-bold text-slate-200 group-hover:text-cyan-50 transition-colors">
+                    <td className="p-4 font-bold text-slate-200 group-hover:text-cyan-300 transition-colors">
                       {f.term}
                       {f.topic && (
-                        <div className="text-[10px] text-slate-450 font-medium font-sans mt-1">Topic: {f.topic}</div>
+                        <div className="text-[10px] text-slate-400 font-medium font-sans mt-1">Topic: {f.topic}</div>
                       )}
                     </td>
                     <td className="p-4 text-[11px] text-slate-300 leading-relaxed font-medium">
@@ -516,7 +591,7 @@ export default function FlashcardsCrud() {
                           ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
                           : "bg-slate-800/60 text-slate-400 border-slate-700/30"
                       }`}>
-                        {f.is_published ? "Yes" : "No"}
+                        {f.is_published ? "Published" : "Draft"}
                       </span>
                     </td>
                     <td className="p-4 text-right">
@@ -530,7 +605,7 @@ export default function FlashcardsCrud() {
                         </button>
                         <button
                           onClick={() => handleDeleteClick(f.id)}
-                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-455 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
+                          className="p-2 rounded-lg bg-slate-800/40 hover:bg-rose-500/10 hover:text-rose-400 text-slate-400 border border-slate-800 hover:border-rose-500/20 transition-all duration-150"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />

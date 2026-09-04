@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { 
@@ -17,9 +18,18 @@ import {
   BookOpen,
   GraduationCap,
   ArrowLeft,
-  FolderOpen
+  FolderOpen,
+  Layers,
+  BookMarked
 } from "lucide-react";
 import BookmarkButton from "@/components/BookmarkButton";
+import { 
+  getYearsForCourse, 
+  getCourseFullName, 
+  getCourseShortName, 
+  getYearLabel, 
+  normalizeCourseName 
+} from "@/lib/courseHelpers";
 
 interface Flashcard {
   id: string;
@@ -32,16 +42,27 @@ interface Flashcard {
   topic: string | null;
 }
 
-export default function FlashcardsPage() {
+// Canonical base courses supported by RxFusion
+const DEFAULT_COURSES = ["Pharm D", "B Pharm", "D Pharm", "M Pharm"];
+
+function FlashcardsContent() {
   const { profile } = useAuth();
-  
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const [learnedIds, setLearnedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Hierarchy Selection State
-  const [selectedYear, setSelectedYear] = useState<number | null>(null);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  // Read URL search params
+  const courseParam = searchParams.get("course");
+  const yearParam = searchParams.get("year");
+  const subjectParam = searchParams.get("subject");
+
+  const selectedCourse = courseParam ? normalizeCourseName(courseParam) : null;
+  const selectedYear = yearParam ? Number(yearParam) : null;
+  const selectedSubject = subjectParam ? subjectParam.trim() : null;
+
   const [searchQuery, setSearchQuery] = useState("");
 
   // Quiz deck state
@@ -94,38 +115,52 @@ export default function FlashcardsPage() {
     }
   };
 
-  // Derive available years (1st to 6th year)
-  const AVAILABLE_YEARS = [1, 2, 3, 4, 5, 6];
+  // Helper to update state via URL search params
+  const updateNavigation = (c: string | null, y: number | null, s: string | null) => {
+    const params = new URLSearchParams();
+    if (c) params.set("course", c);
+    if (y !== null && y !== undefined) params.set("year", String(y));
+    if (s) params.set("subject", s);
 
-  // Derive year label
-  const getYearLabel = (y: number) => {
-    switch (y) {
-      case 1: return "1st Year";
-      case 2: return "2nd Year";
-      case 3: return "3rd Year";
-      case 4: return "4th Year";
-      case 5: return "5th Year";
-      case 6: return "6th Year / Internship";
-      default: return `Year ${y}`;
-    }
+    const queryString = params.toString();
+    router.push(`/flashcards${queryString ? `?${queryString}` : ""}`);
   };
 
-  // Subjects available for selected year
+  // Discover all available courses (Default canonical + any present in DB flashcards)
+  const availableCourses = useMemo(() => {
+    const dbCourses = Array.from(new Set(flashcards.map(f => normalizeCourseName(f.course)))).filter(Boolean);
+    const combined = Array.from(new Set([...DEFAULT_COURSES, ...dbCourses]));
+    return combined;
+  }, [flashcards]);
+
+  // Derived available years for selected course
+  const availableYearsForCourse = useMemo(() => {
+    if (!selectedCourse) return [];
+    return getYearsForCourse(selectedCourse);
+  }, [selectedCourse]);
+
+  // Subjects available for selected course + year
   const availableSubjectsForYear = useMemo(() => {
-    if (selectedYear === null) return [];
-    const forYear = flashcards.filter(c => Number(c.year) === Number(selectedYear));
-    const subjectNames = Array.from(new Set(forYear.map(c => c.subject))).sort();
+    if (!selectedCourse || selectedYear === null) return [];
+    
+    const forCourseAndYear = flashcards.filter(c => 
+      normalizeCourseName(c.course) === selectedCourse && 
+      Number(c.year) === Number(selectedYear)
+    );
+
+    const subjectNames = Array.from(new Set(forCourseAndYear.map(c => c.subject))).sort();
     return subjectNames.map(s => {
-      const count = forYear.filter(c => c.subject === s).length;
+      const count = forCourseAndYear.filter(c => c.subject === s).length;
       return { name: s, count };
     });
-  }, [flashcards, selectedYear]);
+  }, [flashcards, selectedCourse, selectedYear]);
 
-  // Flashcards for current active deck (Selected Year + Selected Subject)
+  // Active deck of cards for selected course + year + subject
   const activeDeck = useMemo(() => {
-    if (selectedYear === null || selectedSubject === null) return [];
+    if (!selectedCourse || selectedYear === null || !selectedSubject) return [];
 
     const filtered = flashcards.filter(card => {
+      const matchesCourse = normalizeCourseName(card.course) === selectedCourse;
       const matchesYear = Number(card.year) === Number(selectedYear);
       const matchesSubject = card.subject.toLowerCase() === selectedSubject.toLowerCase();
       const matchesSearch = searchQuery === "" ||
@@ -133,24 +168,24 @@ export default function FlashcardsPage() {
         card.definition.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (card.topic && card.topic.toLowerCase().includes(searchQuery.toLowerCase()));
 
-      return matchesYear && matchesSubject && matchesSearch;
+      return matchesCourse && matchesYear && matchesSubject && matchesSearch;
     });
 
     if (isShuffled) {
       return shuffledCards.filter(c => filtered.some(f => f.id === c.id));
     }
     return filtered;
-  }, [flashcards, selectedYear, selectedSubject, searchQuery, isShuffled, shuffledCards]);
+  }, [flashcards, selectedCourse, selectedYear, selectedSubject, searchQuery, isShuffled, shuffledCards]);
 
-  // Reset card deck state on subject/year change
+  // Reset deck position when subject, year, or search changes
   useEffect(() => {
     setCurrentIndex(0);
     setIsFlipped(false);
     setIsShuffled(false);
-  }, [selectedYear, selectedSubject, searchQuery]);
+  }, [selectedCourse, selectedYear, selectedSubject, searchQuery]);
 
-  // Log activity when entering a specific subject deck
-  const logDeckActivity = useCallback(async (year: number, subjectName: string) => {
+  // Log activity when entering a subject deck
+  const logDeckActivity = useCallback(async (courseName: string, year: number, subjectName: string) => {
     if (!profile) return;
     try {
       await fetch("/api/student/activity", {
@@ -159,9 +194,9 @@ export default function FlashcardsPage() {
         body: JSON.stringify({
           studentId: profile.id,
           contentType: "flashcards",
-          contentId: `flashcards-${year}-${subjectName}`,
-          contentTitle: `${getYearLabel(year)} — ${subjectName} Flashcards`,
-          contentUrl: "/flashcards"
+          contentId: `flashcards-${courseName}-${year}-${subjectName}`,
+          contentTitle: `${getCourseShortName(courseName)} ${getYearLabel(year, courseName)} — ${subjectName} Flashcards`,
+          contentUrl: `/flashcards?course=${encodeURIComponent(courseName)}&year=${year}&subject=${encodeURIComponent(subjectName)}`
         })
       });
     } catch (err) {
@@ -170,10 +205,10 @@ export default function FlashcardsPage() {
   }, [profile]);
 
   const handleSelectSubject = (subjectName: string) => {
-    setSelectedSubject(subjectName);
-    if (selectedYear !== null) {
-      logDeckActivity(selectedYear, subjectName);
+    if (selectedCourse && selectedYear !== null) {
+      logDeckActivity(selectedCourse, selectedYear, subjectName);
     }
+    updateNavigation(selectedCourse, selectedYear, subjectName);
   };
 
   const handleNext = () => {
@@ -256,35 +291,47 @@ export default function FlashcardsPage() {
               Pharmacy Flashcards
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 font-semibold leading-relaxed">
-              Memorize drug mechanisms, clinical definitions, and pharmacological parameters step by step.
+              Memorize drug mechanisms, clinical definitions, and pharmacological parameters step by step across pharmacy courses.
             </p>
           </header>
 
-          {/* Breadcrumb Navigation */}
-          <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 bg-white border border-slate-200/60 p-3 rounded-2xl shadow-xs">
+          {/* Breadcrumb Navigation Bar */}
+          <nav className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500 bg-white border border-slate-200/60 p-3 rounded-2xl shadow-xs">
             <button
-              onClick={() => { setSelectedYear(null); setSelectedSubject(null); }}
-              className="hover:text-cyan-600 transition-colors flex items-center gap-1"
+              onClick={() => updateNavigation(null, null, null)}
+              className={`hover:text-cyan-600 transition-colors flex items-center gap-1 ${!selectedCourse ? "text-cyan-600 font-bold" : ""}`}
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>Flashcards</span>
             </button>
 
-            {selectedYear !== null && (
+            {selectedCourse && (
               <>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-350" />
+                <ChevronRight className="w-3.5 h-3.5 text-slate-350 shrink-0" />
                 <button
-                  onClick={() => setSelectedSubject(null)}
-                  className={`hover:text-cyan-600 transition-colors ${selectedSubject === null ? "text-cyan-600 font-bold" : ""}`}
+                  onClick={() => updateNavigation(selectedCourse, null, null)}
+                  className={`hover:text-cyan-600 transition-colors ${selectedYear === null ? "text-cyan-600 font-bold" : ""}`}
                 >
-                  {getYearLabel(selectedYear)}
+                  {getCourseShortName(selectedCourse)}
                 </button>
               </>
             )}
 
-            {selectedSubject !== null && (
+            {selectedCourse && selectedYear !== null && (
               <>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-350" />
+                <ChevronRight className="w-3.5 h-3.5 text-slate-350 shrink-0" />
+                <button
+                  onClick={() => updateNavigation(selectedCourse, selectedYear, null)}
+                  className={`hover:text-cyan-600 transition-colors ${!selectedSubject ? "text-cyan-600 font-bold" : ""}`}
+                >
+                  {getYearLabel(selectedYear, selectedCourse)}
+                </button>
+              </>
+            )}
+
+            {selectedCourse && selectedYear !== null && selectedSubject && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-350 shrink-0" />
                 <span className="text-slate-850 font-bold">{selectedSubject}</span>
               </>
             )}
@@ -293,37 +340,95 @@ export default function FlashcardsPage() {
           {loading ? (
             <div className="bg-white border border-slate-200/60 rounded-3xl p-12 text-center flex flex-col items-center justify-center min-h-[320px]">
               <Loader2 className="w-8 h-8 text-cyan-500 animate-spin mb-2" />
-              <p className="text-sm text-slate-500">Loading flashcards directory...</p>
+              <p className="text-sm text-slate-500 font-medium">Loading flashcards directory...</p>
             </div>
-          ) : selectedYear === null ? (
-            
-            /* STEP 1: SELECT YEAR */
+
+          ) : !selectedCourse ? (
+
+            /* STEP 1: SELECT COURSE */
             <section className="space-y-4">
               <div className="flex justify-between items-center">
                 <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5 text-cyan-500" />
-                  <span>Step 1 — Select Academic Year</span>
+                  <BookMarked className="w-5 h-5 text-cyan-500" />
+                  <span>Step 1 — Select Course</span>
                 </h2>
-                <span className="text-xs font-semibold text-slate-400">Choose your year of study</span>
+                <span className="text-xs font-semibold text-slate-400">Select your pharmacy program</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {availableCourses.map((c) => {
+                  const cardsInCourse = flashcards.filter(f => normalizeCourseName(f.course) === c);
+                  const subjectsCount = new Set(cardsInCourse.map(f => f.subject)).size;
+                  const fullName = getCourseFullName(c);
+                  
+                  return (
+                    <button
+                      key={c}
+                      onClick={() => updateNavigation(c, null, null)}
+                      className="p-5 bg-white border border-slate-200/60 hover:border-cyan-400 rounded-3xl text-left shadow-xs hover:shadow-md transition-all group duration-200 flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="w-10 h-10 rounded-2xl bg-cyan-50 group-hover:bg-cyan-500 text-cyan-600 group-hover:text-white flex items-center justify-center mb-3 transition-colors">
+                          <Layers className="w-5 h-5" />
+                        </div>
+                        <h3 className="text-base font-extrabold text-slate-900 group-hover:text-cyan-600 transition-colors">
+                          {fullName}
+                        </h3>
+                        <p className="text-xs text-slate-500 font-semibold mt-1">
+                          {cardsInCourse.length} Flashcards • {subjectsCount} Subjects
+                        </p>
+                      </div>
+
+                      <div className="mt-5 flex items-center text-xs font-bold text-cyan-600 group-hover:translate-x-1 transition-transform gap-1">
+                        <span>Explore {getCourseShortName(c)} Flashcards</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+          ) : selectedYear === null ? (
+
+            /* STEP 2: SELECT YEAR */
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => updateNavigation(null, null, null)}
+                    className="p-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
+                    title="Back to Courses"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <GraduationCap className="w-5 h-5 text-cyan-500" />
+                    <span>Step 2 — Select Academic Year ({getCourseShortName(selectedCourse)})</span>
+                  </h2>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {AVAILABLE_YEARS.map((y) => {
-                  const cardsInYear = flashcards.filter(c => Number(c.year) === y);
-                  const subjectsCount = new Set(cardsInYear.map(c => c.subject)).size;
+                {availableYearsForCourse.map((y) => {
+                  const cardsInYear = flashcards.filter(f => 
+                    normalizeCourseName(f.course) === selectedCourse && Number(f.year) === y
+                  );
+                  const subjectsCount = new Set(cardsInYear.map(f => f.subject)).size;
+                  
                   return (
                     <button
                       key={y}
-                      onClick={() => setSelectedYear(y)}
+                      onClick={() => updateNavigation(selectedCourse, y, null)}
                       className="p-5 bg-white border border-slate-200/60 hover:border-cyan-400 rounded-3xl text-left shadow-xs hover:shadow-md transition-all group duration-200"
                     >
                       <div className="w-10 h-10 rounded-2xl bg-cyan-50 group-hover:bg-cyan-500 text-cyan-600 group-hover:text-white flex items-center justify-center mb-3 transition-colors">
                         <GraduationCap className="w-5 h-5" />
                       </div>
                       <h3 className="text-base font-extrabold text-slate-900 group-hover:text-cyan-600 transition-colors">
-                        {getYearLabel(y)}
+                        {getYearLabel(y, selectedCourse)}
                       </h3>
-                      <p className="text-xs text-slate-500 font-medium mt-1">
+                      <p className="text-xs text-slate-500 font-semibold mt-1">
                         {cardsInYear.length} Flashcards • {subjectsCount} Subjects
                       </p>
                       <div className="mt-4 flex items-center text-xs font-bold text-cyan-600 group-hover:translate-x-1 transition-transform gap-1">
@@ -338,12 +443,12 @@ export default function FlashcardsPage() {
 
           ) : selectedSubject === null ? (
 
-            /* STEP 2: SELECT SUBJECT */
+            /* STEP 3: SELECT SUBJECT */
             <section className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => setSelectedYear(null)}
+                    onClick={() => updateNavigation(selectedCourse, null, null)}
                     className="p-2 bg-white border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
                     title="Back to Years"
                   >
@@ -351,7 +456,7 @@ export default function FlashcardsPage() {
                   </button>
                   <h2 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
                     <FolderOpen className="w-5 h-5 text-cyan-500" />
-                    <span>Step 2 — Select Subject ({getYearLabel(selectedYear)})</span>
+                    <span>Step 3 — Select Subject ({getCourseShortName(selectedCourse)} — {getYearLabel(selectedYear, selectedCourse)})</span>
                   </h2>
                 </div>
               </div>
@@ -361,10 +466,10 @@ export default function FlashcardsPage() {
                   <HelpCircle className="w-12 h-12 text-slate-350 mx-auto" />
                   <p className="text-base font-bold text-slate-800">No flashcards available for this year yet.</p>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Flashcards for {getYearLabel(selectedYear)} are currently being curated by our editorial team. Please check back soon!
+                    Flashcards for {getCourseShortName(selectedCourse)} {getYearLabel(selectedYear, selectedCourse)} are currently being curated. Please check back soon!
                   </p>
                   <button
-                    onClick={() => setSelectedYear(null)}
+                    onClick={() => updateNavigation(selectedCourse, null, null)}
                     className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 rounded-xl hover:bg-slate-200 transition-colors mt-2"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
@@ -398,13 +503,13 @@ export default function FlashcardsPage() {
 
           ) : (
 
-            /* STEP 3: STUDY FLASHCARD DECK */
+            /* STEP 4: STUDY FLASHCARD DECK */
             <section className="space-y-6">
               
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-slate-200/60 p-4 rounded-3xl shadow-xs">
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => setSelectedSubject(null)}
+                    onClick={() => updateNavigation(selectedCourse, selectedYear, null)}
                     className="p-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
                     title="Back to Subjects"
                   >
@@ -412,7 +517,7 @@ export default function FlashcardsPage() {
                   </button>
                   <div>
                     <span className="text-[10px] font-bold uppercase text-cyan-600 bg-cyan-50 border border-cyan-100 px-2 py-0.5 rounded-md">
-                      {getYearLabel(selectedYear)}
+                      {getCourseShortName(selectedCourse)} • {getYearLabel(selectedYear, selectedCourse)}
                     </span>
                     <h2 className="text-base font-extrabold text-slate-900 mt-0.5">
                       {selectedSubject}
@@ -435,12 +540,12 @@ export default function FlashcardsPage() {
               {activeDeck.length === 0 ? (
                 <div className="py-16 text-center bg-white border border-slate-200/60 rounded-3xl shadow-3xs p-6 space-y-3">
                   <HelpCircle className="w-12 h-12 text-slate-350 mx-auto" />
-                  <p className="text-base font-bold text-slate-800">No flashcards are available for this subject yet.</p>
+                  <p className="text-base font-bold text-slate-800">No flashcards available for this subject yet.</p>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
                     Try searching for another keyword or select a different subject.
                   </p>
                   <button
-                    onClick={() => setSelectedSubject(null)}
+                    onClick={() => updateNavigation(selectedCourse, selectedYear, null)}
                     className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-100 border border-slate-200 text-xs font-bold text-slate-700 rounded-xl hover:bg-slate-200 transition-colors mt-2"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
@@ -587,5 +692,17 @@ export default function FlashcardsPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function FlashcardsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-cyan-500 animate-spin" />
+      </div>
+    }>
+      <FlashcardsContent />
+    </Suspense>
   );
 }
