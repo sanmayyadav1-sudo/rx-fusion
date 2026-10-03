@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { verifyStudentSessionToken, STUDENT_SESSION_COOKIE_NAME } from "@/lib/authHelpers";
+import { verifyStudentSessionToken, STUDENT_SESSION_COOKIE_NAME, getServiceSupabaseClient } from "@/lib/authHelpers";
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -96,11 +96,19 @@ export async function middleware(request: NextRequest) {
 
   if (rawEmail) {
     const decodedEmail = decodeURIComponent(rawEmail).trim().toLowerCase();
-    const { data: studentProfile } = await supabase
-      .from("student_profiles")
-      .select("full_name")
-      .eq("email", decodedEmail)
-      .maybeSingle();
+    
+    let studentProfile = null;
+    try {
+      const serviceSupabase = getServiceSupabaseClient();
+      const { data } = await serviceSupabase
+        .from("student_profiles")
+        .select("full_name")
+        .eq("email", decodedEmail)
+        .maybeSingle();
+      studentProfile = data;
+    } catch (err) {
+      console.error("Middleware student_profiles query exception:", err);
+    }
 
     const hasProfile = !!(studentProfile && studentProfile.full_name && studentProfile.full_name.trim());
 
