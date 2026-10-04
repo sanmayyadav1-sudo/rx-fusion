@@ -8,14 +8,17 @@ import {
   Newspaper, 
   Download, 
   Mail, 
-  Trash2,
-  Calendar,
-  Loader2,
-  Inbox,
-  HelpCircle,
-  BookMarked
+  Trash2, 
+  Calendar, 
+  Loader2, 
+  Inbox, 
+  HelpCircle, 
+  BookMarked,
+  ClipboardList,
+  Users,
+  CheckCircle
 } from "lucide-react";
-
+import Link from "next/link";
 
 interface Stats {
   notesCount: number;
@@ -26,6 +29,10 @@ interface Stats {
   qbCount: number;
   qpCount: number;
   fcCount: number;
+  todaysQuizzesCount: number;
+  quizAttemptsCount: number;
+  activeStudentsCount: number;
+  newArticleOrdersCount: number;
 }
 
 interface ContactMessage {
@@ -55,6 +62,10 @@ export default function AdminDashboard() {
     qbCount: 0,
     qpCount: 0,
     fcCount: 0,
+    todaysQuizzesCount: 0,
+    quizAttemptsCount: 0,
+    activeStudentsCount: 0,
+    newArticleOrdersCount: 0,
   });
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [recentDownloads, setRecentDownloads] = useState<RecentDownload[]>([]);
@@ -62,7 +73,7 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      // Fetch stats count parallelly
+      // Fetch stats count in parallel
       const [
         { count: notesCount },
         { count: blogsCount },
@@ -83,6 +94,41 @@ export default function AdminDashboard() {
         supabase.from("flashcards").select("*", { count: "exact", head: true }),
       ]);
 
+      // Fetch dynamic analytics from new API routes
+      let todaysQuizzesCount = 0;
+      let quizAttemptsCount = 0;
+      let activeStudentsCount = 0;
+      let newArticleOrdersCount = 0;
+
+      try {
+        const [dailyRes, analyticsRes, ordersRes, usersRes] = await Promise.all([
+          fetch("/api/admin/daily-quiz"),
+          fetch("/api/admin/quiz-analytics"),
+          fetch("/api/admin/article-orders"),
+          supabase.from("student_profiles").select("id", { count: "exact", head: true })
+        ]);
+
+        if (dailyRes.ok) {
+          const dData = await dailyRes.json();
+          const todayStr = new Date().toISOString().split("T")[0];
+          todaysQuizzesCount = (dData.dailyQuizzes || []).filter((q: { quiz_date: string }) => q.quiz_date === todayStr).length;
+        }
+
+        if (analyticsRes.ok) {
+          const aData = await analyticsRes.json();
+          quizAttemptsCount = aData.summary?.totalAttempts || 0;
+        }
+
+        if (ordersRes.ok) {
+          const oData = await ordersRes.json();
+          newArticleOrdersCount = oData.summary?.newOrders || 0;
+        }
+
+        activeStudentsCount = usersRes.count || 0;
+      } catch (err) {
+        console.warn("Secondary metric fetch issue:", err);
+      }
+
       setStats({
         notesCount: notesCount || 0,
         blogsCount: blogsCount || 0,
@@ -92,6 +138,10 @@ export default function AdminDashboard() {
         qbCount: qbCount || 0,
         qpCount: qpCount || 0,
         fcCount: fcCount || 0,
+        todaysQuizzesCount,
+        quizAttemptsCount,
+        activeStudentsCount,
+        newArticleOrdersCount,
       });
 
       // Fetch contact messages
@@ -147,7 +197,15 @@ export default function AdminDashboard() {
     );
   }
 
-  const statCards = [
+  // Highlight Cards specified in Requirement 11
+  const highlightCards = [
+    { label: "Today's Quizzes", value: stats.todaysQuizzesCount, icon: <Calendar className="w-5 h-5" />, href: "/admin/daily-quiz", color: "cyan" as const, desc: "Active daily tests today" },
+    { label: "Quiz Attempts", value: stats.quizAttemptsCount, icon: <CheckCircle className="w-5 h-5" />, href: "/admin/quiz-analytics", color: "violet" as const, desc: "Total student submissions" },
+    { label: "Active Students", value: stats.activeStudentsCount, icon: <Users className="w-5 h-5" />, href: "/admin/users", color: "emerald" as const, desc: "Registered pharmacy students" },
+    { label: "New Article Orders", value: stats.newArticleOrdersCount, icon: <ClipboardList className="w-5 h-5" />, href: "/admin/article-orders", color: "amber" as const, desc: "Review & research requests" },
+  ];
+
+  const contentCards = [
     { label: "Total Notes", value: stats.notesCount, icon: <FileText className="w-5 h-5" />, color: "cyan" as const },
     { label: "Total Blogs", value: stats.blogsCount, icon: <BookOpen className="w-5 h-5" />, color: "violet" as const },
     { label: "Total News", value: stats.newsCount, icon: <Newspaper className="w-5 h-5" />, color: "emerald" as const },
@@ -207,28 +265,71 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stats Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat) => {
-          const colors = colorMap[stat.color];
-          return (
-            <div
-              key={stat.label}
-              className={`relative overflow-hidden rounded-2xl p-5 bg-slate-900/40 backdrop-blur-md border border-slate-800/60 shadow-xl shadow-slate-950/20 ${colors.border} transition-all duration-200`}
-            >
-              <div className={`absolute top-0 right-0 w-20 h-20 ${colors.bg} rounded-full blur-2xl pointer-events-none`} />
-              <div className={`w-10 h-10 rounded-xl ${colors.iconBg} border ${colors.iconBorder} flex items-center justify-center mb-4 ${colors.iconText}`}>
-                {stat.icon}
+      {/* Requirement 11 Primary Highlights */}
+      <div>
+        <h2 className="text-xs font-bold text-cyan-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+          <span>Live Operations & Engagement</span>
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {highlightCards.map((stat) => {
+            const colors = colorMap[stat.color];
+            return (
+              <Link
+                key={stat.label}
+                href={stat.href}
+                className={`relative overflow-hidden rounded-2xl p-5 bg-slate-900/60 backdrop-blur-md border border-slate-800/80 shadow-xl shadow-slate-950/20 ${colors.border} hover:-translate-y-0.5 transition-all duration-200 group block`}
+              >
+                <div className={`absolute top-0 right-0 w-24 h-24 ${colors.bg} rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform`} />
+                <div className="flex items-center justify-between mb-3">
+                  <div className={`w-10 h-10 rounded-xl ${colors.iconBg} border ${colors.iconBorder} flex items-center justify-center ${colors.iconText}`}>
+                    {stat.icon}
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-300 transition-colors">
+                    Manage &rarr;
+                  </span>
+                </div>
+                <div className={`text-3xl font-black ${colors.valueText} mb-1 tracking-tight`}>
+                  {stat.value ?? 0}
+                </div>
+                <div className="text-xs font-bold text-white mb-0.5">
+                  {stat.label}
+                </div>
+                <div className="text-[10px] text-slate-400">
+                  {stat.desc}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Content Library & Repositories */}
+      <div>
+        <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">
+          <span>Academic Repositories</span>
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {contentCards.map((stat) => {
+            const colors = colorMap[stat.color];
+            return (
+              <div
+                key={stat.label}
+                className={`relative overflow-hidden rounded-2xl p-5 bg-slate-900/40 backdrop-blur-md border border-slate-800/60 shadow-xl shadow-slate-950/20 ${colors.border} transition-all duration-200`}
+              >
+                <div className={`absolute top-0 right-0 w-20 h-20 ${colors.bg} rounded-full blur-2xl pointer-events-none`} />
+                <div className={`w-9 h-9 rounded-xl ${colors.iconBg} border ${colors.iconBorder} flex items-center justify-center mb-3 ${colors.iconText}`}>
+                  {stat.icon}
+                </div>
+                <div className={`text-2xl font-extrabold ${colors.valueText} mb-1`}>
+                  {stat.value ?? 0}
+                </div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  {stat.label}
+                </div>
               </div>
-              <div className={`text-3xl font-extrabold ${colors.valueText} mb-1`}>
-                {stat.value ?? 0}
-              </div>
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                {stat.label}
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Detailed Columns for Messages & Downloads */}

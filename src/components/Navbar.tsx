@@ -10,6 +10,8 @@ import SearchModal from "./SearchModal";
 const primaryLinks = [
   { name: "Home", href: "/" },
   { name: "Notes", href: "/notes" },
+  { name: "Daily Quiz", href: "/quiz" },
+  { name: "Article Services", href: "/article-order" },
   { name: "Explore", dropdown: true },
   { name: "Clinical Cases", href: "/cases" },
   { name: "Blogs", href: "/blogs" },
@@ -20,9 +22,10 @@ const primaryLinks = [
 ];
 
 const exploreItems = [
+  { name: "Year-Wise Daily Quiz", href: "/quiz" },
+  { name: "Order Article / Research Paper", href: "/article-order" },
   { name: "Drug Database", href: "/drugs" },
   { name: "Viva Questions", href: "/viva" },
-  { name: "Daily Quiz", href: "/quiz" },
   { name: "Clinical Tools", href: "/clinical-tools" },
   { name: "Question Bank", href: "/question-bank" },
   { name: "Question Papers", href: "/question-papers" },
@@ -118,7 +121,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden lg:flex items-center space-x-3 xl:space-x-5">
             {links.map((link) => {
               if (link.dropdown) {
                 return (
@@ -209,7 +212,7 @@ export default function Navbar() {
           </nav>
 
           {/* Mobile search & menu buttons */}
-          <div className="flex items-center space-x-1 md:hidden">
+          <div className="flex items-center space-x-1 lg:hidden">
             <button
               onClick={() => setIsSearchOpen(true)}
               className="p-2 hover:bg-slate-100 rounded-xl text-slate-500 hover:text-slate-700 transition-all focus:outline-none"
@@ -233,7 +236,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden transition-all duration-300 ease-in-out ${
+        className={`lg:hidden transition-all duration-300 ease-in-out ${
           isOpen
             ? "max-h-screen opacity-100 border-b border-slate-100"
             : "max-h-0 opacity-0 overflow-hidden"

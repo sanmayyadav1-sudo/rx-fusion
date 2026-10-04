@@ -291,6 +291,96 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Daily Quiz & Research Article Services Spotlight Section */}
+      <section className="py-12 px-4 bg-white border-b border-slate-200/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Daily Quiz Spotlight */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-950 via-slate-900 to-sky-950 p-7 sm:p-8 text-white shadow-md flex flex-col justify-between border border-cyan-900/40">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 text-xs font-bold uppercase tracking-wider mb-4">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Year-Wise Daily Quiz</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-3">
+                  Master Pharma MCQs <br className="hidden sm:block" /> Every Single Day
+                </h3>
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+                  Syllabus-aligned clinical quizzes tailored specifically for your academic year (1st to 5th Year). Timed attempts, instant grading, rationales, and community rank.
+                </p>
+                
+                <div className="grid grid-cols-3 gap-2.5 mb-6 text-center">
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 backdrop-blur-xs">
+                    <p className="text-base sm:text-lg font-black text-cyan-400">5</p>
+                    <p className="text-[10px] text-slate-300 font-medium">Academic Years</p>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 backdrop-blur-xs">
+                    <p className="text-base sm:text-lg font-black text-emerald-400">Daily</p>
+                    <p className="text-[10px] text-slate-300 font-medium">Fresh MCQs</p>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-2.5 backdrop-blur-xs">
+                    <p className="text-base sm:text-lg font-black text-amber-400">Instant</p>
+                    <p className="text-[10px] text-slate-300 font-medium">Review & Rationale</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  href="/quiz"
+                  className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-cyan-500 to-sky-500 text-white hover:from-cyan-400 hover:to-sky-400 shadow-md transition-all duration-200 hover:-translate-y-0.5"
+                >
+                  <span>Take Today&apos;s Daily Quiz</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Article & Research Paper Ordering Spotlight */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-7 sm:p-8 text-white shadow-md flex flex-col justify-between border border-indigo-900/40">
+              <div className="absolute bottom-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold uppercase tracking-wider mb-4">
+                  <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Academic Support Service</span>
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-3">
+                  Order an Article / <br className="hidden sm:block" /> Research Paper
+                </h3>
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed mb-6">
+                  Expert scientific writing and literature synthesis support for pharmacy scholars. Structured according to Vancouver or APA citation styles and academic integrity guidelines.
+                </p>
+
+                <div className="space-y-2 mb-6 text-xs text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 shrink-0" />
+                    <span><strong className="text-white">Review Articles:</strong> Comprehensive literature search & therapeutic syntheses.</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
+                    <span><strong className="text-white">Research Papers:</strong> Methodology outlining, study drafting & data presentation.</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400 italic">
+                    <span>* Ethical drafting support only — strictly no guaranteed publication or false acceptance claims.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <Link
+                  href="/article-order"
+                  className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-indigo-500 to-violet-600 text-white hover:from-indigo-400 hover:to-violet-500 shadow-md transition-all duration-200 hover:-translate-y-0.5"
+                >
+                  <span>Order Article / Research Paper</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Select Course Section */}
       <section className="py-12 px-4 bg-slate-100/50 border-y border-slate-200/40">
         <div className="max-w-6xl mx-auto">

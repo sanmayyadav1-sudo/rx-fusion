@@ -20,7 +20,10 @@ import {
   Stethoscope,
   Megaphone,
   Users,
-  HelpCircle
+  HelpCircle,
+  Calendar,
+  BarChart2,
+  ClipboardList
 } from "lucide-react";
 
 interface SidebarProps {
@@ -44,7 +47,10 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { name: "Blogs", href: "/admin/blogs", icon: <BookOpen className="w-5 h-5" /> },
     { name: "News", href: "/admin/news", icon: <Newspaper className="w-5 h-5" /> },
     { name: "Viva Questions", href: "/admin/viva", icon: <HelpCircle className="w-5 h-5" /> },
-    { name: "Quiz Questions", href: "/admin/quiz", icon: <HelpCircle className="w-5 h-5" /> },
+    { name: "Quiz Management", href: "/admin/quiz", icon: <HelpCircle className="w-5 h-5" /> },
+    { name: "Daily Quiz", href: "/admin/daily-quiz", icon: <Calendar className="w-5 h-5" /> },
+    { name: "Quiz Analytics", href: "/admin/quiz-analytics", icon: <BarChart2 className="w-5 h-5" /> },
+    { name: "Article Orders", href: "/admin/article-orders", icon: <ClipboardList className="w-5 h-5" /> },
     { name: "Question Bank", href: "/admin/question-bank", icon: <BookOpen className="w-5 h-5" /> },
     { name: "Question Papers", href: "/admin/question-papers", icon: <FileText className="w-5 h-5" /> },
     { name: "Flashcards", href: "/admin/flashcards", icon: <BookMarked className="w-5 h-5" /> },
