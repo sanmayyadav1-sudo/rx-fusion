@@ -1,24 +1,33 @@
 import type { Metadata } from "next";
-import { sora, inter, jetbrainsMono } from "@/lib/fonts";
+import { instrumentSans, newsreader, jetbrainsMono } from "@/lib/fonts";
 import "@/styles/globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
-import AnnouncementPopup from "@/components/AnnouncementPopup";
-import ActivityTracker from "@/components/ActivityTracker";
-import WhatsAppFloatingButton from "@/components/WhatsAppFloatingButton";
+import { ToastProvider } from "@/context/ToastContext";
 
 export const metadata: Metadata = {
   title: {
-    default: "RxFusion | Pharmacy Education Platform",
+    default: "RxFusion | Pharmacy Knowledge. Clinical Excellence.",
     template: "%s | RxFusion",
   },
-  description: "Access premium pharmacy lecture notes, resources, and articles. Designed specifically for Pharm D, B Pharm, and D Pharm students.",
-  keywords: ["Pharmacy Education", "B Pharm Notes", "Pharm D Study Material", "D Pharm syllabus", "RxFusion notes", "Pharmacology"],
+  description:
+    "An advanced learning ecosystem designed exclusively for Doctor of Pharmacy (Pharm.D) students, combining academic resources, clinical education and scientific research.",
+  keywords: [
+    "Pharm.D Education",
+    "Doctor of Pharmacy",
+    "Clinical Pharmacy",
+    "Pharmacology",
+    "Pharmacotherapeutics",
+    "SOAP Notes",
+    "Clinical Cases",
+    "Drug Database",
+  ],
   authors: [{ name: "RxFusion Editorial" }],
   openGraph: {
-    title: "RxFusion | Pharmacy Education Platform",
-    description: "Access premium pharmacy lecture notes, study materials, and scientific blogs.",
+    title: "RxFusion | Pharmacy Knowledge. Clinical Excellence.",
+    description:
+      "An advanced learning ecosystem designed exclusively for Doctor of Pharmacy (Pharm.D) students.",
     url: "https://rxfusion.netlify.app",
     siteName: "RxFusion",
     locale: "en_US",
@@ -37,19 +46,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body
-        className={`${inter.variable} ${sora.variable} ${jetbrainsMono.variable} font-sans antialiased min-h-screen flex flex-col bg-background text-foreground`}
+        className={`${instrumentSans.variable} ${newsreader.variable} ${jetbrainsMono.variable} antialiased min-h-screen flex flex-col`}
         suppressHydrationWarning
       >
         <AuthProvider>
-          <ActivityTracker />
-          <Navbar />
-          <AnnouncementPopup />
-          <WhatsAppFloatingButton />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
+          <ToastProvider>
+            <Navbar />
+            <main id="app" className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

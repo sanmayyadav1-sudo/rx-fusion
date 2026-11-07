@@ -37,7 +37,7 @@ export interface Database {
           id: string;
           title: string;
           description: string | null;
-          course: "Pharm D" | "B Pharm" | "D Pharm";
+          course: "Pharm D";
           semester: number;
           subject: string;
           file_url: string;
@@ -49,7 +49,7 @@ export interface Database {
           id?: string;
           title: string;
           description?: string | null;
-          course: "Pharm D" | "B Pharm" | "D Pharm";
+          course?: "Pharm D";
           semester: number;
           subject: string;
           file_url: string;
@@ -61,7 +61,7 @@ export interface Database {
           id?: string;
           title?: string;
           description?: string | null;
-          course?: "Pharm D" | "B Pharm" | "D Pharm";
+          course?: "Pharm D";
           semester?: number;
           subject?: string;
           file_url?: string;
@@ -73,21 +73,21 @@ export interface Database {
       subjects: {
         Row: {
           id: string;
-          course: "Pharm D" | "B Pharm" | "D Pharm";
+          course: "Pharm D";
           year_number: number;
           subject_name: string;
           created_at: string;
         };
         Insert: {
           id?: string;
-          course: "Pharm D" | "B Pharm" | "D Pharm";
+          course?: "Pharm D";
           year_number: number;
           subject_name: string;
           created_at?: string;
         };
         Update: {
           id?: string;
-          course?: "Pharm D" | "B Pharm" | "D Pharm";
+          course?: "Pharm D";
           year_number?: number;
           subject_name?: string;
           created_at?: string;
@@ -99,7 +99,7 @@ export interface Database {
 
 export interface Subject {
   id: string;
-  course: "Pharm D" | "B Pharm" | "D Pharm";
+  course: "Pharm D";
   year_number: number;
   subject_name: string;
   created_at: string;

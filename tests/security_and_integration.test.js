@@ -7,29 +7,18 @@ import { createStudentSessionToken, verifyStudentSessionToken } from "../src/lib
 import fs from "node:fs";
 import path from "node:path";
 
-test("1. Course Normalization Engine", (t) => {
-  assert.equal(normalizeCourseName("M.Pharm"), "M Pharm");
-  assert.equal(normalizeCourseName("M Pharm"), "M Pharm");
-  assert.equal(normalizeCourseName("m.pharm."), "M Pharm");
-  assert.equal(normalizeCourseName("mpharm"), "M Pharm");
-
+test("1. Course Normalization Engine (Pharm.D Exclusive)", (t) => {
   assert.equal(normalizeCourseName("Pharm.D"), "Pharm D");
   assert.equal(normalizeCourseName("Pharm D"), "Pharm D");
   assert.equal(normalizeCourseName("pharmd"), "Pharm D");
-
-  assert.equal(normalizeCourseName("B.Pharm"), "B Pharm");
-  assert.equal(normalizeCourseName("B Pharm"), "B Pharm");
-
-  assert.equal(normalizeCourseName("D.Pharm"), "D Pharm");
-  assert.equal(normalizeCourseName("D Pharm"), "D Pharm");
+  assert.equal(normalizeCourseName("Doctor of Pharmacy"), "Pharm D");
 });
 
-test("2. Semester Resolution Engine for M.Pharm & Pharm.D", (t) => {
-  assert.deepEqual(getSemestersForCourseYear("M Pharm", "1st Year"), [1, 2]);
-  assert.deepEqual(getSemestersForCourseYear("M.Pharm.", "2nd Year"), [3, 4]);
-  assert.equal(normalizeCourseName("M Pharm"), "M Pharm");
-
+test("2. Semester/Year Resolution Engine for Pharm.D (Years 1-6)", (t) => {
   assert.deepEqual(getSemestersForCourseYear("Pharm.D", "1st Year"), [1]);
+  assert.deepEqual(getSemestersForCourseYear("Pharm.D", "2nd Year"), [2]);
+  assert.deepEqual(getSemestersForCourseYear("Pharm.D", "3rd Year"), [3]);
+  assert.deepEqual(getSemestersForCourseYear("Pharm.D", "4th Year"), [4]);
   assert.deepEqual(getSemestersForCourseYear("Pharm.D", "5th Year"), [5]);
   assert.deepEqual(getSemestersForCourseYear("Pharm.D", "6th Year (Internship)"), [6]);
 });

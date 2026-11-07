@@ -85,7 +85,12 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2. Check for student identity (via signed session cookie or Supabase Auth user email)
+  // 2. Strict protection for /admin routes: if not an authenticated admin, redirect immediately
+  if (pathname.startsWith("/admin")) {
+    return redirect("/rx-admin-access", { redirectTo: pathname });
+  }
+
+  // 3. Check for student identity (via signed session cookie or Supabase Auth user email)
   const sessionToken = request.cookies.get(STUDENT_SESSION_COOKIE_NAME)?.value;
   const sessionPayload = sessionToken ? await verifyStudentSessionToken(sessionToken) : null;
 
@@ -114,32 +119,25 @@ export async function middleware(request: NextRequest) {
 
     if (!hasProfile) {
       // Incomplete profile: force redirect to /login to complete details
-      if (pathname !== "/login") {
+      if (pathname === "/dashboard") {
         return redirect("/login", { redirectTo: pathname });
       }
     } else {
-      // Complete profile: prevent accessing login page
-      if (pathname === "/login") {
+      // Complete profile: redirect away from login/register
+      if (pathname === "/login" || pathname === "/register") {
         return redirect("/dashboard");
       }
-    }
-
-    if (pathname.startsWith("/admin")) {
-      return redirect("/rx-admin-access");
     }
 
     return supabaseResponse;
   }
 
-  // 3. No active session or cookie (user is unauthenticated).
-  if (pathname === "/dashboard") {
-    return redirect("/login", { redirectTo: "/dashboard" });
+  // 4. Protect /dashboard route for unauthenticated visitors
+  if (pathname.startsWith("/dashboard")) {
+    return redirect("/login", { redirectTo: pathname });
   }
 
-  if (pathname.startsWith("/admin")) {
-    return redirect("/rx-admin-access", { redirectTo: pathname });
-  }
-
+  // 5. Unauthenticated visitors can view public academic and clinical learning pages
   return supabaseResponse;
 }
 

@@ -97,10 +97,25 @@ export async function authorizeNoteDownload(
       note_title: noteTitle
     });
 
+  // Generate secure signed URL (valid 300 seconds) if note file is stored in Supabase storage
+  let authorizedUrl = note.file_url;
+  try {
+    const bucketMarker = "/storage/v1/object/public/notes/";
+    if (note.file_url.includes(bucketMarker)) {
+      const storagePath = decodeURIComponent(note.file_url.substring(note.file_url.indexOf(bucketMarker) + bucketMarker.length));
+      const { data: signedData } = await supabase.storage.from("notes").createSignedUrl(storagePath, 300);
+      if (signedData?.signedUrl) {
+        authorizedUrl = signedData.signedUrl;
+      }
+    }
+  } catch (signErr) {
+    console.warn("Could not generate signed URL, using direct file_url", signErr);
+  }
+
   return {
     authorized: true,
     limitReached: false,
-    fileUrl: note.file_url,
+    fileUrl: authorizedUrl,
     freeDownloadsUsed: updatedStudent.free_downloads_used,
     downloadLimit: updatedStudent.download_limit
   };

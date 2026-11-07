@@ -26,7 +26,27 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
+.env
+.env.local
+.env.*.local
+
+# database backups
+supabase/backups/
+*.backup.json
+backup_*.json
+
+# scratch and audit scripts
+backup_db.mjs
+check_*.mjs
+clean_db.mjs
+inspect_*.mjs
+list_tables.mjs
+probe_supabase.mjs
+test_cleaning.mjs
+test_data.mjs
+test_errors.mjs
+test_functions.mjs
+test_sql_runner.mjs
 
 # vercel & netlify
 .vercel

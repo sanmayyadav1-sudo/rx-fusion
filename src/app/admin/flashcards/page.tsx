@@ -331,7 +331,7 @@ export default function FlashcardsCrud() {
                     onChange={(e) => handleYearChange(Number(e.target.value))}
                     className="w-full px-4 py-2.5 rounded-xl text-xs text-white bg-slate-800/40 border border-slate-700/50 focus:outline-none focus:border-cyan-500/40 focus:ring-4 focus:ring-cyan-500/5 transition-all duration-200 cursor-pointer"
                   >
-                    {formYearOptions.map((y) => (
+                    {formYearOptions.map((y: number) => (
                       <option key={y} value={y} className="bg-slate-900">
                         {getYearLabel(y, course)}
                       </option>
@@ -516,7 +516,7 @@ export default function FlashcardsCrud() {
             className="bg-slate-800/40 border border-slate-700/50 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-cyan-500/40 cursor-pointer"
           >
             <option value="" className="bg-slate-900">All Years</option>
-            {filterYearOptions.map((y) => (
+            {filterYearOptions.map((y: number) => (
               <option key={y} value={y} className="bg-slate-900">
                 {getYearLabel(y, filterCourse)}
               </option>

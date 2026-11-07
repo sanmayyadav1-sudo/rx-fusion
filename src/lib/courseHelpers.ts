@@ -1,121 +1,97 @@
 /**
  * Canonical course normalization utility for RxFusion.
- * Standardizes all academic stream inputs to canonical internal database representation:
- * - "Pharm D"
- * - "B Pharm"
- * - "D Pharm"
- * - "M Pharm"
+ * RxFusion is exclusively built for Doctor of Pharmacy (Pharm.D).
+ * Standardizes all academic inputs to canonical internal representation:
+ * - "Pharm D" / "Pharm.D"
  */
 export function normalizeCourseName(courseStr: string | null | undefined): string {
-  if (!courseStr) return "";
+  if (!courseStr) return "Pharm D";
   const trimmed = courseStr.trim();
-  if (!trimmed) return "";
+  if (!trimmed) return "Pharm D";
 
   const lower = trimmed.toLowerCase().replace(/\./g, "");
 
-  if (lower === "pharm d" || lower === "pharmd") return "Pharm D";
-  if (lower === "b pharm" || lower === "bpharm") return "B Pharm";
-  if (lower === "d pharm" || lower === "dpharm") return "D Pharm";
-  if (lower === "m pharm" || lower === "mpharm") return "M Pharm";
+  if (lower === "pharm d" || lower === "pharmd" || lower.includes("pharm")) {
+    return "Pharm D";
+  }
 
-  // Check substring matches if exact match failed
-  if (lower.includes("pharm d") || lower.includes("pharmd")) return "Pharm D";
-  if (lower.includes("b pharm") || lower.includes("bpharm")) return "B Pharm";
-  if (lower.includes("d pharm") || lower.includes("dpharm")) return "D Pharm";
-  if (lower.includes("m pharm") || lower.includes("mpharm")) return "M Pharm";
-
-  return trimmed;
+  return "Pharm D";
 }
 
 /**
- * Returns supported semester numbers for a given course and year string.
+ * Returns supported academic year index [1-6] for Pharm.D.
  */
 export function getSemestersForCourseYear(course: string, currentYear: string): number[] {
-  const normalizedCourse = normalizeCourseName(course);
-  const yearStr = currentYear.toLowerCase();
+  void course;
+  const yearStr = (currentYear || "").toLowerCase();
   
-  if (normalizedCourse === "Pharm D") {
-    if (yearStr.includes("1st")) return [1];
-    if (yearStr.includes("2nd")) return [2];
-    if (yearStr.includes("3rd")) return [3];
-    if (yearStr.includes("4th")) return [4];
-    if (yearStr.includes("5th")) return [5];
-    if (yearStr.includes("6th") || yearStr.includes("internship")) return [6];
-    return [1];
-  }
-
-  if (normalizedCourse === "D Pharm") {
-    if (yearStr.includes("1st")) return [1];
-    if (yearStr.includes("2nd")) return [2];
-    return [1];
-  }
-
-  if (normalizedCourse === "B Pharm") {
-    if (yearStr.includes("1st")) return [1, 2];
-    if (yearStr.includes("2nd")) return [3, 4];
-    if (yearStr.includes("3rd")) return [5, 6];
-    if (yearStr.includes("4th")) return [7, 8];
-    return [1, 2];
-  }
-
-  if (normalizedCourse === "M Pharm") {
-    if (yearStr.includes("1st")) return [1, 2];
-    if (yearStr.includes("2nd")) return [3, 4];
-    return [1, 2];
-  }
-
-  return [];
+  if (yearStr.includes("1st") || yearStr.includes("first")) return [1];
+  if (yearStr.includes("2nd") || yearStr.includes("second")) return [2];
+  if (yearStr.includes("3rd") || yearStr.includes("third")) return [3];
+  if (yearStr.includes("4th") || yearStr.includes("fourth")) return [4];
+  if (yearStr.includes("5th") || yearStr.includes("fifth")) return [5];
+  if (yearStr.includes("6th") || yearStr.includes("sixth") || yearStr.includes("intern")) return [6];
+  
+  return [1];
 }
 
 /**
- * Returns list of valid academic years for a given course.
+ * Returns supported academic years for Pharm.D (Years 1 to 6).
  */
-export function getYearsForCourse(courseName: string): number[] {
-  const norm = normalizeCourseName(courseName);
-  if (norm === "Pharm D") return [1, 2, 3, 4, 5, 6];
-  if (norm === "B Pharm") return [1, 2, 3, 4];
-  if (norm === "D Pharm") return [1, 2];
-  if (norm === "M Pharm") return [1, 2];
-  return [1, 2, 3, 4];
+export function getYearsForCourse(course?: string): number[] {
+  void course;
+  return [1, 2, 3, 4, 5, 6];
 }
 
 /**
- * Returns formatted full title for a course.
+ * Returns short badge or display name for course.
  */
-export function getCourseFullName(courseName: string): string {
-  const norm = normalizeCourseName(courseName);
-  if (norm === "Pharm D") return "Pharm.D (Doctor of Pharmacy)";
-  if (norm === "B Pharm") return "B.Pharm (Bachelor of Pharmacy)";
-  if (norm === "D Pharm") return "D.Pharm (Diploma in Pharmacy)";
-  if (norm === "M Pharm") return "M.Pharm (Master of Pharmacy)";
-  return courseName;
+export function getCourseShortName(course?: string): string {
+  void course;
+  return "Pharm.D";
 }
 
 /**
- * Returns clean short display name for a course.
+ * Returns formatted year label for Pharm.D.
+ * Accepts (year, course) or (course, year).
  */
-export function getCourseShortName(courseName: string): string {
-  const norm = normalizeCourseName(courseName);
-  if (norm === "Pharm D") return "Pharm.D";
-  if (norm === "B Pharm") return "B.Pharm";
-  if (norm === "D Pharm") return "D.Pharm";
-  if (norm === "M Pharm") return "M.Pharm";
-  return courseName;
-}
-
-/**
- * Returns human-readable academic year label.
- */
-export function getYearLabel(year: number, courseName?: string): string {
-  const norm = courseName ? normalizeCourseName(courseName) : "";
-  switch (year) {
-    case 1: return "1st Year";
-    case 2: return "2nd Year";
-    case 3: return "3rd Year";
-    case 4: return "4th Year";
-    case 5: return "5th Year";
-    case 6: return norm === "Pharm D" ? "6th Year / Internship" : "6th Year";
-    default: return `Year ${year}`;
+export function getYearLabel(yearOrCourse?: number | string, courseOrYear?: number | string): string {
+  let y = 1;
+  if (typeof yearOrCourse === "number") {
+    y = yearOrCourse;
+  } else if (typeof courseOrYear === "number") {
+    y = courseOrYear;
+  } else if (!isNaN(Number(yearOrCourse))) {
+    y = Number(yearOrCourse);
+  } else if (!isNaN(Number(courseOrYear))) {
+    y = Number(courseOrYear);
   }
+
+  if (y === 6) return "6th Year (Internship)";
+  const suffix = y === 1 ? "st" : y === 2 ? "nd" : y === 3 ? "rd" : "th";
+  return `${y}${suffix} Year`;
 }
 
+/**
+ * Returns all supported academic years for Pharm.D (Years 1 to 6).
+ */
+export function getSupportedYears(course?: string): number[] {
+  void course;
+  return [1, 2, 3, 4, 5, 6];
+}
+
+/**
+ * Returns formal title for Pharm.D.
+ */
+export function getCourseFullName(course?: string): string {
+  void course;
+  return "Doctor of Pharmacy (Pharm.D)";
+}
+
+/**
+ * Returns standardized short badge label.
+ */
+export function getCourseDisplayBadge(course?: string): string {
+  void course;
+  return "Pharm.D";
+}

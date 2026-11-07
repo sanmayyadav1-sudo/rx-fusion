@@ -1,17 +1,10 @@
-import { Sora, Inter, JetBrains_Mono } from "next/font/google";
+import { Instrument_Sans, JetBrains_Mono } from "next/font/google";
 
-export const sora = Sora({
+export const instrumentSans = Instrument_Sans({
   subsets: ["latin"],
-  variable: "--font-sora",
+  variable: "--font-instrument",
   display: "swap",
-  weight: ["400", "600", "700", "800"],
-});
-
-export const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
 });
 
 export const jetbrainsMono = JetBrains_Mono({
@@ -20,3 +13,12 @@ export const jetbrainsMono = JetBrains_Mono({
   display: "swap",
   weight: ["400", "600"],
 });
+
+// Newsreader is loaded via Google Fonts link tag in layout.tsx to support opsz without next/font override errors
+export const newsreader = {
+  variable: "--font-newsreader",
+};
+
+// Compatibility exports
+export const sora = instrumentSans;
+export const inter = instrumentSans;

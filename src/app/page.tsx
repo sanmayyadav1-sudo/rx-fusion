@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import HomeClient from "./HomeClient";
 
 export const metadata: Metadata = {
-  title: "RxFusion | Free Pharmacy Notes for Pharm D, B Pharm & D Pharm",
-  description: "Download free syllabus-aligned lecture notes, lab manuals, and study resources for pharmacy students in India.",
+  title: "RxFusion | Pharmacy Knowledge. Clinical Excellence.",
+  description: "An advanced learning ecosystem designed exclusively for Doctor of Pharmacy (Pharm.D) students, combining academic resources, clinical education and scientific research.",
 };
 
 export default function Page() {

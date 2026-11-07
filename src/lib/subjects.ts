@@ -68,7 +68,7 @@ export async function createSubject(courseId: string, yearNumber: number, subjec
     .from("subjects")
     .insert([
       {
-        course: courseId as "Pharm D" | "B Pharm" | "D Pharm",
+        course: "Pharm D",
         year_number: yearNumber,
         subject_name: subjectName,
       },

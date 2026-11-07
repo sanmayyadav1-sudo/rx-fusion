@@ -63,7 +63,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     // 2. Fetch distinct course streams from notes
-    const coursesSet = new Set<string>(["Pharm D", "B Pharm", "D Pharm"]);
+    const coursesSet = new Set<string>(["Pharm D"]);
     const { data: notes } = await supabase
       .from("notes")
       .select("course");
